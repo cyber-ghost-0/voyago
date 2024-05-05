@@ -100,9 +100,8 @@ module.exports.Login = async (req, res, next) => {
 
 module.exports.Logout = async(req, res, next) => {
     services.black_list = services.black_list.filter(token => token !== req.body.token);
-    
-    req.headers['authorization'].at[5]='1';
-    return res.status(204).json('LoggedOut');
+    req.headers['authorization']=undefined;
+    return res.status(204).send("DONE!");
 };
 
 module.exports.forget_password = (req, res, next) => {
