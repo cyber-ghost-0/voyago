@@ -20,32 +20,31 @@ function validateUserInfo (info) {
     return schema.validate(info);
 }
 
-function is_unique(name,model,col) {
+
+async function is_unique(name, model, col) {
 
     const whereClause = {};
     whereClause[col] = name;
 
     console.log(whereClause);
-    return model.findOne({ where: whereClause }).then(user => {
-        if (user) {
-            return 1;
-        }
-        return 0;
-    });
+    let user = await model.findOne({ where: whereClause });
+    console.log('****',user);
+    return user;
+    
 }
 
-module.exports.token = (req, res, next) => {
+module.exports.token =async (req, res, next) => {
     const refreshToken = req.body.token;
     if (refreshToken == null) return res.sendStatus(401);
     if (!services.black_list.includes(refreshToken)) return res.sendStatus(403);
-    jwt.verify(refreshToken, "4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419", (err, user) => {
+    jwt.verify(refreshToken, "4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419", async (err, user) => {
         if (err) return res.sendStatus(403)
-        const accessToken = services.generateAccessToken(user.name)
-        res.json({ accessToken: accessToken })
+        const accessToken = await services.generateAccessToken(user)
+        return res.json({ accessToken: accessToken })
     })
 }
 
-module.exports.register =  (req, res, next) => {
+module.exports.register = async (req, res, next) => {
     // console.log('*************');
     try {
         const username = req.body.username;
@@ -56,14 +55,18 @@ module.exports.register =  (req, res, next) => {
         console.log(error);
         // console.log(req.body);
         // return is_unique(email, Users, email);
-        if (error || is_unique(email, Users, 'email')) {
+        if (error) {
             return res.status(400).send(error.details[0].message);
+        }
+        // console.log('&&', await is_unique(email, Users, 'email'));
+        if (await is_unique(email, Users, 'email') ||await is_unique(username, Users, 'username')) {
+            return res.status(400).json("emai/username isn\'t unique");
         }
         
         bcrypt.hash(password, 12).then(hashpassword=>{
             
             // console.log('=>',hashpassword,'<=');
-            Users.create({ username:username, password: hashpassword  , email : email });
+            Users.create({ username:username, password: hashpassword  , email : email , role:'user'});
         }).catch(err => {
             console.log(err);
         });
@@ -78,20 +81,27 @@ module.exports.register =  (req, res, next) => {
 };
 
 module.exports.Login = async (req, res, next) => {
-    let user =await services.getuser(req.body.name);
-    console.log('=/>',user,'<=');
+    let user = await services.getuser(req.body.name);
+    console.log('=/>', user, '<=');
     if (!user) {
-        return res.json("Enter a valid name");
+        return res.json("Enter a valid username");
     }
-    const accessToken =await services.generateAccessToken(user);
-    const refreshToken =await jwt.sign(user.name, '4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419');
+    let flag=await bcrypt.compare(req.body.password, user.password)
+    if (!flag) {
+        // console.log("NOT _ EQ");
+        return res.status(401).json('Invalid username or password');
+    }    
+
+    const accessToken =await services.generateAccessToken(user.username);
+    const refreshToken =await jwt.sign(user.username, '4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419');
     services.black_list.push(refreshToken);
     res.json({ accessToken: accessToken, refreshToken: refreshToken });
 };
 
-module.exports.Logout = (req, res, next) => {
+module.exports.Logout = async(req, res, next) => {
     services.black_list = services.black_list.filter(token => token !== req.body.token);
-    req.headers['authorization'] = undefined;
+    
+    req.headers['authorization'].at[5]='1';
     return res.status(204).json('LoggedOut');
 };
 

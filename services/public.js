@@ -13,11 +13,6 @@ module.exports.isexist = async(name) => {
 
 module.exports.getuser = async (name) => {
     let is_ex = await this.isexist(name);
-    // console.log('=/>',is_ex,'<=');
-    // if (!is_ex) {
-    //     return false;
-    // }
-    // let user = await Users.findOne({ where: { name: name } });
     return is_ex;
 };
 
@@ -27,5 +22,5 @@ module.exports.generateCod=()=> {
 }
 
 module.exports.generateAccessToken = async(user) => {
-    return await jwt.sign({ user: user }, '9e57eb4a64fdeb54c93f92202fb4b9f65e5d65c560f8c9000fc173c7a2843dea35fc3334252febf243654c22a696d3d39079ab2abfe70e239964eebc3a9948d9', { expiresIn: '15s' })
+    return await jwt.sign({ user: user }, '9e57eb4a64fdeb54c93f92202fb4b9f65e5d65c560f8c9000fc173c7a2843dea35fc3334252febf243654c22a696d3d39079ab2abfe70e239964eebc3a9948d9', { expiresIn: '40s' })
 }
