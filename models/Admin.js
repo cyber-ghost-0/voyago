@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
-const Users = sequelize.define('users', {
+const Admin = sequelize.define('Admin', {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -30,14 +30,10 @@ const Users = sequelize.define('users', {
     type: Sequelize.STRING,
     allowNull : false
   },
-  location: {
-    type: Sequelize.GEOMETRY,
-    allowNull : true
-  },
   profile_pic: {
     type: Sequelize.STRING,
     allowNull : true
   }
 });
 
-module.exports = Users;
+module.exports = Admin;

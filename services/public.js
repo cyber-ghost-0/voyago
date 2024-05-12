@@ -1,4 +1,4 @@
-const Users = require('../models/users');
+const Users = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 let refreshTokens = []
@@ -10,6 +10,8 @@ module.exports.isexist = async(name) => {
     return user;
     
 };
+
+
 
 module.exports.getuser = async (name) => {
     let is_ex = await this.isexist(name);
@@ -23,4 +25,16 @@ module.exports.generateCod=()=> {
 
 module.exports.generateAccessToken = async(user) => {
     return await jwt.sign({ user: user }, '9e57eb4a64fdeb54c93f92202fb4b9f65e5d65c560f8c9000fc173c7a2843dea35fc3334252febf243654c22a696d3d39079ab2abfe70e239964eebc3a9948d9', { expiresIn: '40s' })
+}
+
+module.exports.get_user_by_any = async(name, model, col)=> {
+
+    const whereClause = {};
+    whereClause[col] = name;
+
+    // return res.json(whereClause);
+    let user = await model.findOne({ where: whereClause });
+    // console.log('****',user)
+    return user;
+    
 }

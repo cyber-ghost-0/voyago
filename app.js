@@ -1,16 +1,14 @@
 const express = require('express');
 const sequelize = require('./util/database');
-const authRoutes = require('./routes/auth/auth');
+const appAuth = require('./routes/app/auth');
+const webAuth = require('./routes/web/auth');
 const app = express();
 const BP = require('body-parser');
-const session = require('express-session');
 
 app.use(BP.json());
 
-app.use(
-    session({ secret: 'my secret', resave: false, saveUninitialized: false })
-);
-app.use('/api', authRoutes);
+app.use('/api', appAuth);
+app.use('/web', webAuth);
 
 sequelize
     //.sync({force:true})

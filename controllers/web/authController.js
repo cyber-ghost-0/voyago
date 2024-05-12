@@ -1,4 +1,4 @@
-const Users = require('../../models/users');
+const Admin = require('../../models/admin.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mail = require('../../services/Mails');
@@ -14,7 +14,8 @@ function validateUserInfo (info) {
         password: Joi.string().min(8).required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
         confirm_password: Joi.ref('password'),
         email: Joi.string()
-        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+            .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+        role: Joi.string().required()
     }) 
     console.log(info);
     return schema.validate(info);
@@ -28,7 +29,7 @@ async function is_unique(name, model, col) {
 
     console.log(whereClause);
     let user = await model.findOne({ where: whereClause });
-    console.log('****',user);
+    console.log('****',user)
     return user;
     
 }
@@ -48,8 +49,16 @@ module.exports.register = async (req, res, next) => {
     // console.log('*************');
     try {
         const username = req.body.username;
-        const password =  req.body.password;
         const email = req.body.email;
+        const role = req.body.role;
+        // const password = req.body.password;
+        
+        let passWord = '' + services.generateCod();
+        Admin.password = passWord;
+        Admin.save();
+        mail(Admin.dataValues.email, passWord);
+        req.session.check = true;
+        req.session.Admin = Admin;
         
         let { error } = validateUserInfo(req.body);
         console.log(error);
@@ -59,19 +68,19 @@ module.exports.register = async (req, res, next) => {
             return res.status(400).send(error.details[0].message);
         }
         // console.log('&&', await is_unique(email, Users, 'email'));
-        if (await is_unique(email, Users, 'email') ||await is_unique(username, Users, 'username')) {
+        if (await is_unique(email, Admin, 'email') ||await is_unique(username, Admin, 'username')) {
             return res.status(400).json("emai/username isn\'t unique");
         }
         
-        bcrypt.hash(password, 12).then(hashpassword=>{
+        bcrypt.hash(passWord, 12).then(hashpassword=>{
             
             // console.log('=>',hashpassword,'<=');
-            Users.create({ username:username, password: hashpassword  , email : email , role:'user'});
+            Users.create({ username:username, password: hashpassword  , email : email , role: role});
         }).catch(err => {
             console.log(err);
         });
 
-        mail(email,'You\'ve regestered successfully !');
+        mail(email,'You\'ve regestered successfully, here is your usernaem and password');
 
         return res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
@@ -105,7 +114,7 @@ module.exports.Logout = async(req, res, next) => {
 };
 
 module.exports.forget_password = (req, res, next) => {
-    console.log('=>',req.body.name,'<=');
+    // console.log('=>',req.body.name,'<=');
 
     return services.getuser(req.body.name).then((user) => {
         // console.log(user);

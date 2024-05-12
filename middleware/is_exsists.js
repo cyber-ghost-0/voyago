@@ -1,4 +1,4 @@
-const Users = require('../models/users');
+const Users = require('../models/User');
 module.exports = (req, res, next) => {
     let name = req.body.username;
     Users.findOne({ where: { username: name } }).then(user => {
