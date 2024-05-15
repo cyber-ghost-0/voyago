@@ -28,7 +28,7 @@ async function is_unique(name, model, col) {
 
     console.log(whereClause);
     let user = await model.findOne({ where: whereClause });
-    console.log('****',user);
+    // console.log('****',user);
     return user;
     
 }
@@ -53,27 +53,25 @@ module.exports.register = async (req, res, next) => {
         
         let { error } = validateUserInfo(req.body);
         console.log(error);
-        // console.log(req.body);
-        // return is_unique(email, Users, email);
+        
         if (error) {
             return res.status(400).send(error.details[0].message);
         }
-        // console.log('&&', await is_unique(email, Users, 'email'));
         if (await is_unique(email, Users, 'email') ||await is_unique(username, Users, 'username')) {
             return res.status(400).json("emai/username isn\'t unique");
         }
+        let cod = '' + services.generateCod();
+        
+        mail(req.body.email, cod);
         
         bcrypt.hash(password, 12).then(hashpassword=>{
             
-            // console.log('=>',hashpassword,'<=');
-            Users.create({ username:username, password: hashpassword  , email : email , role:'user'});
+            Users.create({ username:username, password: hashpassword  , email : email , role:'user',cod_ver:null});
         }).catch(err => {
             console.log(err);
         });
 
-        mail(email,'You\'ve regestered successfully !');
-
-        return res.status(201).json({ message: 'User registered successfully' });
+        return res.status(201).json({ message: 'verification code send to your email' });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'An error occurred while registering user' });
@@ -82,11 +80,15 @@ module.exports.register = async (req, res, next) => {
 
 module.exports.Login = async (req, res, next) => {
     let user = await services.getuser(req.body.name);
-    console.log('=/>', user, '<=');
+    // console.log('=/>', user, '<=');
     if (!user) {
         return res.json("Enter a valid username");
     }
-    let flag=await bcrypt.compare(req.body.password, user.password)
+    let flag = await bcrypt.compare(req.body.password, user.password);
+    if (user.code_ver === null) {
+        user.destroy();
+        return res.json("destroyed");
+    }
     if (!flag) {
         // console.log("NOT _ EQ");
         return res.status(401).json('Invalid username or password');
@@ -119,17 +121,18 @@ module.exports.forget_password = (req, res, next) => {
     });
 };
 
-module.exports.check_password = (req, res, next) => {
-    if (!req.session.check) {
-        return res.json("Access Denied !");
-    }
+module.exports.check_regesteration_password = (req, res, next) => {
     
-    console.log(req.session.user.last_ver , (Date.now()));
-    if (req.session.user.cod_ver === req.body.cod && ( - req.session.user.last_ver + (Date.now())<= 60000)) {
-        req.session.reset = true;
-        req.session.check = false;
+    if (req.body.correct_code === req.body.in_cod) {
+        
+        services.get_user_by_any(req.body.email,User,'email').then((user) => {
+            user.cod_ver = cod;
+            user.save();
+            return user;
+        });
+
         return res.json("verified!");
-    } else if(req.session.user.cod_ver === req.body.cod){
+    } else if(!flag && eq.session.user.cod_ver === req.body.cod){
         return res.json("Time expired for the cod");
     } else {
         return res.json("invalid cod");
