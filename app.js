@@ -11,7 +11,7 @@ app.use('/api', appAuth);
 app.use('/web', webAuth);
 
 sequelize
-    //.sync({force:true})
+    // .sync({force:true})
     .sync()
     .then(result => {
         app.listen(3000);

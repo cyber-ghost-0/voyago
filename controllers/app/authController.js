@@ -57,16 +57,16 @@ module.exports.register = async (req, res, next) => {
         if (error) {
             return res.status(400).send(error.details[0].message);
         }
-        if (await is_unique(email, Users, 'email') ||await is_unique(username, Users, 'username')) {
+        if (await is_unique(email, User, 'email') ||await is_unique(username, User, 'username')) {
             return res.status(400).json("emai/username isn\'t unique");
         }
         let cod = '' + services.generateCod();
         
         mail(req.body.email, cod);
-        
+        console.log(cod,req.body.email)
         bcrypt.hash(password, 12).then(hashpassword=>{
             
-            Users.create({ username:username, password: hashpassword  , email : email , role:'user',cod_ver:null});
+            User.create({ username:username, password: hashpassword  , email : email , role:'user',cod_ver:null});
         }).catch(err => {
             console.log(err);
         });
@@ -121,19 +121,17 @@ module.exports.forget_password = (req, res, next) => {
     });
 };
 
-module.exports.check_regesteration_password = (req, res, next) => {
-    
-    if (req.body.correct_code === req.body.in_cod) {
+module.exports.check_regesteration_code = (req, res, next) => {
+    console.log(req.body.in_code,"  ",req.body.correct_code)
+    if (req.body.correct_code === req.body.in_code) {
         
         services.get_user_by_any(req.body.email,User,'email').then((user) => {
-            user.cod_ver = cod;
+            user.cod_ver = req.body.correct_code;
             user.save();
             return user;
         });
 
         return res.json("verified!");
-    } else if(!flag && eq.session.user.cod_ver === req.body.cod){
-        return res.json("Time expired for the cod");
     } else {
         return res.json("invalid cod");
     }
@@ -149,7 +147,7 @@ module.exports.reset_password = (req, res, next) => {
     bcrypt.hash(req.body.password, 12).then(hashpassword => {
             
         req.session.user.password = hashpassword;
-            Users.
+            User.
             findByPk(req.session.user.id)
             .then(user => {
                 user.password = hashpassword;
