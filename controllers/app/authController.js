@@ -79,13 +79,13 @@ module.exports.register = async (req, res, next) => {
 };
 
 module.exports.Login = async (req, res, next) => {
-    let user = await services.getuser(req.body.name);
-    // console.log('=/>', user, '<=');
+    let user = await services.getuser(req.body.username);
+    console.log('=/>', user.code_ver, '<=');
     if (!user) {
         return res.json("Enter a valid username");
     }
     let flag = await bcrypt.compare(req.body.password, user.password);
-    if (user.code_ver === null) {
+    if (!user.code_ver) {
         user.destroy();
         return res.json("destroyed");
     }
