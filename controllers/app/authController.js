@@ -28,7 +28,6 @@ async function is_unique(name, model, col) {
 
     console.log(whereClause);
     let user = await model.findOne({ where: whereClause });
-    // console.log('****',user);
     return user;
     
 }
@@ -40,7 +39,7 @@ module.exports.token =async (req, res, next) => {
     jwt.verify(refreshToken, "4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419", async (err, user) => {
         if (err) return res.sendStatus(403)
         const accessToken = await services.generateAccessToken(user)
-        return res.json({ accessToken: accessToken })
+        return res.status(200).json({ accessToken: accessToken })
     })
 }
 
@@ -82,12 +81,12 @@ module.exports.Login = async (req, res, next) => {
     let user = await services.getuser(req.body.username);
     console.log('=/>', user.code_ver, '<=');
     if (!user) {
-        return res.json("Enter a valid username");
+        return res.status(406).json("Enter a valid username");
     }
     let flag = await bcrypt.compare(req.body.password, user.password);
     if (!user.code_ver) {
         user.destroy();
-        return res.json("destroyed");
+        return res.status(400).json("destroyed");
     }
     if (!flag) {
         // console.log("NOT _ EQ");
@@ -106,20 +105,6 @@ module.exports.Logout = async(req, res, next) => {
     return res.status(204).send("DONE!");
 };
 
-module.exports.forget_password = (req, res, next) => {
-    console.log('=>',req.body.email,'<=');
-
-    return services.get_user_by_any(req.body.email,User,'email').then((user) => {
-        if (!user) {
-            return res.json("This email isn\'t exist");
-        }
-        let cod = '' + services.generateCod();
-        user.cod_ver = cod;
-        user.save();
-        mail(req.body.email, cod);
-        return res.end(cod);
-    });
-};
 
 module.exports.check_regesteration_code = (req, res, next) => {
     console.log(req.body.in_code,"  ",req.body.correct_code)
@@ -131,32 +116,58 @@ module.exports.check_regesteration_code = (req, res, next) => {
             return user;
         });
 
-        return res.json("verified!");
+        return res.status(200).json("verified!");
     } else {
-        return res.json("invalid cod");
+        return res.status(400).json("invalid cod");
     }
-
+    
 };
 
-module.exports.reset_password = (req, res, next) => {
-    if (!req.session.reset) {
-        return res.json("Access Denied !");
+module.exports.forget_password = (req, res, next) => {
+    // console.log('=>',req.body.email,'<=');
+
+    return services.get_user_by_any(req.body.email,User,'email').then((user) => {
+        if (!user) {
+            return res.status(400).json("This email isn\'t exist");
+        }
+        let cod = '' + services.generateCod();
+        user.cod_ver = cod;
+        user.save();
+        mail(req.body.email, cod);
+        return res.status(200).json(cod);
+    });
+};
+
+module.exports.check_verification_code = async(req, res, next) => {
+    let user = await services.get_user_by_any(req.body.email, User, 'email');
+    if (!user) {
+        return res.status(400).json("Access Denied !");
     }
-    req.session.reset = false;
+    
+    // console.log(req.session.user.last_ver , (Date.now()));
+    if (user.cod_ver === req.body.cod && ( - user.updatedAt + (Date.now())<= 60000)) {
+        
+        return res.status(200).json("verified!");
+    } else if(user.cod_ver === req.body.cod){
+        return res.status(400).json("Time expired for the cod");
+    } else {
+        return res.status(400).json("invalid cod");
+    }
+
+}
+module.exports.reset_password = async(req, res, next) => {
+    let user = await services.get_user_by_any(req.body.email, User, 'email');
+    if (!user) {
+        return res.status(400).json("Access Denied !");
+    }
     
     bcrypt.hash(req.body.password, 12).then(hashpassword => {
-            
-        req.session.user.password = hashpassword;
-            User.
-            findByPk(req.session.user.id)
-            .then(user => {
-                user.password = hashpassword;
-                console.log(user.password);
-                return user.save();
-            }).catch(err => {
-                console.log(err);
-                return res.end("you cant delete a NULL HOLE SHET!");
-            });
+        user.password = hashpassword;
+        // console.log(user.password);
+        user.save();
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).json("you cant delete a NULL HOLE SHET!");
     });
-    return res.json("changhed");
+    return res.status(200).json("changhed");
 };
