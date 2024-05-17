@@ -79,12 +79,12 @@ module.exports.register = async (req, res, next) => {
 
 module.exports.Login = async (req, res, next) => {
     let user = await services.getuser(req.body.username);
-    console.log('=/>', user.code_ver, '<=');
+    // console.log('=/>', user.cod_ver, '<=');
     if (!user) {
         return res.status(406).json("Enter a valid username");
     }
     let flag = await bcrypt.compare(req.body.password, user.password);
-    if (!user.code_ver) {
+    if (!user.cod_ver) {
         user.destroy();
         return res.status(400).json("destroyed");
     }
@@ -140,12 +140,14 @@ module.exports.forget_password = (req, res, next) => {
 
 module.exports.check_verification_code = async(req, res, next) => {
     let user = await services.get_user_by_any(req.body.email, User, 'email');
+    console.log(user); 
     if (!user) {
         return res.status(400).json("Access Denied !");
     }
     
-    // console.log(req.session.user.last_ver , (Date.now()));
-    if (user.cod_ver === req.body.cod && ( - user.updatedAt + (Date.now())<= 60000)) {
+    const updatedAtTimestamp = new Date(user.updatedAt).getTime();
+    console.log(updatedAtTimestamp , (Date.now()) ,",,,",user.cod_ver);
+    if (user.cod_ver === req.body.cod && ( -updatedAtTimestamp + (Date.now())<= 60000)) {
         
         return res.status(200).json("verified!");
     } else if(user.cod_ver === req.body.cod){
@@ -167,7 +169,7 @@ module.exports.reset_password = async(req, res, next) => {
         user.save();
     }).catch(err => {
         console.log(err);
-        return res.status(400).json("you cant delete a NULL HOLE SHET!");
+        return res.status(400).json("ERROR!");
     });
     return res.status(200).json("changhed");
 };
