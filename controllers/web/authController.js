@@ -1,10 +1,10 @@
-const Admin = require('../../models/admin.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mail = require('../../services/Mails');
 const services = require('../../services/public');
 const BP = require('body-parser');
 const Joi = require('joi');
+const Admin = require('../../models/Admin');
 
 // require('dotenv').config()
 
@@ -14,8 +14,17 @@ function validateUserInfo (info) {
         password: Joi.string().min(8).required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
         confirm_password: Joi.ref('password'),
         email: Joi.string()
-            .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-        role: Joi.string().required()
+        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+    }) 
+    console.log(info);
+    return schema.validate(info);
+}
+function validateUserInfo2(info) {
+    const schema = Joi.object({
+        password: Joi.string().min(8).required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+        confirm_password: Joi.ref('password'),
+        email: Joi.string()
+        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
     }) 
     console.log(info);
     return schema.validate(info);
@@ -28,9 +37,8 @@ async function is_unique(name, model, col) {
     whereClause[col] = name;
 
     console.log(whereClause);
-    let user = await model.findOne({ where: whereClause });
-    console.log('****',user)
-    return user;
+    let admin = await model.findOne({ where: whereClause });
+    return admin;
     
 }
 
@@ -41,64 +49,18 @@ module.exports.token =async (req, res, next) => {
     jwt.verify(refreshToken, "4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419", async (err, user) => {
         if (err) return res.sendStatus(403)
         const accessToken = await services.generateAccessToken(user)
-        return res.json({ accessToken: accessToken })
+        return res.status(200).json({ accessToken: accessToken })
     })
 }
 
-module.exports.register = async (req, res, next) => {
-    // console.log('*************');
-    try {
-        const username = req.body.username;
-        const email = req.body.email;
-        const role = req.body.role;
-        // const password = req.body.password;
-        
-        let passWord = '' + services.generateCod();
-        Admin.password = passWord;
-        Admin.save();
-        mail(Admin.dataValues.email, passWord);
-        req.session.check = true;
-        req.session.Admin = Admin;
-        
-        let { error } = validateUserInfo(req.body);
-        console.log(error);
-        // console.log(req.body);
-        // return is_unique(email, Users, email);
-        if (error) {
-            return res.status(400).send(error.details[0].message);
-        }
-        // console.log('&&', await is_unique(email, Users, 'email'));
-        if (await is_unique(email, Admin, 'email') ||await is_unique(username, Admin, 'username')) {
-            return res.status(400).json("emai/username isn\'t unique");
-        }
-        
-        bcrypt.hash(passWord, 12).then(hashpassword=>{
-            
-            // console.log('=>',hashpassword,'<=');
-            Users.create({ username:username, password: hashpassword  , email : email , role: role});
-        }).catch(err => {
-            console.log(err);
-        });
-
-        mail(email,'You\'ve regestered successfully, here is your usernaem and password');
-
-        return res.status(201).json({ message: 'User registered successfully' });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'An error occurred while registering user' });
-    }
-};
-
 module.exports.Login = async (req, res, next) => {
-    let user = await services.getuser(req.body.name);
-    console.log('=/>', user, '<=');
+    let user = await services.get_user_by_any(req.body.email,Admin,'email');
     if (!user) {
-        return res.json("Enter a valid username");
+        return res.status(406).json("Enter a valid Email");
     }
-    let flag=await bcrypt.compare(req.body.password, user.password)
+    let flag = await bcrypt.compare(req.body.password, user.password);
     if (!flag) {
-        // console.log("NOT _ EQ");
-        return res.status(401).json('Invalid username or password');
+        return res.status(401).json('Invalid password');
     }    
 
     const accessToken =await services.generateAccessToken(user.username);
@@ -114,63 +76,90 @@ module.exports.Logout = async(req, res, next) => {
 };
 
 module.exports.forget_password = (req, res, next) => {
-    // console.log('=>',req.body.name,'<=');
+    // console.log('=>',req.body.email,'<=');
 
-    return services.getuser(req.body.name).then((user) => {
-        // console.log(user);
+    return services.get_user_by_any(req.body.email,Admin,'email').then((user) => {
         if (!user) {
-            return res.json("username isn\'t exist");
+            return res.status(400).json("This email isn\'t exist");
         }
-        // console.log(user, "//////////////");
         let cod = '' + services.generateCod();
         user.cod_ver = cod;
-        user.last_ver =(Date.now());
         user.save();
-        mail(user.dataValues.email, cod);
-        req.session.check = true;
-        req.session.user =user;
-        return res.end(cod);
+        mail(req.body.email, cod);
+        return res.status(200).json(cod);
     });
-
 };
 
-module.exports.check_password = (req, res, next) => {
-    if (!req.session.check) {
-        return res.json("Access Denied !");
+module.exports.check_verification_code = async(req, res, next) => {
+    let user = await services.get_user_by_any(req.body.email, Admin, 'email');
+    console.log(user); 
+    if (!user) {
+        return res.status(400).json("Access Denied !");
     }
     
-    console.log(req.session.user.last_ver , (Date.now()));
-    if (req.session.user.cod_ver === req.body.cod && ( - req.session.user.last_ver + (Date.now())<= 60000)) {
-        req.session.reset = true;
-        req.session.check = false;
-        return res.json("verified!");
-    } else if(req.session.user.cod_ver === req.body.cod){
-        return res.json("Time expired for the cod");
+    const updatedAtTimestamp = new Date(user.updatedAt).getTime();
+    // console.log(updatedAtTimestamp , (Date.now()) ,",,,",user.cod_ver);
+    if (user.cod_ver === req.body.cod && ( -updatedAtTimestamp + (Date.now())<= 60000)) {
+        
+        return res.status(200).json("verified!");
+    } else if(user.cod_ver === req.body.cod){
+        return res.status(400).json("Time expired for the cod");
     } else {
-        return res.json("invalid cod");
+        return res.status(400).json("invalid cod");
     }
 
-};
-
-module.exports.reset_password = (req, res, next) => {
-    if (!req.session.reset) {
-        return res.json("Access Denied !");
+}
+module.exports.reset_password = async (req, res, next) => {
+    let { error } = validateUserInfo2(req.body);
+    console.log(error);
+    
+    if (error) {
+        return res.status(400).send(error.details[0].message);
     }
-    req.session.reset = false;
+
+    let user = await services.get_user_by_any(req.body.email, Admin, 'email');
+    if (!user) {
+        return res.status(400).json("Access Denied !");
+    }
     
     bcrypt.hash(req.body.password, 12).then(hashpassword => {
-            
-        req.session.user.password = hashpassword;
-            Users.
-            findByPk(req.session.user.id)
-            .then(user => {
-                user.password = hashpassword;
-                console.log(user.password);
-                return user.save();
-            }).catch(err => {
-                console.log(err);
-                return res.end("you cant delete a NULL HOLE SHET!");
-            });
+        user.password = hashpassword;
+        // console.log(user.password);
+        user.save();
+    }).catch(err => {
+        console.log(err);
+        return res.status(400).json("ERROR!");
     });
-    return res.json("changhed");
+    return res.status(200).json("changhed");
+};
+
+module.exports.add_admin = async (req, res, next) => {
+    // console.log('*************');
+    try {
+        const username = req.body.username;
+        const password =  req.body.password;
+        const email = req.body.email;
+        
+        let { error } = validateUserInfo(req.body);
+        console.log(error);
+        
+        if (error) {
+            return res.status(400).send(error.details[0].message);
+        }
+        if (await is_unique(email, Admin, 'email') ||await is_unique(username, Admin, 'username')) {
+            return res.status(400).json("emai/username isn\'t unique");
+        }
+        
+        bcrypt.hash(password, 12).then(hashpassword=>{
+            
+            Admin.create({ username:username, password: hashpassword  , email : email , role:'Admin',cod_ver:null});
+        }).catch(err => {
+            console.log(err);
+        });
+
+        return res.status(201).json({ message: 'added' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'An error occurred while registering user' });
+    }
 };
