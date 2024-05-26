@@ -8,6 +8,14 @@ const User = sequelize.define('User', {
     allowNull: false,
     primaryKey: true
   },
+  country: {
+    type: Sequelize.STRING,
+    allowNull:true
+  },
+  phone_number: {
+    type: Sequelize.STRING,
+    allowNull:true
+  },
   username: {
     type: Sequelize.STRING,
     unique:true

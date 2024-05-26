@@ -17,7 +17,20 @@ router.post('/check_verification_code', authController.check_verification_code);
 
 router.post('/reset_password', authController.reset_password);
 
+router.get('/users', authController.users);
+
+router.post('/add_user', authController.add_user);
+
+router.delete('/delete_user/:id', authController.delete_user);
+
+router.get('/admins', authController.admins);
+
 router.post('/add_admin', authController.add_admin);
+
+router.delete('/delete_admin/:id', authController.delete_admin);
+
+
+
 
 //
 
