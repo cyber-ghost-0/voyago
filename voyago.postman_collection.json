@@ -105,7 +105,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"anas\",\r\n    \"password\" : \"anassahar\"\r\n}",
+							"raw": "{\r\n    \"username\" : \"Anas\",\r\n    \"password\" : \"anasanas\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -140,7 +140,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"anas\",\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anassana\",\r\n    \"confirm_password\" : \"anassana\"\r\n}",
+							"raw": "{\r\n    \"username\" : \"Anas\",\r\n    \"phone_number\" : \"0937402356\",\r\n    \"country\" : \"palast\",\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anasanas\",\r\n    \"confirm_password\" : \"anasanas\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -224,7 +224,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"correct_code\" : \"406861\",\r\n    \"in_code\" : \"406861\",\r\n    \"username\" : \"anas\",\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anassana\",\r\n    \"confirm_password\" : \"anassana\"\r\n}",
+							"raw": "{\r\n    \"correct_code\" : \"811192\",\r\n    \"in_code\" : \"811192\",\r\n    \"username\" : \"Anas\",\r\n    \"phone_number\" : \"0937402356\",\r\n    \"country\" : \"palast\",\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anasanas\",\r\n    \"confirm_password\" : \"anasanas\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -299,6 +299,119 @@
 							"path": [
 								"api",
 								"reset_password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/EditMyProfile",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"anas_ver2\",\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anasanas\",\r\n    \"confirm_password\" : \"anasanas\",\r\n    \"old_password\" :\"anassana\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/EditMyProfile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"EditMyProfile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/myProfile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/myProfile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"myProfile"
 							]
 						}
 					},
@@ -406,7 +519,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anassana\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"anas.ahmad@gmail.com\",\r\n    \"password\" : \"aya12345\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -594,6 +707,146 @@
 							"path": [
 								"web",
 								"add_admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/add_admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"Aya\",\r\n    \"email\" : \"anas.ahmad@gmail.com\",\r\n    \"password\" : \"aya12345\",\r\n    \"role\" : \"fun\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/Edit_admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"Edit_admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/delete_admin/1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/delete_admin/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"delete_admin",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/admins",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/admins",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"admins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/delete_user/1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/delete_user/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"delete_user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/add_user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"Aya\",\r\n    \"phone_number\" : \"0935756873\",\r\n    \"country\" : \"lebanon\",\r\n    \"email\" : \"anas.ahmad@gmail.com\",\r\n    \"password\" : \"aya12345\",\r\n    \"confirm_password\" : \"aya12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/add_user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"add_user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"users"
 							]
 						}
 					},
