@@ -11,8 +11,6 @@ const User = require('../../models/User');
 
 function validateUserInfo (info) {
     const schema = Joi.object({
-        phone_number : Joi.string(),
-        country : Joi.string(),
         username: Joi.string().alphanum().required(),
         password: Joi.string().min(8).required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
         confirm_password: Joi.ref('password'),
@@ -151,8 +149,6 @@ module.exports.add_user = async (req, res, next) => {
     try {
         const username = req.body.username;
         const password = req.body.password;
-        const phone_number = req.body.phone_number;
-        const country = req.body.country;
         const email = req.body.email;
         
         let { error } = validateUserInfo(req.body);
@@ -170,7 +166,7 @@ module.exports.add_user = async (req, res, next) => {
         // console.log(cod,req.body.email)
         bcrypt.hash(password, 12).then(hashpassword=>{
             
-            User.create({ phone_number : phone_number,country :country,username:username, password: hashpassword  , email : email , role:'user',cod_ver:cod});
+            User.create({ username:username, password: hashpassword  , email : email , role:'user',cod_ver:cod});
         }).catch(err => {
             console.log(err);
         });
@@ -189,7 +185,7 @@ module.exports.delete_user = async (req, res, next) => {
         return res.status(500).json({ msg: "fault", err: "User is not exist!" });
     }
     user.destroy();
-    return res.json({msg:"DONE|"}).status(200);
+    return res.json({msg:"DONE!"}).status(200);
 };
 
 

@@ -10,8 +10,6 @@ const User = require('../../models/User');
 
 function validateUserInfo (info) {
     const schema = Joi.object({
-        phone_number : Joi.string(),
-        country : Joi.string(),
         username: Joi.string().alphanum().required(),
         password: Joi.string().min(8).required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
         confirm_password: Joi.ref('password'),
@@ -50,8 +48,6 @@ module.exports.register = async (req, res, next) => {
     try {
         const username = req.body.username;
         const password = req.body.password;
-        const phone_number = req.body.phone_number;
-        const country = req.body.country;
         const email = req.body.email;
         
         let { error } = validateUserInfo(req.body);
@@ -69,7 +65,7 @@ module.exports.register = async (req, res, next) => {
         console.log(cod,req.body.email)
         bcrypt.hash(password, 12).then(hashpassword=>{
             
-            User.create({ username:username, password: hashpassword  , email : email , role:'user',country : country,phone_number : phone_number , cod_ver:null});
+            User.create({ username:username, password: hashpassword  , email : email , role:'user', cod_ver:null});
         }).catch(err => {
             console.log(err);
         });
