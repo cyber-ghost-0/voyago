@@ -20,7 +20,7 @@ module.exports.getuser = async (name) => {
 
 module.exports.generateCod=()=> {
     // Generate a random number between 100000 (inclusive) and 999999 (inclusive)
-    return Math.floor(Math.random() * 900000) + 100000;
+    return Math.floor(Math.random() * 90000) + 10000;
 }
 
 module.exports.generateAccessToken = async(user) => {

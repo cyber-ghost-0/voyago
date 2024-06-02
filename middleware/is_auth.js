@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
         if (err) {
             return res.status(403).json({ msg: 'Invalid token' });
         }
-        req.userID = userID.user;
+        req.user_id = userID.user;
         next();
     });
 };

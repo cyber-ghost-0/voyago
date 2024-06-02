@@ -21,11 +21,6 @@ router.post('/check_verification_code', authController.check_verification_code);
 
 router.post('/reset_password', authController.reset_password);
 
-router.get('/myProfile', is_auth, authController.myProfile);
-
-router.post('/EditMyProfile',is_auth, authController.EditMyProfile);
-
-
 //
 
 
