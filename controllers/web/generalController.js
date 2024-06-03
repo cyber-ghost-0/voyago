@@ -188,7 +188,10 @@ module.exports.add_trip = async (req, res, nxt) => {
             description = req.body.description, images, features, meeting_point_location = req.body.meeting_point_location, TimeLimitCancellation = req.body.TimeLimitCancellation;
         images = req.body.images;
         features = req.body.features;
-        Trip.create({ name: "ZZZZAAAANNAASS" });
+        if (await is_unique(name, Trip, 'name')) {
+            return res.status(500).json({ msg: 'fault', err: 'name is not unique' });
+        }
+        await Trip.create({ name: "ZZZZAAAANNAASS" });
         const trp = await Trip.findOne({ where: { name: "ZZZZAAAANNAASS" } });
         images.forEach(image => {
             Image.create({ TripId: trp.id, image: image });
@@ -196,10 +199,8 @@ module.exports.add_trip = async (req, res, nxt) => {
         features.forEach(feature => {
             Every_feature.create({ featuresIncludedId: feature, TripId: trp.id });
         });
-       
         trp.name = name; trp.location = location; trp.description = description; trp.trip_price = price; trp.start_date = start_date; trp.capacity = capacity, trp.admin_id = req.user_id; trp.meeting_point_location = meeting_point_location;
         trp.TimeLimitCancellation = TimeLimitCancellation; trp.avilable = true;
-   
         trp.save();
         return res.status(200).json({ data: {}, err: {},msg:'Added!'});
     } catch(error) {
