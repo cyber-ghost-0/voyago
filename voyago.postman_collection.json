@@ -752,7 +752,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"Aya\",\r\n    \"email\" : \"anas.ahmad@gmail.com\",\r\n    \"password\" : \"aya12345\",\r\n    \"confirm_password\" : \"aya12345\"\r\n}",
+							"raw": "{\r\n    \"username\" : \"Ayasareej\",\r\n    \"email\" : \"anas.ahmad@gmail.com\",\r\n    \"password\" : \"aya12345\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -789,6 +789,146 @@
 							"path": [
 								"web",
 								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/admins/1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/admins/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"admins",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/users/1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/features_included",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/features_included",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"features_included"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/add_features_included",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"feature\":\"ee\",\r\n    \"type\":\"ll\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/add_features_included",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"add_features_included"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/add_trip",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"second\",\r\n    \"location\":\"Syria\",\r\n    \"start_date\" : \"10/5/2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/add_trip",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"add_trip"
 							]
 						}
 					},
