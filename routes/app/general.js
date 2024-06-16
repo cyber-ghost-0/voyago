@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.get('/myProfile', is_auth, generalController.myProfile);
 
-router.post('/EditMyProfile',is_auth, generalController.EditMyProfile);
+router.post('/EditMyProfile', is_auth, generalController.EditMyProfile);
+
+router.get('/im/:id', generalController.im_t);
 
 module.exports = router;

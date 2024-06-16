@@ -7,9 +7,13 @@ const Joi = require('joi');
 const Admin = require('../../models/Admin');
 const User = require('../../models/User');
 const Trip = require('../../models/Trip');
-const Image = require('../../models/Image');
+const Image = require('../../models/image');
 const Features_included = require('../../models/features_included');
 const Every_feature = require('../../models/every_feture');
+const Event = require('../../models/Event');
+const Day_trip = require('../../models/Day_trip');
+const Attraction = require('../../models/Attraction');
+const db =require('../../util/database')
 // require('dotenv').config()
 
 function validateUserInfo (info) {
@@ -186,25 +190,108 @@ module.exports.add_trip = async (req, res, nxt) => {
     try {
         let name = req.body.name, location = req.body.location, start_date = req.body.start_date, price = req.body.price, capacity = req.body.capacity,
             description = req.body.description, images, features, meeting_point_location = req.body.meeting_point_location, TimeLimitCancellation = req.body.TimeLimitCancellation;
+        let end_date = new Date(start_date);
+
+        // Add the duration in days
         images = req.body.images;
         features = req.body.features;
+        let days = [];
+        days = req.body.days;
+        console.log(days);
+        end_date.setDate(end_date.getDate() +  days.length);
         if (await is_unique(name, Trip, 'name')) {
             return res.status(500).json({ msg: 'fault', err: 'name is not unique' });
         }
         await Trip.create({ name: "ZZZZAAAANNAASS" });
         const trp = await Trip.findOne({ where: { name: "ZZZZAAAANNAASS" } });
-        images.forEach(image => {
-            Image.create({ TripId: trp.id, image: image });
+        
+        images.forEach(async image => {
+            console.log(trp.id);
+            await Image.create({ image: image,TripId: trp.id});
         });
-        features.forEach(feature => {
-            Every_feature.create({ featuresIncludedId: feature, TripId: trp.id });
+        features.forEach(async feature => {
+            await Every_feature.create({ featuresIncludedId: feature, TripId: trp.id });
         });
-        trp.name = name; trp.location = location; trp.description = description; trp.trip_price = price; trp.start_date = start_date; trp.capacity = capacity, trp.admin_id = req.user_id; trp.meeting_point_location = meeting_point_location;
+        let dur = 2;
+        let cnt = 0;
+        days.forEach(async day => {
+            cnt++;
+            await Day_trip.create({ num: -1 });
+            const DAY = await Day_trip.findOne({ where: { num: -1 } });
+        
+            day.forEach(async event => {
+                let action = event.action;
+                let title;
+                if (event.attraction_id != null) {
+                    const attr = await Attraction.findByPk(event.attraction_id);
+                    title = attr.title;
+                } else title = event.title;
+                let Start_event = event.start_date;
+                let duration_event = event.duration;
+                let description_event = event.description;
+                let type = event.type;
+                let price_adult = event.price_adult;
+                let price_child = event.price_child;
+                let additional_note = event.additional_note;
+                await Event.create({
+                    action: action,title:title,start_date:Start_event,duration:duration_event,description:description_event,type:type,price_adult:price_adult,price_child:price_child,additional_note:additional_note,DayTripId:DAY.id
+                })
+            })
+            DAY.num = cnt;
+            DAY.TripId = trp.id;
+            await DAY.save();
+        });
+        trp.name = name; trp.location = location; trp.description = description; trp.trip_price = price; trp.start_date = start_date;trp.end_date=end_date, trp.capacity = capacity, trp.AdminId = req.user_id; trp.meeting_point_location = meeting_point_location;
         trp.TimeLimitCancellation = TimeLimitCancellation; trp.avilable = true;
-        trp.save();
+        await trp.save();
         return res.status(200).json({ data: {}, err: {},msg:'Added!'});
     } catch(error) {
         console.error('Error fetching data:', error);
         res.status(500).send({ msg: 'fault', err: 'Internal Server Error', data: {} });
     }
 };
+
+module.exports.trips_card = async (req, res, next) => {
+    let cards = [];
+    const trips = await Trip.findAll({
+        limit: 10,
+        order: [['id', 'ASC']],
+    });
+    // return res.json(trips);
+    for (let i = 0; i < 10; i++) {
+        let single = {};
+        let trip = trips[i];
+        if (!trip) continue;
+        let IMg1 = await trip.getImages();
+        single.image = [];
+        IMg1.forEach(element => {
+            single.image.push(element.image);
+        });
+        single.title = trip.name;
+        single.location = trip.location;
+        single.start_date = trip.start_date;
+        single.end_date = trip.end_date;
+        const date1 = new Date(trip.start_date); // Example start time
+        const date2 = new Date(trip.end_date); // Example end time
+        // Calculate the difference in milliseconds
+        const diffInMilliseconds = date2 - date1;   
+        const diffInDays = diffInMilliseconds / (1000 * 60 * 60 * 24);
+        console.log(trip.start_date, " ", date2, " ", diffInDays);
+        single.duration = diffInDays;
+        single.avilable = trip.avilable;
+        single.price = trip.price;
+        cards.push(single);
+    }
+    return res.status(200).json({ data: {cards}, err: {},msg:'Added!'});
+};
+
+module.exports.delete_trip = async (req,res, next)=>{
+    const TripId = req.params.id;
+    const trip = (await Trip.findByPk(TripId));
+    if (trip) {
+        trip.destroy();
+        return res.status(200).json({ data: {}, err: {}, msg: 'Deleted!' });
+    }
+    else
+        return res.status(500).json({ data: {}, err: 'no user with this id!', msg: 'error' });
+};  

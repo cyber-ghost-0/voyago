@@ -26,8 +26,11 @@ router.get('/features_included', generalController.show_features_included);
 
 router.post('/add_features_included', generalController.add_features_included);
 
-router.post('/add_trip', is_auth,generalController.add_trip);
+router.post('/add_trip', is_auth, generalController.add_trip);
 
+router.get('/trip_cards',generalController.trips_card);
+
+router.delete('/delete_trip/:id',generalController.delete_trip);
 
 
 

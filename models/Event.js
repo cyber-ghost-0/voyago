@@ -8,31 +8,39 @@ const Event = sequelize.define('Event', {
         allowNull: false,
         primaryKey: true
     },
-    type: {
+    action: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    title: {
         type: Sequelize.STRING,
         allowNull: true
     },
     start_date: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    duration: {
+        type: Sequelize.BIGINT,
         allowNull: true
     },
     description: {
         type: Sequelize.STRING,
         allowNull: true
     },
-    price: {
+    type: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    price_adult: {
         type: Sequelize.DOUBLE,
         allowNull: true
     },
-    is_required: {
-        type: Sequelize.BOOLEAN,
+    price_child: {
+        type: Sequelize.DOUBLE,
         allowNull: true
     },
-    time: {
-        type: Sequelize.BIGINT,
-        allowNull: true
-    },
-    title: {
+    additional_note: {
         type: Sequelize.STRING,
         allowNull: true
     },

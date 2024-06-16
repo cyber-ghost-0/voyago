@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
-const Trips_review = sequelize.define('Trips_review', {
+const review = sequelize.define('review', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -19,4 +19,4 @@ const Trips_review = sequelize.define('Trips_review', {
         
 });
 
-module.exports = Trips_review;
+module.exports = review;

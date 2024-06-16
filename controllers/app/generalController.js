@@ -5,7 +5,10 @@ const services = require('../../services/public');
 const BP = require('body-parser');
 const Joi = require('joi');
 const User = require('../../models/User');
-
+const Trip=require('../../models/Trip')
+const Image=require('../../models/image');
+const { Sequelize } = require('sequelize');
+const { SequelizeMethod } = require('sequelize/lib/utils');
 // require('dotenv').config()
 
 function validateUserInfo (info) {
@@ -59,4 +62,12 @@ module.exports.EditMyProfile = async(req, res, next) => {
     user.password = await bcrypt.hash(req.body.password, 12);
     user.save();
     return res.json({ msg: "edited", data: {}, err: {} }).status(200);
+};
+
+module.exports.im_t = async (req, res, err) => {
+    
+    const TripId = req.params.id;
+    let trip = await Trip.findByPk(TripId);
+    let reson = await trip.getImages();
+    return res.json(reson);
 };
