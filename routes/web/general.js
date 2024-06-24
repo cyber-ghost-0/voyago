@@ -32,6 +32,21 @@ router.get('/trip_cards',generalController.trips_card);
 
 router.delete('/delete_trip/:id',generalController.delete_trip);
 
+router.post('/add_destenation', is_auth, generalController.add_destenation);
+
+router.post('/add_attraction', is_auth, generalController.add_attraction);
+
+router.get('/destenations', generalController.Destenations);
+
+router.get('/attractions', generalController.Attractions);
+
+router.delete('/delete_attraction/:id', generalController.delete_attraction);
+
+router.delete('/delete_destenation/:id', generalController.delete_destenation);
+
+router.get('/destenation/:id', generalController.single_destination);
+
+router.get('/attraction/:id', generalController.single_attraction);
 
 
 //

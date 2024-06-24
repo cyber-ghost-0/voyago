@@ -1,25 +1,21 @@
 const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
-const Attraction = sequelize.define('Attraction', {
+const every_user_review = sequelize.define('EveryUserReview', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },
-    name: {
-        type: Sequelize.STRING,
-        unique: true
+    comment: {
+        type: Sequelize.STRING
+        ,allowNull:true
     },
-    location: {
-        type: Sequelize.STRING,
+    rate: {
+        type: Sequelize.DOUBLE,
         allowNull: true
-    },
-    description: {
-        type:Sequelize.STRING
     }
-    
 });
 
-module.exports = Attraction;
+module.exports = every_user_review;
