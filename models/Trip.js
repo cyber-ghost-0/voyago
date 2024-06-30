@@ -14,10 +14,6 @@ const Trip = sequelize.define('Trip', {
         type: Sequelize.STRING,
         //allowMull: false
     },
-    location: {
-        type: Sequelize.STRING,
-        //allowMull: false
-    },
     description: {
         type: Sequelize.STRING,
         //allowMull: true

@@ -9,7 +9,7 @@
 			"name": "app",
 			"item": [
 				{
-					"name": "http://localhost:3000/api/token",
+					"name": "refresh_token",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -38,7 +38,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/forget_password",
+					"name": "forget_password",
 					"request": {
 						"auth": {
 							"type": "oauth2",
@@ -93,7 +93,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/login",
+					"name": "login",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -105,7 +105,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"anas\",\r\n    \"password\" : \"anasanas\"\r\n}",
+							"raw": "{\r\n    \"username\" : \"Ayasareej\",\r\n    \"password\" : \"aya12345\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -128,7 +128,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/register",
+					"name": "register",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -163,7 +163,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/logout",
+					"name": "logout",
 					"request": {
 						"auth": {
 							"type": "oauth2",
@@ -218,7 +218,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/regesteration_code",
+					"name": "regesteration_code",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -247,7 +247,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/check_verification_code",
+					"name": "check_verefication_code",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -276,7 +276,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/reset_password",
+					"name": "reset_password",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -305,7 +305,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/EditMyProfile",
+					"name": "EditMyProfike",
 					"request": {
 						"auth": {
 							"type": "oauth2",
@@ -360,7 +360,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/myProfile",
+					"name": "MyProfile",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -416,6 +416,112 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Trip_review",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"comment\" : \"weakly\",\r\n    \"rate\" : 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/trip_review/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trip_review",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/destenation_review/2",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"comment\":\"NOO\",\r\n    \"rate\": 4.3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/destenation_review/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"destenation_review",
+								"2"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -423,7 +529,7 @@
 			"name": "web",
 			"item": [
 				{
-					"name": "http://localhost:3000/api/token",
+					"name": "refresh_token",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -452,7 +558,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/forget_password",
+					"name": "forget_password",
 					"request": {
 						"auth": {
 							"type": "oauth2",
@@ -507,7 +613,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/login",
+					"name": "login",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -542,7 +648,341 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/logout",
+					"name": "check_verefication_code",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"cod\" : 165132\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/check_verification_code",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"check_verification_code"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset_password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\":\"anassahar\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/reset_password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"reset_password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_admin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"anas\",\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anassana\",\r\n    \"role\":\"foundantiel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/add_admin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"add_admin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"Ayasareej\",\r\n    \"email\" : \"anas.ahmad@gmail.com\",\r\n    \"password\" : \"aya12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/add_user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"add_user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_features_included",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"feature\":\"55\",\r\n    \"type\":\"22\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/add_features_included",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"add_features_included"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_destenation",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"66\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/add_destenation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"add_destenation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_attraction",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"sdd\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ],\r\n    \"description\" : \"asdfsdijaklfjasdf\",\r\n    \"destenation_id\":3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/add_attraction",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"add_attraction"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_trip",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"ANNA\",\r\n    \"destenation_id\":2,\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/add_trip",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"add_trip"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_admin/id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/delete_admin/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"delete_admin",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_user/id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/delete_user/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"delete_user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
 					"request": {
 						"auth": {
 							"type": "oauth2",
@@ -597,99 +1037,12 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/check_verification_code",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"cod\" : 165132\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/web/check_verification_code",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"web",
-								"check_verification_code"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "http://localhost:3000/api/reset_password",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\":\"anassahar\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/web/reset_password",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"web",
-								"reset_password"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "http://localhost:3000/web/add_admin",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"anas\",\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anassana\",\r\n    \"role\":\"foundantiel\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/web/add_admin",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"web",
-								"add_admin"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "http://localhost:3000/web/delete_admin/1",
+					"name": "delete_trip/id",
 					"request": {
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/web/delete_admin/1",
+							"raw": "http://localhost:3000/web/delete_trip/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -697,7 +1050,7 @@
 							"port": "3000",
 							"path": [
 								"web",
-								"delete_admin",
+								"delete_trip",
 								"1"
 							]
 						}
@@ -705,7 +1058,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/web/admins",
+					"name": "admins",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -725,57 +1078,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/web/delete_user/1",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/web/delete_user/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"web",
-								"delete_user",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "http://localhost:3000/web/add_user",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"Ayasareej\",\r\n    \"email\" : \"anas.ahmad@gmail.com\",\r\n    \"password\" : \"aya12345\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/web/add_user",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"web",
-								"add_user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "http://localhost:3000/web/users",
+					"name": "users",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -795,7 +1098,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/web/admins/1",
+					"name": "admins/id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -816,7 +1119,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/web/users/1",
+					"name": "users/id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -837,7 +1140,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/web/features_included",
+					"name": "features_included",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -857,88 +1160,22 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/web/add_features_included",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"feature\":\"55\",\r\n    \"type\":\"22\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/web/add_features_included",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"web",
-								"add_features_included"
-							]
-						}
+					"name": "trip_cards",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
 					},
-					"response": []
-				},
-				{
-					"name": "http://localhost:3000/web/add_trip",
-					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"ansa\",\r\n    \"location\":\"Syria\",\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/web/add_trip",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"web",
-								"add_trip"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "http://localhost:3000/web/trip_cards",
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:3000/web/trip_cards",
 							"protocol": "http",
@@ -955,12 +1192,12 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/web/delete_trip/1",
+					"name": "destenations",
 					"request": {
-						"method": "DELETE",
+						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/web/delete_trip/1",
+							"raw": "http://localhost:3000/web/destenations",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -968,7 +1205,59 @@
 							"port": "3000",
 							"path": [
 								"web",
-								"delete_trip",
+								"destenations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "attractions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/attractions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"attractions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "destenation/id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/destenation/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"destenation",
 								"1"
 							]
 						}
