@@ -19,5 +19,6 @@ router.post('/attraction_review/:id', is_auth, generalController.attraction_revi
 
 router.post('/reservation/:id', is_auth, generalController.reserve_on_trip)
 
+router.post('/charge_wallet', is_auth, generalController.charge_wallet)
 
 module.exports = router;

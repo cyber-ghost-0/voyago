@@ -20,6 +20,12 @@ const Review = require('./models/review.js')
 const Every_user_review =require('./models/EveryUserReview.js')
 const User =require('./models/User.js');
 const reservation = require('./models/reservation.js');
+const Wallet = require('./models/wallet.js');
+const Transaction = require('./models/transaction.js');
+const ChargeRequest = require('./models/chargeRequest');
+const every_user_review = require('./models/EveryUserReview.js');
+
+
 app.use(BP.json());
 // trip;
 Admin.hasMany(Destenation,{onDelete: 'CASCADE'});
@@ -40,21 +46,37 @@ Admin.hasMany(Trip,{onDelete: 'CASCADE'});
 Trip.belongsTo(Admin, ({ constraints: true, onDelete: 'CASCADE' }));
 Trip.hasMany(Day_trip,{onDelete: 'CASCADE'});
 Day_trip.belongsTo(Trip, ({ constraints: true, onDelete: 'CASCADE' }));
-Day_trip.hasMany(Event,{onDelete: 'CASCADE'});
+Day_trip.hasMany(Event,{constraints: true,onDelete: 'CASCADE'});
 Event.belongsTo(Day_trip, ({ constraints: true, onDelete: 'CASCADE' }));
-Trip.belongsToMany(User, { through: Every_user_review },{onDelete: 'CASCADE'});
-User.belongsToMany(Trip, { through: Every_user_review },{onDelete: 'CASCADE'});
-Destenation.belongsToMany(User, { through: Every_user_review },{onDelete: 'CASCADE'});
-User.belongsToMany(Destenation, { through: Every_user_review }, { onDelete: 'CASCADE'});
-Attraction.belongsToMany(User, { through: Every_user_review },{onDelete: 'CASCADE'});
-User.belongsToMany(Attraction, { through: Every_user_review },{onDelete: 'CASCADE'});
+
+
+Trip.hasMany(Every_user_review, { constraints: true, onDelete: 'CASCADE' });
+Every_user_review.belongsTo(Trip, { constraints: true, onDelete: 'CASCADE' });
+User.hasMany(Every_user_review, { constraints: true, onDelete: 'CASCADE' });
+Every_user_review.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+Destenation.hasMany(Every_user_review, { constraints: true, onDelete: 'CASCADE' });
+Every_user_review.belongsTo(Destenation, { constraints: true, onDelete: 'CASCADE' });
+Attraction.hasMany(Every_user_review, { constraints: true, onDelete: 'CASCADE' });
+Every_user_review.belongsTo(Attraction, { constraints: true, onDelete: 'CASCADE' });
+
 Trip.belongsTo(Destenation, ({ constraints: true, onDelete: 'CASCADE' }));
 Destenation.hasMany(Trip, ({ constraints: true, onDelete: 'CASCADE' }));
 Attraction.hasMany(Event, ({ constraints: true, onDelete: 'CASCADE' }));
 Event.belongsTo(Attraction, ({ constraints: true, onDelete: 'CASCADE' }));
-Trip.belongsToMany(User, { through: reservation },{onDelete: 'CASCADE'});
-User.belongsToMany(Trip, { through: reservation },{onDelete: 'CASCADE'});
 
+Trip.hasMany(reservation, { constraints: true, onDelete: 'CASCADE' });
+reservation.belongsTo(Trip, { constraints: true, onDelete: 'CASCADE' });
+User.hasMany(reservation, { constraints: true, onDelete: 'CASCADE' });
+reservation.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+
+User.hasOne(Wallet,{constraints: true,onDelete: 'CASCADE'});
+Wallet.belongsTo(User, ({ constraints: true, onDelete: 'CASCADE' }));
+Wallet.hasMany(Transaction,{constraints: true,onDelete: 'CASCADE'});
+Transaction.belongsTo(Wallet, ({ constraints: true, onDelete: 'CASCADE' }));
+Admin.hasMany(Transaction, { constraints: true, onDelete: 'CASCADE' });
+Transaction.belongsTo(Admin,{ constraints: true, onDelete: 'CASCADE' });
+User.hasMany(ChargeRequest, ({ constraints: true, onDelete: 'CASCADE' }));
+ChargeRequest.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 
 app.use('/api', appAuth);
 app.use('/web', webAuth);

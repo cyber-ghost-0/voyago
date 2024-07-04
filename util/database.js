@@ -4,7 +4,6 @@ const sequelize = new Sequelize('voyago', 'anas', 'anas', {
   host: 'localhost'
 });
 
-
 module.exports =sequelize;
 
 

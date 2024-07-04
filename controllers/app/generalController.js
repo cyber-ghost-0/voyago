@@ -13,6 +13,11 @@ const Every_user_review =require('../../models/EveryUserReview');
 const Attraction = require('../../models/Attraction');
 const Destenation = require('../../models/Destenation');
 const reservation = require('../../models/reservation');
+const Wallet = require('../../models/wallet.js');
+const Transaction = require('../../models/transaction.js');
+const ChargeRequest = require('../../models/chargeRequest');
+
+
 // require('dotenv').config()
 
 function validateUserInfo (info) {
@@ -130,14 +135,144 @@ module.exports.reserve_on_trip = async (req, res, next) => {
     const lname = req.body.last_name;
     const phone = req.body.phone;
     const password = req.body.password;
-    const user = User.findByPk(req.userID);
-    let flag = await bcrypt.compare(req.body.password, user.password);
+    const user = await User.findByPk(req.user_id);
+    let flag = await bcrypt.compare(password, user.password);
     if (!flag) {
         let response = { data: {}, msg: "fail" ,err:"password is not correct !"};
         return res.json(response).status(500);
     }
 
-    reservation.create({ fname: fname, lname: lname, adult: adult, child: child, phone: phone, UserId: user_id, TripId: trip_id });
+    await reservation.create({ fname: fname, lname: lname, adult: adult, child: child, phone: phone, UserId: req.user_id, TripId: trip_id });
     let response = { data: {}, msg: "you have regesterd on this trip !" ,err:{}};
     return res.json(response).status(200);
 }
+
+
+module.exports.Attractions = async (req,res, next)=>{
+    let Atr = await Attraction.findAll();
+    let arr = [];
+    for (let i = 0; i < Atr.length; i++) {
+        let cur = Atr[i].dataValues;
+        let all_images = await Atr[i].getImages();
+        let URL_images = [];
+        all_images.forEach(element => {
+            URL_images.push( element.image);
+        });
+        cur.images = URL_images;
+        arr.push(cur);
+    }
+    return res.status(200).json({ data: arr , err: {}, msg: 'success' });
+};
+
+module.exports.Destenations = async (req, res, next) => {
+    let Dst = await Destenation.findAll();
+    let arr = [];
+    for (let i = 0; i < Dst.length; i++) {
+        let cur = Dst[i].dataValues;
+        let all_images = await Dst[i].getImages();
+        let URL_images = [];
+        all_images.forEach(element => {
+            URL_images.push( element.image);
+        });
+        cur.images = URL_images;
+        arr.push(cur);
+    }
+    return res.status(200).json({ data:  arr , err: {}, msg: 'success' });
+}; 
+
+
+module.exports.single_destination = async (req, res, next) => {
+    // try {
+        const destinationId = req.params.id;
+        const destination = await Destenation.findByPk(destinationId);
+        if (!destination) {
+            return res.status(404).json({ data: {}, err: {}, msg: 'Destination not found' });
+        }
+
+        const attractions = await destination.getAttractions();
+        const trips = await destination.getTrips();
+        console.log(attractions)
+        let response = {
+            destination,
+            attractions: [],
+            trips: []
+        };
+
+        // Process attractions and their images
+        for (const attraction of attractions) {
+            const all_images = await attraction.getImages();
+            const URL_images = all_images.map(image => image.dataValues.image);
+            attraction.dataValues.images = URL_images;
+            response.attractions.push(attraction);
+        }
+
+        // Process trips and their images
+        for (const trip of trips) {
+            const all_images = await trip.getImages();
+            const URL_images = all_images.map(image => image.dataValues.image);
+            trip.dataValues.images = URL_images;
+            response.trips.push(trip);
+        }
+
+    // Get user reviews
+    
+    let reviews = await destination.getUsers(); 
+    
+        response.reviews = reviews;
+
+        return res.status(200).json({ data: response, err: {}, msg: 'success' });
+    
+};
+
+module.exports.single_attraction = async (req, res, next) => {
+    const attractionId = req.params.id;
+    const attraction = await Attraction.findByPk(attractionId);
+    if (!attraction) {
+        return res.status(404).json({ data: {}, err: {}, msg: 'attrraction not found' });
+    }
+
+    const destenation = await attraction.getDestenation().name;
+    const events = await attraction.getEvents();
+    let Day_trip=[];
+    events.forEach(element => {
+        Day_trip.push(element.getDayTrips());
+    });
+    let trips = [];
+    Day_trip.forEach(async element => {
+        trips.push(await element.getTrip());
+    });
+    const uniqueArray = Array.from(new Set(trips));
+    
+    let response = {
+        destenation:destenation,
+        attractions:attraction,
+        trips:uniqueArray
+    };
+
+
+    // Process trips and their images
+    for (const trip of trips) {
+        const all_images = await trip.getImages();
+        const URL_images = all_images.map(image => image.dataValues.image);
+        trip.dataValues.images = URL_images;
+        response.trips.push(trip);
+    }
+
+    // Get user reviews
+    
+    let reviews = await attraction.getUsers(); 
+
+    response.reviews = reviews;
+
+    return res.status(200).json({ data: response, err: {}, msg: 'success' });
+    
+};
+
+module.exports.charge_wallet    = async (req, res, next) => {
+    const user_id = req.user_id;
+    const bank_ticket = req.body.bank_ticket;
+    const amount = req.body.amount;
+
+    await ChargeRequest.create({ UserId: user_id, bank_ticket: bank_ticket, amount: amount });
+    return res.status(200).json({ data: {}, err: {}, msg: 'wait for admin response <3' });
+}   

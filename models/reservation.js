@@ -8,7 +8,11 @@ const reservation = sequelize.define('reservation', {
         allowNull: false,
         primaryKey: true
     },    
-    name: {
+    fname: {
+        type: Sequelize.STRING,
+        allowNull: false,
+    },
+    lname: {
         type: Sequelize.STRING,
         allowNull: false,
     },

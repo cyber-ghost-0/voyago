@@ -73,9 +73,12 @@ module.exports.Login = async (req, res, next) => {
     res.json({ msg: 'done', accessToken: accessToken, refreshToken: refreshToken, name: user.username, role: user.role });
 };
 
-module.exports.Logout = async(req, res, next) => {
+module.exports.Logout = async (req, res, next) => {
+    if (!services.black_list.includes(req.body.refresh_token)) {
+        return res.status(500).json({ data: {}, msg: 'fault', err: "refresh token is not valid " });
+    }
     services.black_list = services.black_list.filter(token => token !== req.body.token);
-    req.headers['authorization']=undefined;
+    req.headers['authorization'] = undefined;
     return res.status(200).send({msg:"DONE!"});
 };
 
