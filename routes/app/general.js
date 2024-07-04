@@ -29,5 +29,12 @@ router.put('/add_destenation_favourite/:id',is_auth, generalController.add_desti
 
 router.put('/add_attraction_favourite/:id',is_auth, generalController.add_attraction_favourite)
 
+router.get('/top_attractions', is_auth,generalController.top_attractions)
+
+router.get('/top_trips', is_auth, generalController.top_trips);
+
+router.get('/popular_trips', is_auth, generalController.popular_trips);
+
+
 
 module.exports = router;

@@ -18,6 +18,8 @@ const Transaction = require('../../models/transaction.js');
 const ChargeRequest = require('../../models/chargeRequest');
 const favourites = require('../../models/Favourites.js');
 const { use } = require('../../routes/app/auth.js');
+const review = require('../../models/review.js');
+const every_user_review = require('../../models/EveryUserReview');
 
 
 // require('dotenv').config()
@@ -280,6 +282,82 @@ module.exports.charge_wallet    = async (req, res, next) => {
 }   
 
 
+module.exports.add_trip_favourite = async (req, res, next) => {
+    try {
+        const user_id = req.user_id;
+        const trip = await Trip.findByPk(req.params.id);
+
+        if (!trip) {
+            return res.status(404).json({ err: 'Trip not found',msg:'fault' });
+        }
+
+        let fav = await favourites.findOne({ where: { UserId: user_id, TripId: trip.id } });
+        
+        if (!fav) {
+            fav = await favourites.create({ UserId: user_id, TripId: trip.id, is_favourite: false });
+        }
+
+        fav.is_favourite = !fav.is_favourite;
+        await fav.save();
+        
+        return res.status(200).json({ msg: 'Favourite status updated', data: {} });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+module.exports.add_attraction_favourite = async (req, res, next) => {
+    try {
+        const user_id = req.user_id;
+        const attraction = await Attraction.findByPk(req.params.id);
+        
+        if (!attraction) {
+            return res.status(404).json({ err: 'Attraction not found',msg:'fault' });
+        }
+
+        let fav = await favourites.findOne({ where: { UserId: user_id, AttractionId: attraction.id } });
+
+        if (!fav) {
+            fav = await favourites.create({ UserId: user_id, AttractionId: attraction.id, is_favourite: false });
+        }
+        
+        fav.is_favourite = !fav.is_favourite;
+        await fav.save();
+        
+        return res.status(200).json({ msg: 'Favourite status updated', data: {} });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+module.exports.add_destination_favourite = async (req, res, next) => {
+    try {
+        const user_id = req.user_id;
+        const destination = await Destenation.findByPk(req.params.id);
+        
+        if (!destination) {
+            return res.status(404).json({ err: 'Destination not found' });
+        }
+
+        let fav = await favourites.findOne({ where: { UserId: user_id, DestenationId: destination.id } });
+        
+        if (!fav) {
+            fav = await favourites.create({ UserId: user_id, DestenationId: destination.id, is_favourite: false });
+        }
+        
+        fav.is_favourite = !fav.is_favourite;
+        await fav.save();
+        
+        return res.status(200).json({ msg: 'Favourite status updated', data: {} });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+
 module.exports.trending_destenation = async (req, res, next) => {
     try {
         let result = [];
@@ -313,84 +391,155 @@ module.exports.trending_destenation = async (req, res, next) => {
 
         result = result.slice(0, 10);
         
-        return res.json(result);
+        return res.status(200).json({ msg: {}, data: {result} });
     } catch (err) {
         console.error(err);
         next(err);
     }
 };
 
-module.exports.add_trip_favourite = async (req, res, next) => {
+module.exports.top_attractions = async (req, res, next) => {
     try {
-        const user_id = req.user_id;
-        const trip = await Trip.findByPk(req.params.id);
+        let result = [];
+        let attractions = await Attraction.findAll();
 
-        if (!trip) {
-            return res.status(404).json({ message: 'Trip not found' });
-        }
+        await Promise.all(attractions.map(async (single_attr) => {
+            let image = await Image.findOne({ where: { AttractionId: single_attr.id } });
+            let fav = await favourites.findOne({ where: { UserId: req.user_id, AttractionId: single_attr.id } });
 
-        let fav = await favourites.findOne({ where: { UserId: user_id, TripId: trip.id } });
+            if (!fav) {
+                fav = await favourites.create({ UserId: req.user_id, AttractionId: single_attr.id, is_favourite: false });
+            }
+    
+            let object = {
+                id: single_attr.id,
+                name: single_attr.name,
+                image: image.image,
+                is_favourite: fav.is_favourite
+            };
+            let reviews = await every_user_review.findAll({ where: { AttractionId: single_attr.id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                console.log(element.dataValues);
+                if (element.rate) {
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            }
+            rate = rate.toFixed(1);
+            object.rate = rate;
+            result.push(object);
+        }));
+        result.sort((b, a) => a.rate - b.rate);
 
-        if (!fav) {
-            fav = await favourites.create({ UserId: user_id, TripId: trip.id, is_favourite: false });
-        }
+        result = result.slice(0, 10);
+        return res.status(200).json({ msg: {}, data: {result} });
 
-        fav.is_favourite = !fav.is_favourite;
-        await fav.save();
-
-        return res.status(200).json({ message: 'Favourite status updated', data: {} });
     } catch (err) {
         console.error(err);
         next(err);
     }
 };
 
-module.exports.add_attraction_favourite = async (req, res, next) => {
+module.exports.top_trips = async (req, res, next) => {
     try {
-        const user_id = req.user_id;
-        const attraction = await Attraction.findByPk(req.params.id);
+        let result = [];
+        let trips = await Trip.findAll();
 
-        if (!attraction) {
-            return res.status(404).json({ message: 'Attraction not found' });
-        }
+        await Promise.all(trips.map(async (single_trip) => {
+            let image = await Image.findOne({ where: { TripId: single_trip.id } });
+            let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
 
-        let fav = await favourites.findOne({ where: { UserId: user_id, AttractionId: attraction.id } });
+            if (!fav) {
+                fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
+            }
+    
+            let object = {
+                id: single_trip.id,
+                name: single_trip.name,
+                image: image.image,
+                is_favourite: fav.is_favourite
+            };
+            let reviews = await every_user_review.findAll({ where: { TripId: single_trip.id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                // console.log(element.dataValues);
+                if(element.rate){
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            } 
+            rate=rate.toFixed(1);
+            object.rate = rate;
+            result.push(object);
+        }));
+        result.sort((b, a) => a.rate - b.rate);
 
-        if (!fav) {
-            fav = await favourites.create({ UserId: user_id, AttractionId: attraction.id, is_favourite: false });
-        }
+        result = result.slice(0, 10);
+        
+        return res.status(200).json({ msg: {}, data: {result} });
 
-        fav.is_favourite = !fav.is_favourite;
-        await fav.save();
-
-        return res.status(200).json({ message: 'Favourite status updated', data: {} });
     } catch (err) {
         console.error(err);
         next(err);
     }
-};
+}   
 
-module.exports.add_destination_favourite = async (req, res, next) => {
+module.exports.popular_trips = async (req, res, next) => {
     try {
-        const user_id = req.user_id;
-        const destination = await Destenation.findByPk(req.params.id);
+        let result = [];
+        let trips = await Trip.findAll();
 
-        if (!destination) {
-            return res.status(404).json({ message: 'Destination not found' });
-        }
+        await Promise.all(trips.map(async (single_trip) => {
+            try {
+                let image = await Image.findOne({ where: { TripId: single_trip.id } });
+                let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
 
-        let fav = await favourites.findOne({ where: { UserId: user_id, DestenationId: destination.id } });
+                if (!fav) {
+                    fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
+                }
 
-        if (!fav) {
-            fav = await favourites.create({ UserId: user_id, DestenationId: destination.id, is_favourite: false });
-        }
+                const diffTime = Math.abs(new Date(single_trip.end_date) - new Date(single_trip.start_date));
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                let dist = await Destenation.findByPk(single_trip.DestenationId);
+                
+                let object = {
+                    id: single_trip.id,
+                    name: single_trip.name,
+                    image: image ? image.image : null,
+                    is_favourite: fav.is_favourite,
+                    duration: diffDays,
+                    destenation: dist ? dist.name : null,
+                    price: single_trip.price
+                };
 
-        fav.is_favourite = !fav.is_favourite;
-        await fav.save();
+                let reservationCount = (await reservation.findAll({ where: { TripId: single_trip.id } })).length;
+                object.cnt = reservationCount;
+                result.push(object);
+            } catch (innerErr) {
+                console.error(`Error processing trip ID ${single_trip.id}:`, innerErr);
+            }
+        }));
 
-        return res.status(200).json({ message: 'Favourite status updated', data: {} });
+        result.sort((b, a) => a.cnt - b.cnt);
+        result = result.slice(0, 10);
+        
+        return res.status(200).json({ msg: {}, data: {result} });
+
     } catch (err) {
-        console.error(err);
+        console.error('Error fetching popular trips:', err);
         next(err);
     }
 };
