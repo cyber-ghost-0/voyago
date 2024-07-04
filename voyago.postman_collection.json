@@ -604,7 +604,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"token\" : \"eyJhbGciOiJIUzI1NiJ9.YW5hcw.wheGVQR84kpD5qaKNpS4KNTcz1K4naUEWPOWc8lJ9qU\"\r\n}",
+							"raw": "{\r\n    \"refresh_token\":\"eyJhbGciOiJIUzI1NiJ9.QW5hcyBBbGxhaGFt.fW3q-hP9c3xBdN4ZE_AlbgOjG0cwTZ_o5_fqAKHkaGg\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -842,6 +842,126 @@
 								"api",
 								"add_attraction_favourite",
 								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/top_attractions",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/top_attractions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"top_attractions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "popular_trips",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/popular_trips",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"popular_trips"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "top_trips",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/top_trips",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"top_trips"
 							]
 						}
 					},
@@ -1338,7 +1458,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"token\" : \"eyJhbGciOiJIUzI1NiJ9.YW5hcw.wheGVQR84kpD5qaKNpS4KNTcz1K4naUEWPOWc8lJ9qU\"\r\n}",
+							"raw": "{\r\n    \"refresh_token\":\"eyJhbGciOiJIUzI1NiJ9.QW5hcyBBbGxhaGFt.fW3q-hP9c3xBdN4ZE_AlbgOjG0cwTZ_o5_fqAKHkaGg\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
