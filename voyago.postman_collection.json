@@ -278,11 +278,31 @@
 				{
 					"name": "http://localhost:3000/api/reset_password",
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\":\"anassahar\"\r\n}",
+							"raw": "{\r\n    \"comment\":\"Nop\",\r\n    \"rate\": 4.3\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -290,7 +310,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/reset_password",
+							"raw": "http://localhost:3000/api/attraction_review/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -519,7 +539,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anassana\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anassana\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -970,6 +990,47 @@
 								"web",
 								"delete_trip",
 								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reject_charge",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/reject_charge/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"reject_charge",
+								"2"
 							]
 						}
 					},
