@@ -35,6 +35,12 @@ router.get('/top_trips', is_auth, generalController.top_trips);
 
 router.get('/popular_trips', is_auth, generalController.popular_trips);
 
+router.get('/RecommendedAttractions/:name', is_auth, generalController.recommended_attractions_by_destenation);
 
+router.get('/RecommendedTrips/:name', is_auth, generalController.recommended_trips_by_destenation);
+
+router.get('/AllAttractions/:name', is_auth, generalController.all_trips_by_destenation);
+
+router.get('/AllTrips/:name', is_auth, generalController.all_trips_by_destenation);
 
 module.exports = router;

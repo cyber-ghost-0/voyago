@@ -543,3 +543,229 @@ module.exports.popular_trips = async (req, res, next) => {
         next(err);
     }
 };
+
+module.exports.recommended_attractions_by_destenation = async (req, res, next) => {
+    try {
+        let result = [];
+        let name = req.params.name;
+        let destenation = await Destenation.findOne({ where: { name: name } });
+        if (!destenation) {
+            return res.status(404).json({ err: 'Destination not found' });
+        }
+        let attractions = await Attraction.findAll({where:{DestenationId:destenation.id}});
+        // console.log(destenation_id);
+        await Promise.all(attractions.map(async (single_attr) => {
+            let image = await Image.findOne({ where: { AttractionId: single_attr.id } });
+            let fav = await favourites.findOne({ where: { UserId: req.user_id, AttractionId: single_attr.id } });
+
+            if (!fav) {
+                fav = await favourites.create({ UserId: req.user_id, AttractionId: single_attr.id, is_favourite: false });
+            }
+    
+            let object = {
+                id: single_attr.id,
+                name: single_attr.name,
+                image: image.image,
+                is_favourite: fav.is_favourite
+            };
+            let reviews = await every_user_review.findAll({ where: { AttractionId: single_attr.id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                console.log(element.dataValues);
+                if (element.rate) {
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            }
+            rate = rate.toFixed(1);
+            object.rate = rate;
+            result.push(object);
+        }));
+        result.sort((b, a) => a.rate - b.rate);
+
+        result = result.slice(0, 10);
+        return res.status(200).json({ msg: {}, data: {result} });
+
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+module.exports.recommended_trips_by_destenation = async (req, res, next) => {
+    try {
+        let result = [];
+        let name = req.params.name;
+        let destenation = await Destenation.findOne({ where: { name: name } });
+        if (!destenation) {
+            return res.status(404).json({ err: 'Destination not found' });
+        }
+        let trips = await Trip.findAll({where:{DestenationId:destenation.id}});
+
+        await Promise.all(trips.map(async (single_trip) => {
+            let image = await Image.findOne({ where: { TripId: single_trip.id } });
+            let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
+
+            if (!fav) {
+                fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
+            }
+    
+            let object = {
+                id: single_trip.id,
+                name: single_trip.name,
+                image: image.image,
+                is_favourite: fav.is_favourite
+            };
+            let reviews = await every_user_review.findAll({ where: { TripId: single_trip.id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                // console.log(element.dataValues);
+                if(element.rate){
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            } 
+            rate=rate.toFixed(1);
+            object.rate = rate;
+            result.push(object);
+        }));
+        result.sort((b, a) => a.rate - b.rate);
+
+        result = result.slice(0, 10);
+        
+        return res.status(200).json({ msg: {}, data: {result} });
+
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+}
+   
+
+module.exports.all_trips_by_destenation = async (req, res, next) => {
+    try {
+        let result = [];
+        let name = req.params.name;
+        let destenation = await Destenation.findOne({ where: { name: name } });
+        if (!destenation) {
+            return res.status(404).json({ err: 'Destination not found' });
+        }
+        let trips = await Trip.findAll({where:{DestenationId:destenation.id}});
+
+        await Promise.all(trips.map(async (single_trip) => {
+            let image = await Image.findOne({ where: { TripId: single_trip.id } });
+            let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
+
+            if (!fav) {
+                fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
+            }
+            const diffTime = Math.abs(new Date(single_trip.end_date) - new Date(single_trip.start_date));
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const reservations = await reservation.findAll({ where: { TripId: single_trip.id } });
+            let regestered = 0;
+            reservations.forEach(element => {
+                regestered+=element.adult+element.child
+            });
+            let object = {
+                id: single_trip.id,
+                name: single_trip.name,
+                image: image.image,
+                is_favourite: fav.is_favourite,
+                start_date: single_trip.start_date,
+                end_date: single_trip.end_date,
+                duration: diffDays,
+                is_avilable: single_trip.avilable,
+                maxcapacity: single_trip.capacity,
+                regestered:regestered
+                
+            };
+            let reviews = await every_user_review.findAll({ where: { TripId: single_trip.id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                // console.log(element.dataValues);
+                if(element.rate){
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            } 
+            rate=rate.toFixed(1);
+            object.rate = rate;
+            result.push(object);
+        }));
+  
+        
+        return res.status(200).json({ msg: {}, data: {result} });
+
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+}
+module.exports.all_attractions_by_destenation = async (req, res, next) => {
+    try {
+        let result = [];
+        let name = req.params.name;
+        let destenation = await Destenation.findOne({ where: { name: name } });
+        if (!destenation) {
+            return res.status(404).json({ err: 'Destination not found' });
+        }
+        let attractions = await Attraction.findAll({where:{DestenationId:destenation.id}});
+        // console.log(destenation_id);
+        await Promise.all(attractions.map(async (single_attr) => {
+            let image = await Image.findOne({ where: { AttractionId: single_attr.id } });
+            let fav = await favourites.findOne({ where: { UserId: req.user_id, AttractionId: single_attr.id } });
+
+            if (!fav) {
+                fav = await favourites.create({ UserId: req.user_id, AttractionId: single_attr.id, is_favourite: false });
+            }
+    
+            let object = {
+                id: single_attr.id,
+                name: single_attr.name,
+                image: image.image,
+                is_favourite: fav.is_favourite
+            };
+            let reviews = await every_user_review.findAll({ where: { AttractionId: single_attr.id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                console.log(element.dataValues);
+                if (element.rate) {
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            }
+            rate = rate.toFixed(1);
+            object.rate = rate;
+            result.push(object);
+        }));
+        return res.status(200).json({ msg: {}, data: {result} });
+
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+}
