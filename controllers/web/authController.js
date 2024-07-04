@@ -7,7 +7,7 @@ const Joi = require('joi');
 const Admin = require('../../models/Admin');
 const User = require('../../models/User');
 const Trip = require('../../models/Trip');
-const Image = require('../../models/Image');
+//const Image = require('../../models/Image');
 const Features_included = require('../../models/features_included');
 const Every_feature = require('../../models/every_feture');
 // require('dotenv').config()
