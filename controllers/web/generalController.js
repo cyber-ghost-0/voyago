@@ -7,7 +7,7 @@ const Joi = require('joi');
 const Admin = require('../../models/Admin');
 const User = require('../../models/User');
 const Trip = require('../../models/Trip');
-//const Image = require('../../models/image');
+const Image = require('../../models/image');
 const Features_included = require('../../models/features_included');
 const Every_feature = require('../../models/every_feture');
 const Event = require('../../models/Event');
@@ -20,6 +20,7 @@ const Transaction = require('../../models/transaction.js');
 const ChargeRequest = require('../../models/chargeRequest');
 const Wallet = require('../../models/wallet');
 const { use } = require('../../routes/app/auth.js');
+const every_user_review = require('../../models/EveryUserReview.js');
 
 // require('dotenv').config()
 
@@ -464,8 +465,15 @@ module.exports.single_destination = async (req, res, next) => {
 
     // Get user reviews
     
-    let reviews = await destination.getUsers(); 
-    
+    let reviews = await every_user_review.findAll({where:{DestenationId:destinationId}}); 
+    // let reviews = await destination.getEveryuserreviews(); 
+    for (let i = 0; i < reviews.length; i++){
+        let element = reviews[i];
+        let user = await User.findByPk(element.UserId);
+        element.dataValues.username = user.dataValues.username;
+        reviews[i] = element;
+        console.log(element);
+    }
         response.reviews = reviews;
 
         return res.status(200).json({ data: response, err: {}, msg: 'success' });
@@ -486,7 +494,7 @@ module.exports.single_attraction = async (req, res, next) => {
         Day_trip.push(element.getDayTrips());
     });
     let trips = [];
-    Day_trip_id.forEach(async element => {
+    Day_trip.forEach(async element => {
         trips.push(await element.getTrip());
     });
     const uniqueArray = Array.from(new Set(trips));
@@ -509,8 +517,15 @@ module.exports.single_attraction = async (req, res, next) => {
 
     // Get user reviews
     
-    let reviews = await attraction.getUsers(); 
-
+    let reviews = await every_user_review.findAll({where: {AttractionId:attractionId}});  
+    
+    for (let i = 0; i < reviews.length; i++){
+        let element = reviews[i];
+        let user = await User.findByPk(element.UserId);
+        element.dataValues.username = user.dataValues.username;
+        reviews[i] = element;
+        console.log(element);
+    }
     response.reviews = reviews;
 
     return res.status(200).json({ data: response, err: {}, msg: 'success' });

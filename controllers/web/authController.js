@@ -7,7 +7,7 @@ const Joi = require('joi');
 const Admin = require('../../models/Admin');
 const User = require('../../models/User');
 const Trip = require('../../models/Trip');
-//const Image = require('../../models/Image');
+const Image = require('../../models/Image');
 const Features_included = require('../../models/features_included');
 const Every_feature = require('../../models/every_feture');
 // require('dotenv').config()
@@ -75,9 +75,10 @@ module.exports.Login = async (req, res, next) => {
 
 module.exports.Logout = async (req, res, next) => {
     if (!services.black_list.includes(req.body.refresh_token)) {
+        console.log(services.black_list);
         return res.status(500).json({ data: {}, msg: 'fault', err: "refresh token is not valid " });
     }
-    services.black_list = services.black_list.filter(token => token !== req.body.token);
+    services.black_list = services.black_list.filter(token => token !== req.body.refresh_token);
     req.headers['authorization'] = undefined;
     return res.status(200).send({msg:"DONE!"});
 };

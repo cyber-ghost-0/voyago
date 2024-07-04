@@ -1,17 +1,17 @@
 const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
-const Image = sequelize.define('Image', {
+const image = sequelize.define('image', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },    
-    url: {
+    image: {
         type: Sequelize.STRING,
         allowNull: true
     },
 });
 
-module.exports = Image;
+module.exports = image;

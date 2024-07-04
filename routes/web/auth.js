@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/login', authController.Login);
 
-router.delete('/logout',/* is_auth,*/ authController.Logout);
+router.delete('/logout',is_auth, authController.Logout);
 
 router.post('/token', authController.token);
 
