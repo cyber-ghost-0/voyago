@@ -11,7 +11,7 @@ const Admin = require('./models/Admin');
 const Destenation = require('./models/Destenation');
 const Event = require('./models/Event');
 const Attraction = require('./models/Attraction');
-const fav_users_Attrac = require('./models/fav_users_attrac');
+const Favourites = require('./models/Favourites.js');
 const Features_included=require('./models/features_included');
 const Every_feature = require('./models/every_feture');
 const Image = require('./models/image');
@@ -77,6 +77,16 @@ Admin.hasMany(Transaction, { constraints: true, onDelete: 'CASCADE' });
 Transaction.belongsTo(Admin,{ constraints: true, onDelete: 'CASCADE' });
 User.hasMany(ChargeRequest, ({ constraints: true, onDelete: 'CASCADE' }));
 ChargeRequest.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+
+User.hasMany(Favourites, ({ constraints: true, onDelete: 'CASCADE' }));
+Favourites.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+Trip.hasMany(Favourites, ({ constraints: true, onDelete: 'CASCADE' }));
+Favourites.belongsTo(Trip, { constraints: true, onDelete: 'CASCADE' });
+Destenation.hasMany(Favourites, ({ constraints: true, onDelete: 'CASCADE' }));
+Favourites.belongsTo(Destenation, { constraints: true, onDelete: 'CASCADE' });
+Attraction.hasMany(Favourites, ({ constraints: true, onDelete: 'CASCADE' }));
+Favourites.belongsTo(Attraction, { constraints: true, onDelete: 'CASCADE' });
+
 
 app.use('/api', appAuth);
 app.use('/web', webAuth);

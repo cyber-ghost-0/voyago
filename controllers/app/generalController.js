@@ -7,7 +7,7 @@ const Joi = require('joi');
 const User = require('../../models/User');
 const Trip=require('../../models/Trip')
 const Image=require('../../models/image');
-const { Sequelize } = require('sequelize');
+const { Sequelize, where } = require('sequelize');
 const { SequelizeMethod } = require('sequelize/lib/utils');
 const Every_user_review =require('../../models/EveryUserReview');
 const Attraction = require('../../models/Attraction');
@@ -16,6 +16,8 @@ const reservation = require('../../models/reservation');
 const Wallet = require('../../models/wallet.js');
 const Transaction = require('../../models/transaction.js');
 const ChargeRequest = require('../../models/chargeRequest');
+const favourites = require('../../models/Favourites.js');
+const { use } = require('../../routes/app/auth.js');
 
 
 // require('dotenv').config()
@@ -276,3 +278,119 @@ module.exports.charge_wallet    = async (req, res, next) => {
     await ChargeRequest.create({ UserId: user_id, bank_ticket: bank_ticket, amount: amount });
     return res.status(200).json({ data: {}, err: {}, msg: 'wait for admin response <3' });
 }   
+
+
+module.exports.trending_destenation = async (req, res, next) => {
+    try {
+        let result = [];
+        let destenations = await Destenation.findAll();
+
+        await Promise.all(destenations.map(async (single_dist) => {
+            let image = await Image.findOne({ where: { DestenationId: single_dist.id } });
+            let fav = await favourites.findOne({ where: { UserId: req.user_id, DestenationId: single_dist.id } });
+
+            if (!fav) {
+                fav = await favourites.create({ UserId: req.user_id, DestenationId: single_dist.id, is_favourite: false });
+            }
+    
+            let object = {
+                id: single_dist.id,
+                name: single_dist.name,
+                image: image.image,
+                is_favourite: fav.is_favourite
+            };
+
+            let trips = await Trip.findAll({ where: { DestenationId: single_dist.id } });
+            let reservationCount = await Promise.all(trips.map(async (single_trip) => {
+                let reservations = await reservation.findAll({ where: { TripId: single_trip.id } });
+                return reservations.length;
+            }));
+
+            object.cnt = reservationCount.reduce((acc, count) => acc + count, 0);
+            result.push(object);
+        }));
+        result.sort((b, a) => a.cnt - b.cnt);
+
+        result = result.slice(0, 10);
+        
+        return res.json(result);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+module.exports.add_trip_favourite = async (req, res, next) => {
+    try {
+        const user_id = req.user_id;
+        const trip = await Trip.findByPk(req.params.id);
+
+        if (!trip) {
+            return res.status(404).json({ message: 'Trip not found' });
+        }
+
+        let fav = await favourites.findOne({ where: { UserId: user_id, TripId: trip.id } });
+
+        if (!fav) {
+            fav = await favourites.create({ UserId: user_id, TripId: trip.id, is_favourite: false });
+        }
+
+        fav.is_favourite = !fav.is_favourite;
+        await fav.save();
+
+        return res.status(200).json({ message: 'Favourite status updated', data: {} });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+module.exports.add_attraction_favourite = async (req, res, next) => {
+    try {
+        const user_id = req.user_id;
+        const attraction = await Attraction.findByPk(req.params.id);
+
+        if (!attraction) {
+            return res.status(404).json({ message: 'Attraction not found' });
+        }
+
+        let fav = await favourites.findOne({ where: { UserId: user_id, AttractionId: attraction.id } });
+
+        if (!fav) {
+            fav = await favourites.create({ UserId: user_id, AttractionId: attraction.id, is_favourite: false });
+        }
+
+        fav.is_favourite = !fav.is_favourite;
+        await fav.save();
+
+        return res.status(200).json({ message: 'Favourite status updated', data: {} });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+module.exports.add_destination_favourite = async (req, res, next) => {
+    try {
+        const user_id = req.user_id;
+        const destination = await Destenation.findByPk(req.params.id);
+
+        if (!destination) {
+            return res.status(404).json({ message: 'Destination not found' });
+        }
+
+        let fav = await favourites.findOne({ where: { UserId: user_id, DestenationId: destination.id } });
+
+        if (!fav) {
+            fav = await favourites.create({ UserId: user_id, DestenationId: destination.id, is_favourite: false });
+        }
+
+        fav.is_favourite = !fav.is_favourite;
+        await fav.save();
+
+        return res.status(200).json({ message: 'Favourite status updated', data: {} });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};

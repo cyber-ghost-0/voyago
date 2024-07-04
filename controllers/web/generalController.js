@@ -329,24 +329,7 @@ module.exports.add_destenation = async (req,res, next)=>{
         console.log(err);
         return res.status(500).json({ data: {}, err: err, msg: 'error' });
     }
-};  
-
-module.exports.add_destenation = async (req,res, next)=>{
-    let name = req.body.name;
-    let images = req.body.images;
-    try {
-        await Destenation.create({ name: name, AdminId:req.user_id });
-        const Dst = await Destenation.findOne({ where: { name: name } });
-        images.forEach(async (element) => {
-            await image.create({ DestenationId: Dst.id, image: element });
-        });
-        return res.status(200).json({ data: {}, err: {}, msg: 'Destenation has added successfully !' });
-    }
-    catch (err) {
-        console.log(err);
-        return res.status(500).json({ data: {}, err: err, msg: 'error' });
-    }
-}; 
+};   
 
 module.exports.add_attraction = async (req,res, next)=>{
     let name = req.body.name;
@@ -542,6 +525,10 @@ module.exports.approve_charge = async (req, res, next) => {
     const request_id = req.params.id;
     const chargeRequest = await
         ChargeRequest.findByPk(request_id);
+    if (!chargeRequest) {
+        return res.status(500).json({ data: {}, err: {}, msg: 'request not found' });
+
+    }
     let wallet = chargeRequest.UserId;
     wallet = await User.findByPk(wallet);
     wallet = await wallet.getWallet();
@@ -561,6 +548,9 @@ module.exports.reject_charge = async (req, res, next) => {
     const request_id = req.params.id;
     const chargeRequest = await
         ChargeRequest.findByPk(request_id);
+    if (!chargeRequest) {
+        return res.status(500).json({ data: {}, err: {}, msg: 'request not found' });
+    }
     let wallet = chargeRequest.UserId;
     wallet = await User.findByPk(wallet);
     wallet = await wallet.getWallet();

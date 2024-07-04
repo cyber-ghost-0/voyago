@@ -21,4 +21,13 @@ router.post('/reservation/:id', is_auth, generalController.reserve_on_trip)
 
 router.post('/charge_wallet', is_auth, generalController.charge_wallet)
 
+router.get('/trending_destenation',is_auth, generalController.trending_destenation)
+
+router.put('/add_trip_favourite/:id', is_auth,generalController.add_trip_favourite)
+
+router.put('/add_destenation_favourite/:id',is_auth, generalController.add_destination_favourite)
+
+router.put('/add_attraction_favourite/:id',is_auth, generalController.add_attraction_favourite)
+
+
 module.exports = router;
