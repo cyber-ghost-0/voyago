@@ -105,7 +105,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"anas\",\r\n    \"password\" : \"anassana\"\r\n}",
+							"raw": "{\r\n    \"username\" : \"Aya sareej\",\r\n    \"password\" : \"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -276,7 +276,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"comment\":\"Nop\",\r\n    \"rate\": 4.3\r\n}",
+							"raw": "{\r\n    \"comment\":\"Bob\",\r\n    \"rate\": 4\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -284,7 +284,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/attraction_review/1",
+							"raw": "http://localhost:3000/api/destenation_review/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -292,7 +292,7 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"attraction_review",
+								"destenation_review",
 								"1"
 							]
 						}
@@ -966,6 +966,170 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/AllTrips/QQ",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/AllTrips/QQ",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"AllTrips",
+								"QQ"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/AllAttractions/QQ",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/AllAttractions/QQ",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"AllAttractions",
+								"QQ"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/Recommendedtrips/QQe",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/Recommendedtrips/QQe",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"Recommendedtrips",
+								"QQe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RecommendedAttractions",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/RecommendedAttractions/QQ",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"RecommendedAttractions",
+								"QQ"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1069,7 +1233,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anassana\"\r\n}\r\n",
+							"raw": "{\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"12345678\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1263,7 +1427,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"QQ\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ]\r\n}",
+							"raw": "{\r\n    \"name\": \"dess\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1312,7 +1476,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"allalam\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ],\r\n    \"description\" : \"asdfsdijaklfjasdf\",\r\n    \"destenation_id\":1\r\n}",
+							"raw": "{\r\n    \"name\": \"Anjas\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ],\r\n    \"description\" : \"asdfsdijaklfjasdf\",\r\n    \"destenation_id\":1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
