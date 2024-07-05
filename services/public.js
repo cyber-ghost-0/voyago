@@ -24,7 +24,7 @@ module.exports.generateCod=()=> {
 }
 
 module.exports.generateAccessToken = async(user_id) => {
-    return await jwt.sign({ user: user_id }, '9e57eb4a64fdeb54c93f92202fb4b9f65e5d65c560f8c9000fc173c7a2843dea35fc3334252febf243654c22a696d3d39079ab2abfe70e239964eebc3a9948d9', { expiresIn: '1h' })
+    return await jwt.sign({ user: user_id }, '9e57eb4a64fdeb54c93f92202fb4b9f65e5d65c560f8c9000fc173c7a2843dea35fc3334252febf243654c22a696d3d39079ab2abfe70e239964eebc3a9948d9', { expiresIn: '3h' })
 }
 
 module.exports.get_user_by_any = async(name, model, col)=> {

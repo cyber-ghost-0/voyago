@@ -68,7 +68,7 @@ module.exports.Login = async (req, res, next) => {
     }    
 
     const accessToken =await services.generateAccessToken(user.id);
-    const refreshToken =await jwt.sign(user.username, '4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419');
+    const refreshToken =await jwt.sign({ user: user.id }, '4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419',{ expiresIn: '9h' });
     services.black_list.push(refreshToken);
     res.json({ msg: 'done', accessToken: accessToken, refreshToken: refreshToken, name: user.username, role: user.role });
 };

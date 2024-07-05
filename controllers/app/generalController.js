@@ -667,7 +667,6 @@ module.exports.all_trips_by_destenation = async (req, res, next) => {
         await Promise.all(trips.map(async (single_trip) => {
             let image = await Image.findOne({ where: { TripId: single_trip.id } });
             let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
-
             if (!fav) {
                 fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
             }

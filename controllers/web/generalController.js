@@ -61,6 +61,13 @@ async function is_unique(name, model, col) {
 module.exports.users = async (req, res, next) => {
     try {
         const users = await User.findAll();
+        for (let i = 0; i < users.length; i++) {
+            const id = users[i].id;
+            let balance = await Wallet.findOne({ where: { UserId: id } });
+            balance = balance.balance;
+            console.log(balance, users[i]);
+            users[i].dataValues.balance = balance;
+        }
         return res.json({msg:'Done!',users:users});
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -142,9 +149,9 @@ module.exports.add_admin = async (req, res, next) => {
         }
         mail(req.body.email, "you have added as admin in voyago !");
         // console.log(cod,req.body.email)
-        bcrypt.hash(password, 12).then(hashpassword=>{
+        bcrypt.hash(password, 12).then(async hashpassword=>{
             
-            Admin.create({ username:username, password: hashpassword  , email : email , role:role ,cod_ver:null});
+            await Admin.create({ username:username, password: hashpassword  , email : email , role:role ,cod_ver:null});
         }).catch(err => {
             console.log(err);
         });
@@ -225,6 +232,11 @@ module.exports.add_trip = async (req, res, nxt) => {
         images.forEach(async image => {
             console.log(trp.id);
             await Image.create({ image: image,TripId: trp.id});
+        });
+        features.forEach(feature => {
+            if (!Features_included.findByPk(feature)) {
+                return res.status(500).json({ msg: 'fault', err: 'featureId not exist' });
+            }
         });
         features.forEach(async feature => {
             await Every_feature.create({ featuresIncludedId: feature, TripId: trp.id });
@@ -378,6 +390,22 @@ module.exports.Destenations = async (req, res, next) => {
             URL_images.push( element.image);
         });
         cur.images = URL_images;
+        let reviews = await every_user_review.findAll({ where: { DestenationId: Dst[i].id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                // console.log(element.dataValues);
+                if(element.rate){
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            } 
+            cur.rate=rate.toFixed(1);
         arr.push(cur);
     }
     return res.status(200).json({ data:  arr , err: {}, msg: 'success' });
