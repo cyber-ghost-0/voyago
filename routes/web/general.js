@@ -48,6 +48,11 @@ router.get('/destenation/:id', generalController.single_destination);
 
 router.get('/attraction/:id', generalController.single_attraction);
 
+router.get('/charge_requests',is_auth, generalController.charge_requests);
+
+router.get('/approve_charge/:id', is_auth,generalController.approve_charge);
+
+router.get('/reject_charge/:id', is_auth,generalController.reject_charge);
 
 //
 

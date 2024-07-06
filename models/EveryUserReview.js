@@ -13,7 +13,7 @@ const every_user_review = sequelize.define('EveryUserReview', {
         ,allowNull:true
     },
     rate: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true
     }
 });

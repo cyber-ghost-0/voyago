@@ -9,14 +9,17 @@ const Destenation = sequelize.define('Destenation', {
     primaryKey: true
   },
   name: {
-    type: Sequelize.STRING,
-    unique:true
+      type: Sequelize.STRING,
+      unique: true
   },
   location: {
-    type: Sequelize.GEOMETRY,
-    allowNull : true
+      type: Sequelize.STRING,
+      allowNull: true
   },
-  
+  description: {
+      type:Sequelize.STRING
+  }
+
 });
 
 module.exports = Destenation;

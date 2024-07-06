@@ -105,7 +105,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"Ayasareej\",\r\n    \"password\" : \"aya12345\"\r\n}",
+							"raw": "{\r\n    \"username\" : \"Aya sareej\",\r\n    \"password\" : \"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -157,61 +157,6 @@
 							"path": [
 								"api",
 								"register"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "logout",
-					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"token\" : \"eyJhbGciOiJIUzI1NiJ9.YW5hcw.wheGVQR84kpD5qaKNpS4KNTcz1K4naUEWPOWc8lJ9qU\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:3000/api/logout",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"logout"
 							]
 						}
 					},
@@ -305,6 +250,273 @@
 					"response": []
 				},
 				{
+					"name": "attraction_review",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"comment\":\"Bob\",\r\n    \"rate\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/destenation_review/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"destenation_review",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Trip_review",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"comment\" : \"weakly\",\r\n    \"rate\" : 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/trip_review/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trip_review",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "destenation_review",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"comment\":\"Nop\",\r\n    \"rate\": 3\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/destenation_review/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"destenation_review",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reservation",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"adult\":5,\r\n    \"child\":2,\r\n    \"optional_choices\":[],\r\n    \"first_name\":\"Amas\",\r\n    \"last_name\":\"lplp\",\r\n    \"phone\":\"0937402356\",\r\n    \"password\":\"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/reservation/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"reservation",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "charge_wallet",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"            "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"bank_ticket\":\"222\",\r\n    \"amount\":\"35\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/charge_wallet",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"charge_wallet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "EditMyProfike",
 					"request": {
 						"auth": {
@@ -354,6 +566,61 @@
 							"path": [
 								"api",
 								"EditMyProfile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refresh_token\":\"eyJhbGciOiJIUzI1NiJ9.QW5hcyBBbGxhaGFt.fW3q-hP9c3xBdN4ZE_AlbgOjG0cwTZ_o5_fqAKHkaGg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"logout"
 							]
 						}
 					},
@@ -418,7 +685,7 @@
 					"response": []
 				},
 				{
-					"name": "Trip_review",
+					"name": "trending_destenation",
 					"request": {
 						"auth": {
 							"type": "oauth2",
@@ -440,25 +707,10 @@
 								}
 							]
 						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Accept",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"comment\" : \"weakly\",\r\n    \"rate\" : 5\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
+						"method": "GET",
+						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/trip_review/2",
+							"raw": "http://localhost:3000/api/trending_destenation",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -466,15 +718,14 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"trip_review",
-								"2"
+								"trending_destenation"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/destenation_review/2",
+					"name": "add_destenation_favourite",
 					"request": {
 						"auth": {
 							"type": "oauth2",
@@ -496,19 +747,10 @@
 								}
 							]
 						},
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"comment\":\"NOO\",\r\n    \"rate\": 4.3\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
-							"raw": "http://localhost:3000/api/destenation_review/2",
+							"raw": "http://localhost:3000/api/add_destenation_favourite/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -516,8 +758,374 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"destenation_review",
-								"2"
+								"add_destenation_favourite",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_trip_favourite",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/add_trip_favourite/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"add_trip_favourite",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_attraction_favourite",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/add_attraction_favourite/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"add_attraction_favourite",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/top_attractions",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/top_attractions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"top_attractions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "popular_trips",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/popular_trips",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"popular_trips"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "top_trips",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/top_trips",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"top_trips"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/AllTrips/QQ",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/AllTrips/QQ",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"AllTrips",
+								"QQ"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/AllAttractions/QQ",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/AllAttractions/QQ",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"AllAttractions",
+								"QQ"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/Recommendedtrips/QQe",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/Recommendedtrips/QQe",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"Recommendedtrips",
+								"QQe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RecommendedAttractions",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/RecommendedAttractions/QQ",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"RecommendedAttractions",
+								"QQ"
 							]
 						}
 					},
@@ -625,7 +1233,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anassana\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"12345678\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -712,7 +1320,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"anas\",\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anassana\",\r\n    \"role\":\"foundantiel\"\r\n}",
+							"raw": "{\r\n    \"username\" : \"anas\",\r\n    \"email\" : \"anas.sahar.ahd@gmail.com\",\r\n    \"password\" : \"anassana\",\r\n    \"role\":\"foundantiel\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -741,7 +1349,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"Ayasareej\",\r\n    \"email\" : \"anas.ahmad@gmail.com\",\r\n    \"password\" : \"aya12345\"\r\n}",
+							"raw": "{\r\n    \"username\": \"anas\",\r\n    \"email\": \"ansa.sahar.ahmad@gmail.com\",\r\n    \"password\": \"anassana\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -819,7 +1427,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"66\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ]\r\n}",
+							"raw": "{\r\n    \"name\": \"QiQ\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ],\r\n    \"description\":\"snjfsdklfns\",\r\n    \"location\":\"Syria\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -868,7 +1476,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"sdd\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ],\r\n    \"description\" : \"asdfsdijaklfjasdf\",\r\n    \"destenation_id\":3\r\n}",
+							"raw": "{\r\n    \"name\": \"Anjas\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ],\r\n    \"description\" : \"asdfsdijaklfjasdf\",\r\n    \"destenation_id\":1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -917,7 +1525,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"ANNA\",\r\n    \"destenation_id\":2,\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
+							"raw": "{\r\n    \"name\" : \"sANNAs\",\r\n    \"destenation_id\":1,\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1014,7 +1622,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"token\" : \"eyJhbGciOiJIUzI1NiJ9.YW5hcw.wheGVQR84kpD5qaKNpS4KNTcz1K4naUEWPOWc8lJ9qU\"\r\n}",
+							"raw": "{\r\n    \"refresh_token\":\"eyJhbGciOiJIUzI1NiJ9.QW5hcyBBbGxhaGFt.fW3q-hP9c3xBdN4ZE_AlbgOjG0cwTZ_o5_fqAKHkaGg\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1259,6 +1867,140 @@
 								"web",
 								"destenation",
 								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "charge_requests",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/charge_requests",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"charge_requests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "approve_charge",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/approve_charge/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"approve_charge",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reject_charge",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "tokenName",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "tokenType",
+									"value": "",
+									"type": "string"
+								},
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/reject_charge/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"reject_charge",
+								"2"
 							]
 						}
 					},

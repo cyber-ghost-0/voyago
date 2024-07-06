@@ -9,7 +9,7 @@ const review = sequelize.define('review', {
         primaryKey: true
     },
     rate: {
-        type: Sequelize.DOUBLE,
+        type: Sequelize.INTEGER,
         allowNull: true
     },
     comment: {

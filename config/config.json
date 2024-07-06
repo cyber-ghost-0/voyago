@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "anas",
+    "password": "anas",
+    "database": "voyago",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "anas",
+    "password": "anas",
+    "database": "voyago",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "anas",
+    "password": "anas",
+    "database": "voyago",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}

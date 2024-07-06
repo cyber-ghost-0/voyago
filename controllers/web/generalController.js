@@ -7,7 +7,7 @@ const Joi = require('joi');
 const Admin = require('../../models/Admin');
 const User = require('../../models/User');
 const Trip = require('../../models/Trip');
-//const Image = require('../../models/image');
+const Image = require('../../models/image');
 const Features_included = require('../../models/features_included');
 const Every_feature = require('../../models/every_feture');
 const Event = require('../../models/Event');
@@ -16,6 +16,12 @@ const Attraction = require('../../models/Attraction');
 const db = require('../../util/database')
 const Destenation = require('../../models/Destenation');
 const image = require('../../models/image');
+const Transaction = require('../../models/transaction.js');
+const ChargeRequest = require('../../models/chargeRequest');
+const Wallet = require('../../models/wallet');
+const { use } = require('../../routes/app/auth.js');
+const every_user_review = require('../../models/EveryUserReview.js');
+
 // require('dotenv').config()
 
 
@@ -28,7 +34,6 @@ function validateUserInfo (info) {
         email: Joi.string()
         .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
     }) 
-    console.log(info);
     return schema.validate(info);
 }
 function validateUserInfo2(info) {
@@ -38,7 +43,6 @@ function validateUserInfo2(info) {
         email: Joi.string()
         .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
     }) 
-    console.log(info);
     return schema.validate(info);
 }
 
@@ -57,6 +61,13 @@ async function is_unique(name, model, col) {
 module.exports.users = async (req, res, next) => {
     try {
         const users = await User.findAll();
+        for (let i = 0; i < users.length; i++) {
+            const id = users[i].id;
+            let balance = await Wallet.findOne({ where: { UserId: id } });
+            balance = balance.balance;
+            console.log(balance, users[i]);
+            users[i].dataValues.balance = balance;
+        }
         return res.json({msg:'Done!',users:users});
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -72,7 +83,7 @@ module.exports.add_user = async (req, res, next) => {
         const email = req.body.email;
         
         let { error } = validateUserInfo(req.body);
-        console.log(error);
+        // console.log(error);
         
         if (error) {
             return res.status(400).send({msg:'fault',err:error.details[0].message});
@@ -81,16 +92,21 @@ module.exports.add_user = async (req, res, next) => {
             return res.status(500).json({msg:'fault',err:"emai/username isn\'t unique"});
         }
         let cod = '' + services.generateCod();
-        
         mail(req.body.email, "Admin added you to the app");
         // console.log(cod,req.body.email)
-        bcrypt.hash(password, 12).then(hashpassword=>{
+        await bcrypt.hash(password, 12).then(async hashpassword=>{
             
-            User.create({ username:username, password: hashpassword  , email : email , role:'user',cod_ver:cod});
+           await User.create({ username:username, password: hashpassword  , email : email , role:'user',cod_ver:cod});
         }).catch(err => {
+            return res.json({
+                msg: 'fault', data: {}});
             console.log(err);
         });
         let response = { msg: 'user added' };
+        let id = await services.get_user_by_any(username, User, 'username');
+        id = id.dataValues.id;
+        // console.log('=>'+id+'<=');
+        await Wallet.create({balance:0,UserId:id});
 
         return res.status(200).json(response);
     } catch (error) {
@@ -122,16 +138,20 @@ module.exports.admins = async (req, res, next) => {
 
 module.exports.add_admin = async (req, res, next) => {
     try {
+        
         const username = req.body.username;
         const role = req.body.role;
         const password =  req.body.password;
         const email = req.body.email;
-                
+        if(await is_unique(email, Admin, 'email'))
+        {
+            return res.status(500).send({msg:'fault',err:'There is another admin with this email'});
+        }
         mail(req.body.email, "you have added as admin in voyago !");
         // console.log(cod,req.body.email)
-        bcrypt.hash(password, 12).then(hashpassword=>{
+        bcrypt.hash(password, 12).then(async hashpassword=>{
             
-            Admin.create({ username:username, password: hashpassword  , email : email , role:role ,cod_ver:null});
+            await Admin.create({ username:username, password: hashpassword  , email : email , role:role ,cod_ver:null});
         }).catch(err => {
             console.log(err);
         });
@@ -212,6 +232,11 @@ module.exports.add_trip = async (req, res, nxt) => {
         images.forEach(async image => {
             console.log(trp.id);
             await Image.create({ image: image,TripId: trp.id});
+        });
+        features.forEach(feature => {
+            if (!Features_included.findByPk(feature)) {
+                return res.status(500).json({ msg: 'fault', err: 'featureId not exist' });
+            }
         });
         features.forEach(async feature => {
             await Every_feature.create({ featuresIncludedId: feature, TripId: trp.id });
@@ -316,24 +341,7 @@ module.exports.add_destenation = async (req,res, next)=>{
         console.log(err);
         return res.status(500).json({ data: {}, err: err, msg: 'error' });
     }
-};  
-
-module.exports.add_destenation = async (req,res, next)=>{
-    let name = req.body.name;
-    let images = req.body.images;
-    try {
-        await Destenation.create({ name: name, AdminId:req.user_id });
-        const Dst = await Destenation.findOne({ where: { name: name } });
-        images.forEach(async (element) => {
-            await image.create({ DestenationId: Dst.id, image: element });
-        });
-        return res.status(200).json({ data: {}, err: {}, msg: 'Destenation has added successfully !' });
-    }
-    catch (err) {
-        console.log(err);
-        return res.status(500).json({ data: {}, err: err, msg: 'error' });
-    }
-}; 
+};   
 
 module.exports.add_attraction = async (req,res, next)=>{
     let name = req.body.name;
@@ -382,6 +390,22 @@ module.exports.Destenations = async (req, res, next) => {
             URL_images.push( element.image);
         });
         cur.images = URL_images;
+        let reviews = await every_user_review.findAll({ where: { DestenationId: Dst[i].id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                // console.log(element.dataValues);
+                if(element.rate){
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            } 
+            cur.rate=rate.toFixed(1);
         arr.push(cur);
     }
     return res.status(200).json({ data:  arr , err: {}, msg: 'success' });
@@ -416,6 +440,7 @@ module.exports.delete_destenation = async (req, res, next) => {
         return res.status(500).json({ data: {}, err: err, msg: 'error' });
     }
 };
+
 module.exports.single_destination = async (req, res, next) => {
     // try {
         const destinationId = req.params.id;
@@ -451,8 +476,15 @@ module.exports.single_destination = async (req, res, next) => {
 
     // Get user reviews
     
-    let reviews = await destination.getUsers(); 
-    
+    let reviews = await every_user_review.findAll({where:{DestenationId:destinationId}}); 
+    // let reviews = await destination.getEveryuserreviews(); 
+    for (let i = 0; i < reviews.length; i++){
+        let element = reviews[i];
+        let user = await User.findByPk(element.UserId);
+        element.dataValues.username = user.dataValues.username;
+        reviews[i] = element;
+        console.log(element);
+    }
         response.reviews = reviews;
 
         return res.status(200).json({ data: response, err: {}, msg: 'success' });
@@ -473,7 +505,7 @@ module.exports.single_attraction = async (req, res, next) => {
         Day_trip.push(element.getDayTrips());
     });
     let trips = [];
-    Day_trip_id.forEach(async element => {
+    Day_trip.forEach(async element => {
         trips.push(await element.getTrip());
     });
     const uniqueArray = Array.from(new Set(trips));
@@ -496,10 +528,69 @@ module.exports.single_attraction = async (req, res, next) => {
 
     // Get user reviews
     
-    let reviews = await attraction.getUsers(); 
-
+    let reviews = await every_user_review.findAll({where: {AttractionId:attractionId}});  
+    
+    for (let i = 0; i < reviews.length; i++){
+        let element = reviews[i];
+        let user = await User.findByPk(element.UserId);
+        element.dataValues.username = user.dataValues.username;
+        reviews[i] = element;
+        console.log(element);
+    }
     response.reviews = reviews;
 
     return res.status(200).json({ data: response, err: {}, msg: 'success' });
     
+};
+
+module.exports.charge_requests = async (req, res, next) => {
+    let requests =await ChargeRequest.findAll();
+    return res.status(200).json({ data: requests, err: {}, msg: 'success' });
+
+};
+
+module.exports.approve_charge = async (req, res, next) => {
+    const request_id = req.params.id;
+    const chargeRequest = await
+        ChargeRequest.findByPk(request_id);
+    if (!chargeRequest) {
+        return res.status(500).json({ data: {}, err: {}, msg: 'request not found' });
+
+    }
+    let wallet = chargeRequest.UserId;
+    wallet = await User.findByPk(wallet);
+    wallet = await wallet.getWallet();
+    wallet.balance += chargeRequest.amount;
+    await wallet.save();
+    console.log(wallet.id, req.user_id);
+    let walletid = wallet.id;
+    await Transaction.create({ AdminId: req.user_id, walletId: walletid, new_balance: wallet.balance, last_balance: wallet.balance-chargeRequest.amount, type: "credit",status:'Success' });
+    
+    await chargeRequest.destroy();
+    return res.status(200).json({ data:{} , err: {}, msg: 'success' });
+
+
+};
+
+module.exports.reject_charge = async (req, res, next) => {
+    const request_id = req.params.id;
+    const chargeRequest = await
+        ChargeRequest.findByPk(request_id);
+    if (!chargeRequest) {
+        return res.status(500).json({ data: {}, err: {}, msg: 'request not found' });
+    }
+    let wallet = chargeRequest.UserId;
+    wallet = await User.findByPk(wallet);
+    wallet = await wallet.getWallet();
+    let walletid = wallet.id;
+    await Transaction.create({ AdminId: req.user_id, walletId: walletid, new_balance: wallet.balance, last_balance: wallet.balance, type: "credit" ,status:'Failed'});
+    
+    await chargeRequest.destroy();
+    return res.status(200).json({ data: {}, err: {}, msg: 'success' });
+    
+};
+
+module.exports.transactions = async (req, res, next) => {
+    let transactions = await Transaction.findall();
+    return res.status(200).json({ data: transactions, err: {}, msg: {} });
 };

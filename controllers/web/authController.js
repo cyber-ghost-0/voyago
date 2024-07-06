@@ -7,7 +7,7 @@ const Joi = require('joi');
 const Admin = require('../../models/Admin');
 const User = require('../../models/User');
 const Trip = require('../../models/Trip');
-//const Image = require('../../models/Image');
+const Image = require('../../models/Image');
 const Features_included = require('../../models/features_included');
 const Every_feature = require('../../models/every_feture');
 // require('dotenv').config()
@@ -68,14 +68,18 @@ module.exports.Login = async (req, res, next) => {
     }    
 
     const accessToken =await services.generateAccessToken(user.id);
-    const refreshToken =await jwt.sign(user.username, '4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419');
+    const refreshToken =await jwt.sign({ user: user.id }, '4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419',{ expiresIn: '9h' });
     services.black_list.push(refreshToken);
     res.json({ msg: 'done', accessToken: accessToken, refreshToken: refreshToken, name: user.username, role: user.role });
 };
 
-module.exports.Logout = async(req, res, next) => {
-    services.black_list = services.black_list.filter(token => token !== req.body.token);
-    req.headers['authorization']=undefined;
+module.exports.Logout = async (req, res, next) => {
+    if (!services.black_list.includes(req.body.refresh_token)) {
+        console.log(services.black_list);
+        return res.status(500).json({ data: {}, msg: 'fault', err: "refresh token is not valid " });
+    }
+    services.black_list = services.black_list.filter(token => token !== req.body.refresh_token);
+    req.headers['authorization'] = undefined;
     return res.status(200).send({msg:"DONE!"});
 };
 
