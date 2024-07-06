@@ -12,6 +12,7 @@ const Image = sequelize.define('Image', {
         type: Sequelize.STRING,
         allowNull: true
     },
+    
 });
 
 module.exports = Image;

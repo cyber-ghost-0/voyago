@@ -28,6 +28,12 @@ const path = require('path');
 app.use(express.static('uploads'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+app.use(BP.urlencoded({ extended: true })); 
+app.use(BP.json()); 
+ 
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
+
 // trip;
 Admin.hasMany(Destenation,{onDelete: 'CASCADE'});
 Destenation.belongsTo(Admin, ({ constraints: true, onDelete: 'CASCADE' }));
@@ -73,10 +79,10 @@ app.use('/web', webRoutes);
 app.use('/web', imageRoutes);
 
 sequelize
-    .sync({  force:true})
-    //.sync()
+    //.sync({  force:true})
+    .sync()
     .then(result => {
-        app.listen(3000);
+        app.listen(3001);
     })
     .catch(err => {
         console.log(err);
