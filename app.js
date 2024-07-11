@@ -25,6 +25,12 @@ const Transaction = require('./models/transaction.js');
 const ChargeRequest = require('./models/chargeRequest');
 const every_user_review = require('./models/EveryUserReview.js');
 
+app.use(BP.urlencoded({ extended: true })); 
+app.use(BP.json()); 
+ 
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
+
 
 app.use(BP.json());
 // trip;
@@ -94,10 +100,11 @@ app.use('/api', appRoutes);
 app.use('/web', webRoutes);
 
 sequelize
+    //.sync({  force:true})
     // .sync({  force:true})
     .sync()
     .then(result => {
-        app.listen(3000);
+        app.listen(3001);
     })
     .catch(err => {
         console.log(err);
