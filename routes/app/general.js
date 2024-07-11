@@ -43,4 +43,6 @@ router.get('/AllAttractions/:name', is_auth, generalController.all_trips_by_dest
 
 router.get('/AllTrips/:name', is_auth, generalController.all_trips_by_destenation);
 
+router.get('/TripImages/:id', is_auth, generalController.TripImages);
+
 module.exports = router;

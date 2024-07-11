@@ -768,3 +768,41 @@ module.exports.all_attractions_by_destenation = async (req, res, next) => {
         next(err);
     }
 }
+
+module.exports.TripImages = async (req, res, next) => {
+    let Trip_id = req.params.id;
+    let images = await Image.findAll({ where: { TripId: Trip_id } })
+    return res.status(200).json({ msg: {}, data: images });
+
+}
+
+module.exports.TripInfo = async (req, res, next) => {
+    let Trip_id = req.params.id;
+    const trip = await Trip.findByPk(Trip_id);
+    let destenation = await Destenation.findByPk(trip.destinationId);
+    let reviews = await every_user_review.findAll({ where: { TripId: trip.id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                console.log(element.dataValues);
+                if (element.rate) {
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            }
+            rate = rate.toFixed(1);
+    let result = {
+        name: trip.name,
+        location: destenation.name,
+        rate: rate,
+        reviews: cnt,
+        price:trip.trip_price
+    }
+    return res.status(200).json({ msg: {}, data: result });
+}
+
