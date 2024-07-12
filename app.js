@@ -100,7 +100,6 @@ app.use('/api', appRoutes);
 app.use('/web', webRoutes);
 
 sequelize
-    //.sync({  force:true})
     // .sync({  force:true})
     .sync()
     .then(result => {
