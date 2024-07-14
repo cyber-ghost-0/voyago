@@ -71,7 +71,7 @@ module.exports.users = async (req, res, next) => {
         return res.json({msg:'Done!',users:users});
     } catch (error) {
         console.error('Error fetching users:', error);
-        res.status(500).send({msg:'fault',err:'Internal Server Error'});
+       return res.status(500).json({msg:'fault',err:'Internal Server Error'});
     }
 };
 
@@ -86,7 +86,7 @@ module.exports.add_user = async (req, res, next) => {
         // console.log(error);
         
         if (error) {
-            return res.status(400).send({msg:'fault',err:error.details[0].message});
+            return res.status(400).json({msg:'fault',err:error.details[0].message});
         }
         if (await is_unique(email, User, 'email') ||await is_unique(username, User, 'username')) {
             return res.status(500).json({msg:'fault',err:"emai/username isn\'t unique"});
@@ -131,7 +131,7 @@ module.exports.admins = async (req, res, next) => {
         return res.status(200).json({msg:'Done!',admins:admins});
     } catch (error) {
         console.error('Error fetching users:', error);
-        res.status(500).send({msg:'fault',err:'Internal Server Error'});
+       return res.status(500).json({msg:'fault',err:'Internal Server Error'});
     }
 };
 
@@ -145,7 +145,7 @@ module.exports.add_admin = async (req, res, next) => {
         const email = req.body.email;
         if(await is_unique(email, Admin, 'email'))
         {
-            return res.status(500).send({msg:'fault',err:'There is another admin with this email'});
+            return res.status(500).json({msg:'fault',err:'There is another admin with this email'});
         }
         mail(req.body.email, "you have added as admin in voyago !");
         // console.log(cod,req.body.email)
@@ -195,7 +195,7 @@ module.exports.show_features_included = async (req, res, next) => {
         return res.status(200).json({msg:'Done!',features:features});
     } catch (error) {
         console.error('Error fetching data:', error);
-        res.status(500).send({ dat: {},msg:'fault',err:'Internal Server Error'});
+       return res.status(500).json({ dat: {},msg:'fault',err:'Internal Server Error'});
     }
 };
 
@@ -206,7 +206,7 @@ module.exports.add_features_included = async (req, res, next) => {
         return res.status(200).json({msg:'Added!'});
     } catch (error) {
         console.error('Error fetching data:', error);
-        res.status(500).send({ data: {},msg:'fault',err:'Internal Server Error'});
+      return  res.status(500).json({ data: {},msg:'fault',err:'Internal Server Error'});
     }
 };
 
@@ -223,7 +223,12 @@ module.exports.add_trip = async (req, res, nxt) => {
         days = req.body.days;
         console.log(days);
         end_date.setDate(end_date.getDate() +  days.length);
-        if (await is_unique(name, Trip, 'name')) {
+        let err=await Destenation.findByPk(DestenationId)
+        if(! err){
+            return res.status(500).json({ msg: 'fault', err: 'Destenation is not exist' });
+        }
+        err=await is_unique(name, Trip, 'name');
+        if (err) {
             return res.status(500).json({ msg: 'fault', err: 'name is not unique' });
         }
         await Trip.create({ name: "ZZZZAAAANNAASS" });
@@ -233,11 +238,14 @@ module.exports.add_trip = async (req, res, nxt) => {
             console.log(trp.id);
             await Image.create({ image: image,TripId: trp.id});
         });
-        features.forEach(feature => {
-            if (!Features_included.findByPk(feature)) {
-                return res.status(500).json({ msg: 'fault', err: 'featureId not exist' });
+        for(let i=0;i<features.length;i++){
+            let feature=features[i];
+            err=(await Features_included.findByPk(feature));
+            if (!err) {
+                return res.json({ msg: 'fault', err: 'featureId not exist' }).status(500);
             }
-        });
+        }
+       
         features.forEach(async feature => {
             await Every_feature.create({ featuresIncludedId: feature, TripId: trp.id });
         });
@@ -273,10 +281,10 @@ module.exports.add_trip = async (req, res, nxt) => {
         trp.name = name; trp.DestenationId = DestenationId; trp.description = description; trp.trip_price = price; trp.start_date = start_date;trp.end_date=end_date, trp.capacity = capacity, trp.AdminId = req.user_id; trp.meeting_point_location = meeting_point_location;
         trp.TimeLimitCancellation = TimeLimitCancellation; trp.avilable = true;
         await trp.save();
-        return res.status(200).json({ data: {}, err: {},msg:'Added!'});
+        return res.json({ data: {},msg:'Added!'}).status(200);
     } catch(error) {
-        console.error('Error fetching data:', error);
-        res.status(500).send({ msg: 'fault', err: 'Internal Server Error', data: {} });
+        console.log('Error fetching data:', error);
+        return res.json({ msg: 'fault', err: 'Internal Server Error', data: {} }).status(500);
     }
 };
 

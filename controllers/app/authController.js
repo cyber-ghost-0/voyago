@@ -111,6 +111,9 @@ module.exports.check_regesteration_code = (req, res, next) => {
     if (req.body.correct_code === req.body.in_code) {
         
         services.get_user_by_any(req.body.email,User,'email').then((user) => {
+            if(!user){
+                return res.status(400).json({msg:'fault',err:"invalid user",data:{}});
+            }
             user.cod_ver = req.body.correct_code;
             user.save();
             return user;

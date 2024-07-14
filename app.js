@@ -40,8 +40,12 @@ Admin.hasMany(Attraction,{onDelete: 'CASCADE'});
 Attraction.belongsTo(Admin, ({ constraints: true, onDelete: 'CASCADE' }));
 Destenation.hasMany(Attraction,{onDelete: 'CASCADE'});
 Attraction.belongsTo(Destenation, ({ constraints: true, onDelete: 'CASCADE' }));
-Trip.belongsToMany(Features_included, { through: Every_feature },{onDelete: 'CASCADE'});
-Features_included.belongsToMany(Trip, { through: Every_feature },{onDelete: 'CASCADE'});
+
+Trip.belongsTo(Every_feature,{constraints: true,onDelete: 'CASCADE'});
+Every_feature.hasMany(Trip,{constraints: true,onDelete: 'CASCADE'});
+Features_included.belongsTo(Every_feature,{constraints: true,onDelete: 'CASCADE'});
+Every_feature.hasMany(Features_included,{constraints: true,onDelete: 'CASCADE'});
+
 Trip.hasMany(Image,{onDelete: 'CASCADE'});
 Image.belongsTo(Trip, ({ constraints: true, onDelete: 'CASCADE' }));
 Destenation.hasMany(Image,{onDelete: 'CASCADE'});
@@ -103,7 +107,7 @@ sequelize
     // .sync({  force:true})
     .sync()
     .then(result => {
-        app.listen(3001);
+        app.listen(3000);
     })
     .catch(err => {
         console.log(err);
