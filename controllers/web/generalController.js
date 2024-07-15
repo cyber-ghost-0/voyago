@@ -211,6 +211,9 @@ module.exports.add_features_included = async (req, res, next) => {
 };
 
 module.exports.add_trip = async (req, res, nxt) => {
+    await Trip.create({ name: "ZZZZAAAANNAASS" });
+    const trp = await Trip.findOne({ where: { name: "ZZZZAAAANNAASS" } });
+    
     try {
         let name = req.body.name, DestenationId = req.body.destenation_id, start_date = req.body.start_date, price = req.body.price, capacity = req.body.capacity,
             description = req.body.description, images, features, meeting_point_location = req.body.meeting_point_location, TimeLimitCancellation = req.body.TimeLimitCancellation;
@@ -225,15 +228,16 @@ module.exports.add_trip = async (req, res, nxt) => {
         end_date.setDate(end_date.getDate() +  days.length);
         let err=await Destenation.findByPk(DestenationId)
         if(! err){
+            await trp.destroy();
+
             return res.status(500).json({ msg: 'fault', err: 'Destenation is not exist' });
         }
         err=await is_unique(name, Trip, 'name');
         if (err) {
+            await trp.destroy();
+
             return res.status(500).json({ msg: 'fault', err: 'name is not unique' });
         }
-        await Trip.create({ name: "ZZZZAAAANNAASS" });
-        const trp = await Trip.findOne({ where: { name: "ZZZZAAAANNAASS" } });
-        
         for(let i=0;i<images.length;i++){
             let image=images[i];
             console.log(trp.id);
@@ -243,6 +247,7 @@ module.exports.add_trip = async (req, res, nxt) => {
             let feature=features[i];
             err=(await Features_included.findByPk(feature));
             if (!err) {
+                await trp.destroy();
                 return res.json({ msg: 'fault', err: 'featureId not exist' }).status(500);
             }
         }
@@ -264,6 +269,10 @@ module.exports.add_trip = async (req, res, nxt) => {
                 let title;
                 if (event.attraction_id != null) {
                     const attr = await Attraction.findByPk(event.attraction_id);
+                    if(!attr){
+                        await trp.destroy();
+                        return res.json({ msg: 'fault', err: 'Attraction is not exist' }).status(500);
+                    }
                     title = attr.title;
                 } else title = event.title;
                 let Start_event = event.start_date;
@@ -286,6 +295,7 @@ module.exports.add_trip = async (req, res, nxt) => {
         await trp.save();
         return res.json({ data: {},msg:'Added!'}).status(200);
     } catch(error) {
+        await trp.destroy();
         console.log('Error fetching data:', error);
         return res.json({ msg: 'fault', err: 'Internal Server Error', data: {} }).status(500);
     }
