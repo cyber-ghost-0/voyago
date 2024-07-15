@@ -41,10 +41,10 @@ Attraction.belongsTo(Admin, ({ constraints: true, onDelete: 'CASCADE' }));
 Destenation.hasMany(Attraction,{onDelete: 'CASCADE'});
 Attraction.belongsTo(Destenation, ({ constraints: true, onDelete: 'CASCADE' }));
 
-Trip.belongsTo(Every_feature,{constraints: true,onDelete: 'CASCADE'});
-Every_feature.hasMany(Trip,{constraints: true,onDelete: 'CASCADE'});
-Features_included.belongsTo(Every_feature,{constraints: true,onDelete: 'CASCADE'});
-Every_feature.hasMany(Features_included,{constraints: true,onDelete: 'CASCADE'});
+Trip.hasMany(Every_feature,{constraints: true,onDelete: 'CASCADE'});
+Every_feature.belongsTo(Trip,{constraints: true,onDelete: 'CASCADE'});
+Features_included.hasMany(Every_feature,{constraints: true,onDelete: 'CASCADE'});
+Every_feature.belongsTo(Features_included,{constraints: true,onDelete: 'CASCADE'});
 
 Trip.hasMany(Image,{onDelete: 'CASCADE'});
 Image.belongsTo(Trip, ({ constraints: true, onDelete: 'CASCADE' }));

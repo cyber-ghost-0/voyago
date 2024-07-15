@@ -20,6 +20,11 @@ const favourites = require('../../models/Favourites.js');
 const { use } = require('../../routes/app/auth.js');
 const review = require('../../models/review.js');
 const every_user_review = require('../../models/EveryUserReview');
+const DayTrips = require('../../models/Day_trip');
+const Events = require('../../models/Event.js');
+const Every_features = require('../../models/every_feture.js');
+const every_feature = require('../../models/every_feture.js');
+const features_included = require('../../models/features_included.js');
 
 
 // require('dotenv').config()
@@ -829,10 +834,13 @@ module.exports.TripImages = async (req, res, next) => {
 
 }
 
-module.exports.TripInfo = async (req, res, next) => {
+module.exports.TripInfo1 = async (req, res, next) => {
     let Trip_id = req.params.id;
     const trip = await Trip.findByPk(Trip_id);
-    let destenation = await Destenation.findByPk(trip.destinationId);
+    if(!trip){
+        return res.status(500).json({ msg: "fault", err:"there is no trip with this id" });
+    }
+    let destenation = await Destenation.findByPk(trip.DestenationId);
     let reviews = await every_user_review.findAll({ where: { TripId: trip.id } });
             let rate = 0.0;
             let cnt = 0;
@@ -859,3 +867,174 @@ module.exports.TripInfo = async (req, res, next) => {
     return res.status(200).json({ msg: {}, data: result });
 }
 
+module.exports.TripInfo2 = async (req, res, next) => {
+    let Trip_id = req.params.id;
+    const trip = await Trip.findByPk(Trip_id);
+    if(!trip){
+        return res.status(500).json({ msg: "fault", err:"there is no trip with this id" });
+    }
+    const price=trip.price;
+    const diffTime = Math.abs(new Date(trip.end_date) - new Date(trip.start_date));
+    const duration = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const start_date=trip.start_date;
+    const capacity=trip.capacity;
+    let reservs=await reservation.findAll({where:{TripId:Trip_id}});
+    let cnt=0;
+    reservs.forEach(element => {
+        cnt+=element.adult+element.child;
+    });
+    const available=capacity-cnt;
+    let Days=await DayTrips.findAll({wher:{TripId:Trip_id}});
+    let ATTRACTIONS=[];
+    for(let j=0;j<Days.length;j++){
+        let DAY=Days[j];
+        let events=await Events.findAll({where:{DayTripId :DAY.id}});
+        events.forEach(element => {
+            if(element.AttractionId)
+            ATTRACTIONS.push(element.AttractionId);
+        });
+    }
+    ATTRACTIONS=Array.from(new Set(ATTRACTIONS));
+    const cnt_att=ATTRACTIONS.length;
+    const description=Trip.description;
+    let features=await every_feature.findAll({where:{TripId:Trip_id}});
+    let my_features=[];
+    for(let i=0;i<features.length;i++){
+        let fea=features[i];
+        let featur=await features_included.findByPk(fea.featuresIncludedId);
+        my_features.push({type:featur.type,name:featur.name});
+    }
+    const meet_point=trip.meeting_point_location;
+    const time_canellation=trip.TimeLimitCancellation;
+    let result={
+        price:price,
+        duration:duration,
+        start_date:start_date,
+        capacity:capacity,
+        available:available,
+        ATTRACTIONS:cnt_att,
+        description:description,
+        features:my_features,
+        meet_point:meet_point,
+        time_canellation:time_canellation
+    }
+    return res.status(200).json({ msg: {}, data: result });
+}
+
+module.exports.TripInfo3 = async (req, res, next) => {
+    let Trip_id = req.params.id;
+    const trip = await Trip.findByPk(Trip_id);
+    if(!trip){
+        return res.status(500).json({ msg: "fault", err:"there is no trip with this id" });
+    }
+    
+    let Days=await DayTrips.findAll({wher:{TripId:Trip_id}});
+    let ATTRACTIONS=[];
+    for(let j=0;j<Days.length;j++){
+        let DAY=Days[j];
+        let events=await Events.findAll({where:{DayTripId :DAY.id}});
+        for(let i=0;i<events.length;i++){
+            if(events[i].AttractionId)
+                ATTRACTIONS.push(events[i].AttractionId);
+        }
+    }
+        let resu=[]
+        ATTRACTIONS= Array.from(new Set(ATTRACTIONS));
+        console.log(ATTRACTIONS);
+        for(let i=0;i<ATTRACTIONS.length;i++){
+            let att=ATTRACTIONS[i];
+            // console.log(att,'**');
+            element=await Attraction.findByPk(att);
+            if(element){
+                let image = await Image.findOne({ where: { AttractionId: element.id } });
+                let fav = await favourites.findOne({ where: { UserId: req.user_id, AttractionId: element.id } });
+    
+                if (!fav) {
+                    fav = await favourites.create({ UserId: req.user_id, AttractionId: element.id, is_favourite: false });
+                }
+                let trpID=element.id;
+                    if(!image){
+                        return res.status(404).json({ err: ('attraction ',trpID,' is not completed')});
+                    }
+                let object = {
+                    id: element.id,
+                    name: element.name,
+                    image: image.image,
+                    is_favourite: fav.is_favourite
+                };
+                let reviews = await every_user_review.findAll({ where: { AttractionId: element.id } });
+                let rate = 0.0;
+                let cnt = 0;
+                reviews.forEach(elemet => {
+                    // console.log(elemet.dataValues);
+                    if (elemet.rate) {
+                        cnt++;
+                        rate += elemet.rate;
+                        // console.log(elemet.rate);
+                    }
+                });
+                if (!cnt) rate = 0;
+                else {
+                    rate = rate * 1.0 / cnt;
+                }
+                rate = rate.toFixed(1);
+                object.rate = rate;
+                resu.push(object);
+            }
+        }
+    
+    const destenation=await Destenation.findByPk(trip.DestenationId);
+
+   
+    let result={
+       Destenation:destenation,
+       Attraction:resu
+    }
+    return res.status(200).json({ msg: {}, data: result });
+}
+
+module.exports.reviews_trip=async(req,res,next)=>{
+    let Trip_id = req.params.id;
+    const trip = await Trip.findByPk(Trip_id);
+    if(!trip){
+        return res.status(500).json({ msg: "fault", err:"there is no trip with this id" });
+    }
+    let reviews = await every_user_review.findAll({where:{TripId:Trip_id}}); 
+    // let reviews = await destination.getEveryuserreviews(); 
+    for (let i = 0; i < reviews.length; i++){
+        let element = reviews[i];
+        let user = await User.findByPk(element.UserId);
+        element.dataValues.username = user.dataValues.username;
+        reviews[i] = element;
+        console.log(element);
+    }
+
+        return res.status(200).json({ data: reviews, err: {}, msg: 'success' });
+    
+
+}
+module.exports.itenerary=async(req,res,next)=>{
+    let Trip_id = req.params.id;
+    const trip = await Trip.findByPk(Trip_id);
+    if(!trip){
+        return res.status(500).json({ msg: "fault", err:"there is no trip with this id" });
+    }
+    let result=[];
+    let DAYS= await DayTrips.findAll({where:{TripId:Trip_id}});
+    // console.log(DAYS,Trip_id);
+    for(let i=0;i<DAYS.length;i++){
+        let object={};
+        let day=DAYS[i]
+        // day=day.Day_Trip
+        day=day.dataValues;
+        console.log(day);
+        object.order_of_day=day.num;
+        let events=await Events.findAll({where:{DayTripId:day.id}});
+        console.log(events);
+        object.events=events;
+        result.push(object);
+    }    
+
+    return res.status(200).json({ msg: {}, data: result });
+
+}

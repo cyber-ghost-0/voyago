@@ -234,10 +234,11 @@ module.exports.add_trip = async (req, res, nxt) => {
         await Trip.create({ name: "ZZZZAAAANNAASS" });
         const trp = await Trip.findOne({ where: { name: "ZZZZAAAANNAASS" } });
         
-        images.forEach(async image => {
+        for(let i=0;i<images.length;i++){
+            let image=images[i];
             console.log(trp.id);
             await Image.create({ image: image,TripId: trp.id});
-        });
+        }
         for(let i=0;i<features.length;i++){
             let feature=features[i];
             err=(await Features_included.findByPk(feature));
@@ -251,12 +252,14 @@ module.exports.add_trip = async (req, res, nxt) => {
         });
         let dur = 2;
         let cnt = 0;
-        days.forEach(async day => {
+        for(let i=0;i<days.length;i++){
+            let day=days[i];
             cnt++;
             await Day_trip.create({ num: -1 });
             let DAY = await Day_trip.findOne({ where: { num: -1 } });
         
-            day.forEach(async event => {
+            for(let j=0;j<day.length;j++){
+                let event=day[j];
                 let action = event.action;
                 let title;
                 if (event.attraction_id != null) {
@@ -273,11 +276,11 @@ module.exports.add_trip = async (req, res, nxt) => {
                 await Event.create({
                     AttractionId:event.attraction_id,action: action,title:title,start_date:Start_event,duration:duration_event,description:description_event,type:type,price_adult:price_adult,price_child:price_child,additional_note:additional_note,DayTripId:DAY.id
                 })
-            })
+            }
             DAY.num = cnt;
             DAY.TripId = trp.id;
             await DAY.save();
-        });
+        }
         trp.name = name; trp.DestenationId = DestenationId; trp.description = description; trp.trip_price = price; trp.start_date = start_date;trp.end_date=end_date, trp.capacity = capacity, trp.AdminId = req.user_id; trp.meeting_point_location = meeting_point_location;
         trp.TimeLimitCancellation = TimeLimitCancellation; trp.avilable = true;
         await trp.save();

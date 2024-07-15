@@ -45,4 +45,14 @@ router.get('/AllTrips/:name', is_auth, generalController.all_trips_by_destenatio
 
 router.get('/TripImages/:id', is_auth, generalController.TripImages);
 
+router.get('/tripInfo1/:id',generalController.TripInfo1);
+
+router.get('/tripInfo2/:id', generalController.TripInfo2);
+
+router.get('/tripInfo3/:id',is_auth, generalController.TripInfo3);
+
+router.get('/reviews_trip/:id',is_auth, generalController.reviews_trip);
+
+router.get('/itenerary/:id',is_auth, generalController.itenerary);
+
 module.exports = router;
