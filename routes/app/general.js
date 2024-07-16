@@ -55,4 +55,26 @@ router.get('/reviews_trip/:id',is_auth, generalController.reviews_trip);
 
 router.get('/itenerary/:id',is_auth, generalController.itenerary);
 
+router.get('/destenationInfo1/:id',generalController.destenationInfo1);
+
+router.get('/destenationInfo2/:id',is_auth,generalController.destenationInfo2);
+
+router.get('/destenationInfo3/:id',is_auth,generalController.destenationInfo3);
+
+router.get('/destenation_review/:id', is_auth, generalController.reviews_destenation)
+
+router.get('/destenation_full_review/:id', is_auth, generalController.full_review_destenation)
+
+router.get('/trip_full_review/:id', is_auth, generalController.full_review_trip)
+
+router.get('/attractionInfo1/:id',generalController.AttractionInfo1);
+
+router.get('/attractionInfo2/:id',is_auth,generalController.AttractionInfo2);
+
+router.get('/Attraction_full_review/:id',is_auth,generalController.full_review_Attraction);
+
+router.get('/attraction_review/:id', is_auth, generalController.reviews_Attraction)
+
+
+
 module.exports = router;

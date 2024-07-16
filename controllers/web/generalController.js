@@ -350,8 +350,10 @@ module.exports.delete_trip = async (req,res, next)=>{
 module.exports.add_destenation = async (req,res, next)=>{
     let name = req.body.name;
     let images = req.body.images;
+    let desc=req.body.description;
+    let location=req.body.location;
     try {
-        await Destenation.create({ name: name, AdminId:req.user_id });
+        await Destenation.create({ name: name, AdminId:req.user_id ,description:desc,location:location});
         const Dst = await Destenation.findOne({ where: { name: name } });
         images.forEach(async (element) => {
             await image.create({ DestenationId: Dst.id, image: element });

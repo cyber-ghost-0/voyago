@@ -609,7 +609,7 @@ module.exports.recommended_attractions_by_destenation = async (req, res, next) =
         let attractions = await Attraction.findAll({where:{DestenationId:destenation.id}});
         // console.log(destenation_id);
         for(let i=0;i<attractions.length;i++) {
-            this.single_attr=attractions[i];
+            let single_attr=attractions[i];
             let image = await Image.findOne({ where: { AttractionId: single_attr.id } });
             let fav = await favourites.findOne({ where: { UserId: req.user_id, AttractionId: single_attr.id } });
 
@@ -668,22 +668,23 @@ module.exports.recommended_trips_by_destenation = async (req, res, next) => {
 
         for(let i=0;i<trips.length;i++) {
             single_trip=trips[i];
-            let image = await Image.findOne({ where: { TripId: single_trip.id } });
-            let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
+            try {
+                let image = await Image.findOne({ where: { TripId: single_trip.id } });
+                let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
 
-            if (!fav) {
-                fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
-            }
-            let trpID=single_trip.id;
-                if(!image || !single_trip){
+                if (!fav) {
+                    fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
+                }
+                let trpID=single_trip.id;
+                if(!image){
                     return res.status(404).json({ err: ('trip ',trpID,' is not completed')});
                 }
-            let object = {
-                id: single_trip.id,
-                name: single_trip.name,
-                image: image.image,
-                is_favourite: fav.is_favourite
-            };
+                const diffTime = Math.abs(new Date(single_trip.end_date) - new Date(single_trip.start_date));
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                let dist = await Destenation.findByPk(single_trip.DestenationId);
+
+
+
             let reviews = await every_user_review.findAll({ where: { TripId: single_trip.id } });
             let rate = 0.0;
             let cnt = 0;
@@ -699,13 +700,26 @@ module.exports.recommended_trips_by_destenation = async (req, res, next) => {
             else {
                 rate = rate * 1.0 / cnt;
             } 
-            rate=rate.toFixed(1);
-            object.rate = rate;
-            result.push(object);
-        }
-        result.sort((b, a) => a.rate - b.rate);
+                rate=rate.toFixed(1);
+                
+                let object = {
+                    id: single_trip.id,
+                    name: single_trip.name,
+                    image: image ? image.image : null,
+                    is_favourite: fav.is_favourite,
+                    duration: diffDays,
+                    destenation: dist ? dist.name : null,
+                    price: single_trip.trip_price,
+                    rate:rate
+                };
+                result.push(object);
+            } catch (innerErr) {
+                console.error(`Error processing trip ID ${single_trip.id}:`, innerErr);
+            }
+    }
+    result.sort((b, a) => a.rate - b.rate);
 
-        result = result.slice(0, 10);
+    result = result.slice(0, 10);
         
         return res.status(200).json({ msg: {}, data: {result} });
 
@@ -797,7 +811,7 @@ module.exports.all_attractions_by_destenation = async (req, res, next) => {
         let attractions = await Attraction.findAll({where:{DestenationId:destenation.id}});
         // console.log(destenation_id);
         for(let i=0;i<attractions.length;i++) {
-            this.single_attr=attractions[i];
+            let single_attr=attractions[i];
             let image = await Image.findOne({ where: { AttractionId: single_attr.id } });
             let fav = await favourites.findOne({ where: { UserId: req.user_id, AttractionId: single_attr.id } });
 
@@ -1050,5 +1064,404 @@ module.exports.itenerary=async(req,res,next)=>{
     }    
 
     return res.status(200).json({ msg: {}, data: result });
+
+}
+module.exports.destenationInfo1=async(req,res,next)=>{
+    let destenation_id = req.params.id;
+    const destenation = await Destenation.findByPk(destenation_id);
+    if(!destenation){
+        return res.status(500).json({ msg: "fault", err:"there is no destenation with this id" });
+    }
+    // let destenation = await Destenation.findByPk(trip.DestenationId);
+    let reviews = await every_user_review.findAll({ where: { DestenationId: destenation_id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                console.log(element.dataValues);
+                if (element.rate) {
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            }
+            rate = rate.toFixed(1);
+    let result = {
+        name: destenation.name,
+        location: destenation.location,
+        rate: rate,
+        reviews: cnt,
+        description:destenation.description
+    }
+    return res.status(200).json({ msg: {}, data: result });
+}
+
+module.exports.destenationInfo2 = async (req, res, next) => {
+    try {
+        let result = [];
+        let name = req.params.id;
+        let destenation = await Destenation.findOne({ where: { id: name } });
+        if (!destenation) {
+            return res.status(404).json({ err: 'Destination not found' });
+        }
+        let attractions = await Attraction.findAll({where:{DestenationId:destenation.id}});
+        // console.log(destenation_id);
+        for(let i=0;i<attractions.length;i++) {
+            let single_attr=attractions[i];
+            let image = await Image.findOne({ where: { AttractionId: single_attr.id } });
+            let fav = await favourites.findOne({ where: { UserId: req.user_id, AttractionId: single_attr.id } });
+
+            if (!fav) {
+                fav = await favourites.create({ UserId: req.user_id, AttractionId: single_attr.id, is_favourite: false });
+            }
+            let trpID=single_attr.id;
+                if(!image){
+                    return res.status(404).json({ err: ('attraction ',trpID,' is not completed')});
+                }
+            let object = {
+                id: single_attr.id,
+                name: single_attr.name,
+                image: image.image,
+                is_favourite: fav.is_favourite
+            };
+            let reviews = await every_user_review.findAll({ where: { AttractionId: single_attr.id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                console.log(element.dataValues);
+                if (element.rate) {
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            }
+            rate = rate.toFixed(1);
+            object.rate = rate;
+            result.push(object);
+        }
+        result.sort((b, a) => a.rate - b.rate);
+
+        result = result.slice(0, 10);
+        return res.status(200).json({ msg: {}, data: {result} });
+
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
+module.exports.destenationInfo3 = async (req, res, next) => {
+    try {
+        let result = [];
+        let name = req.params.id;
+        let destenation = await Destenation.findOne({ where: { id: name } });
+        if (!destenation) {
+            return res.status(404).json({ err: 'Destination not found' });
+        }
+        let trips = await Trip.findAll({where:{DestenationId:destenation.id}});
+
+        for(let i=0;i<trips.length;i++) {
+            single_trip=trips[i];
+            try {
+                let image = await Image.findOne({ where: { TripId: single_trip.id } });
+                let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
+
+                if (!fav) {
+                    fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
+                }
+                let trpID=single_trip.id;
+                if(!image){
+                    return res.status(404).json({ err: ('trip ',trpID,' is not completed')});
+                }
+                const diffTime = Math.abs(new Date(single_trip.end_date) - new Date(single_trip.start_date));
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                let dist = await Destenation.findByPk(single_trip.DestenationId);
+
+
+
+            let reviews = await every_user_review.findAll({ where: { TripId: single_trip.id } });
+            let rate = 0.0;
+            let cnt = 0;
+            reviews.forEach(element => {
+                // console.log(element.dataValues);
+                if(element.rate){
+                    cnt++;
+                    rate += element.rate;
+                    console.log(element.rate);
+                }
+            });
+            if (!cnt) rate = 0;
+            else {
+                rate = rate * 1.0 / cnt;
+            } 
+                rate=rate.toFixed(1);
+                
+                let object = {
+                    id: single_trip.id,
+                    name: single_trip.name,
+                    image: image ? image.image : null,
+                    is_favourite: fav.is_favourite,
+                    duration: diffDays,
+                    destenation: dist ? dist.name : null,
+                    price: single_trip.trip_price,
+                    rate:rate
+                };
+                result.push(object);
+            } catch (innerErr) {
+                console.error(`Error processing trip ID ${single_trip.id}:`, innerErr);
+            }
+    }
+    result.sort((b, a) => a.rate - b.rate);
+
+    result = result.slice(0, 10);
+        return res.status(200).json({ msg: {}, data: {result} });
+
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+}
+   
+module.exports.reviews_destenation=async(req,res,next)=>{
+    let destenation_id = req.params.id;
+    const destenation = await Destenation.findByPk(destenation_id);
+    if(!destenation){
+        return res.status(500).json({ msg: "fault", err:"there is no destenation with this id" });
+    }
+    let reviews = await every_user_review.findAll({where:{DestenationId:destenation_id}}); 
+    // let reviews = await destination.getEveryuserreviews(); 
+    for (let i = 0; i < reviews.length; i++){
+        let element = reviews[i];
+        let user = await User.findByPk(element.UserId);
+        element.dataValues.username = user.dataValues.username;
+        reviews[i] = element;
+        console.log(element);
+    }
+
+        return res.status(200).json({ data: reviews, err: {}, msg: 'success' });
+    
+
+}
+module.exports.full_review_destenation=async(req,res,next)=>{
+    let destenation_id = req.params.id;
+    const destenation = await Destenation.findByPk(destenation_id);
+    if(!destenation){
+        return res.status(500).json({ msg: "fault", err:"there is no destenation with this id" });
+    }
+    let reviews = await every_user_review.findAll({where:{DestenationId:destenation_id}}); 
+    // let reviews = await destination.getEveryuserreviews(); 
+    let cnt_rates=[0,0,0,0,0,0];
+    for (let i = 0; i < reviews.length; i++){
+        let element = reviews[i];
+        console.log(element.rate);
+        if(element.rate){
+            cnt_rates[element.rate]++;
+        }
+        let user = await User.findByPk(element.UserId);
+        element.dataValues.username = user.dataValues.username;
+        reviews[i] = element;
+        // console.log(element);
+    }
+
+        return res.status(200).json({ data: {cnt_rates,reviews}, err: {}, msg: 'success' });
+    
+
+}
+module.exports.full_review_trip=async(req,res,next)=>{
+    let trip_id = req.params.id;
+    const trip = await Trip.findByPk(trip_id);
+    if(!trip){
+        return res.status(500).json({ msg: "fault", err:"there is no trip with this id" });
+    }
+    let reviews = await every_user_review.findAll({where:{TripId:trip_id}}); 
+    // let reviews = await destination.getEveryuserreviews(); 
+    let cnt_rates=[0,0,0,0,0,0];
+    for (let i = 0; i < reviews.length; i++){
+        let element = reviews[i];
+        console.log(element.rate);
+        if(element.rate){
+            cnt_rates[element.rate]++;
+        }
+        let user = await User.findByPk(element.UserId);
+        element.dataValues.username = user.dataValues.username;
+        reviews[i] = element;
+        // console.log(element);
+    }
+
+        return res.status(200).json({ data: {cnt_rates,reviews}, err: {}, msg: 'success' });
+    
+
+}
+
+module.exports.AttractionInfo1=async(req,res,next)=>{
+    let attraction_id = req.params.id;
+    const attraction = await Attraction.findByPk(attraction_id);
+    if(!attraction){
+        return res.status(500).json({ msg: "fault", err:"there is no attraction with this id" });
+    }
+    // let destenation = await Destenation.findByPk(trip.DestenationId);
+    let reviews = await every_user_review.findAll({ where: { AttractionId: attraction_id } });
+    let rate = 0.0;
+    let cnt = 0;
+    reviews.forEach(element => {
+        console.log(element.dataValues);
+        if (element.rate) {
+            cnt++;
+            rate += element.rate;
+            console.log(element.rate);
+        }
+    });
+    if (!cnt) rate = 0;
+    else {
+        rate = rate * 1.0 / cnt;
+    }
+    rate = rate.toFixed(1);
+    const destenation = (await attraction.getDestenation()).name;
+    let events=await Events.findAll({where:{AttractionId : attraction_id}});
+    let days=[],trips=[];
+    for(let i=0;i<events.length;i++){
+        days.push(events[i].DayTripId);
+    }
+    days=Array.from(new Set(days));
+    // console.log(days);
+    for(let i=0;i<days.length;i++){
+        trips.push((await DayTrips.findByPk(days[i])).TripId );
+    }
+    trips=Array.from(new Set(trips));
+    console.log(trips);
+    let result = {
+        name: attraction.name,
+        location: destenation,
+        rate: rate,
+        reviews: cnt,
+        description:attraction.description,
+        trips_included:trips.length
+    }
+    return res.status(200).json({ msg: {}, data: result });
+}
+
+module.exports.AttractionInfo2=async(req,res,next)=>{
+    let attraction_id = req.params.id;
+    const attraction = await Attraction.findByPk(attraction_id);
+    if(!attraction){
+        return res.status(500).json({ msg: "fault", err:"there is no attraction with this id" });
+    }
+    // let destenation = await Destenation.findByPk(trip.DestenationId);
+    
+    let events=await Events.findAll({where:{AttractionId : attraction_id}});
+    let days=[],trips=[];
+    for(let i=0;i<events.length;i++){
+        days.push(events[i].DayTripId);
+    }
+    days=Array.from(new Set(days));
+    // console.log(days);
+    for(let i=0;i<days.length;i++){
+        trips.push((await DayTrips.findByPk(days[i])).TripId );
+    }
+    trips=Array.from(new Set(trips));
+    console.log(trips);
+    let result =[];
+    for(let i=0;i<trips.length;i++){
+        let single_trip=await Trip.findByPk(trips[i]);
+        console.log(req.user_id);
+        let image = await Image.findOne({ where: { TripId: single_trip.id } });
+        let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
+        
+        if (!fav) {
+            fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
+        }
+        let trpID=single_trip.id;
+        if(!image){
+                    return res.status(404).json({ err: ('trip ',trpID,' is not completed')});
+                }
+                const diffTime = Math.abs(new Date(single_trip.end_date) - new Date(single_trip.start_date));
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                let dist = await Destenation.findByPk(single_trip.DestenationId);
+
+                
+                
+                let reviews = await every_user_review.findAll({ where: { TripId: single_trip.id } });
+                let rate = 0.0;
+                let cnt = 0;
+                reviews.forEach(element => {
+                    // console.log(element.dataValues);
+                    if(element.rate){
+                        cnt++;
+                        rate += element.rate;
+                        console.log(element.rate);
+                    }
+                });
+                if (!cnt) rate = 0;
+                else {
+                    rate = rate * 1.0 / cnt;
+                } 
+                rate=rate.toFixed(1);
+                    
+                let object = {
+                    id: single_trip.id,
+                    name: single_trip.name,
+                    image: image ? image.image : null,
+                    is_favourite: fav.is_favourite,
+                    duration: diffDays,
+                    destenation: dist ? dist.name : null,
+                    price: single_trip.trip_price,
+                    rate:rate
+                };
+                result.push(object);
+            }
+            
+    return res.status(200).json({ msg: {}, data: result });
+}
+
+module.exports.reviews_Attraction=async(req,res,next)=>{
+    let attraction_id = req.params.id;
+    const attrraction = await Attraction.findByPk(attraction_id);
+    if(!attrraction){
+        return res.status(500).json({ msg: "fault", err:"there is no attraction with this id" });
+    }
+    let reviews = await every_user_review.findAll({where:{AttractionId:attraction_id}}); 
+    // let reviews = await destination.getEveryuserreviews(); 
+    for (let i = 0; i < reviews.length; i++){
+        let element = reviews[i];
+        let user = await User.findByPk(element.UserId);
+        element.dataValues.username = user.dataValues.username;
+        reviews[i] = element;
+        console.log(element);
+    }
+
+        return res.status(200).json({ data: reviews, err: {}, msg: 'success' });
+
+}
+
+module.exports.full_review_Attraction=async(req,res,next)=>{
+    let attraction_id = req.params.id;
+    const attraction = await Attraction.findByPk(attraction_id);
+    if(!attraction){
+        return res.status(500).json({ msg: "fault", err:"there is no attraction with this id" });
+    }
+    let reviews = await every_user_review.findAll({where:{AttractionId:attraction_id}}); 
+    // let reviews = await destination.getEveryuserreviews(); 
+    let cnt_rates=[0,0,0,0,0,0];
+    for (let i = 0; i < reviews.length; i++){
+        let element = reviews[i];
+        console.log(element.rate);
+        if(element.rate){
+            cnt_rates[element.rate]++;
+        }
+        let user = await User.findByPk(element.UserId);
+        element.dataValues.username = user.dataValues.username;
+        reviews[i] = element;
+        // console.log(element);
+    }
+
+        return res.status(200).json({ data: {cnt_rates,reviews}, err: {}, msg: 'success' });
+    
 
 }
