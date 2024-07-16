@@ -460,46 +460,60 @@ module.exports.top_attractions = async (req, res, next) => {
 };
 
 module.exports.top_trips = async (req, res, next) => {
-    try {
-        let result = [];
-        let trips = await Trip.findAll();
-
-        for(let i=0;i<trips.length;i++) {
-            single_trip=trips[i];
-            let image = await Image.findOne({ where: { TripId: single_trip.id } });
-            let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
-
-            if (!fav) {
-                fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
-            }
-            let trpID=single_trip.id;
-                if(!image){
-                    return res.status(404).json({ err: ('trip '+trpID+' is not completed')});
+        try {
+            let result = [];
+            let trips = await Trip.findAll();
+    
+            for(let i=0;i<trips.length;i++) {
+                single_trip=trips[i];
+                try {
+                    let image = await Image.findOne({ where: { TripId: single_trip.id } });
+                    let fav = await favourites.findOne({ where: { UserId: req.user_id, TripId: single_trip.id } });
+    
+                    if (!fav) {
+                        fav = await favourites.create({ UserId: req.user_id, TripId: single_trip.id, is_favourite: false });
+                    }
+                    let trpID=single_trip.id;
+                    if(!image){
+                        return res.status(404).json({ err: ('trip ',trpID,' is not completed')});
+                    }
+                    const diffTime = Math.abs(new Date(single_trip.end_date) - new Date(single_trip.start_date));
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    let dist = await Destenation.findByPk(single_trip.DestenationId);
+    
+    
+    
+                let reviews = await every_user_review.findAll({ where: { TripId: single_trip.id } });
+                let rate = 0.0;
+                let cnt = 0;
+                reviews.forEach(element => {
+                    // console.log(element.dataValues);
+                    if(element.rate){
+                        cnt++;
+                        rate += element.rate;
+                        console.log(element.rate);
+                    }
+                });
+                if (!cnt) rate = 0;
+                else {
+                    rate = rate * 1.0 / cnt;
+                } 
+                    rate=rate.toFixed(1);
+                    
+                    let object = {
+                        id: single_trip.id,
+                        name: single_trip.name,
+                        image: image ? image.image : null,
+                        is_favourite: fav.is_favourite,
+                        duration: diffDays,
+                        destenation: dist ? dist.name : null,
+                        price: single_trip.trip_price,
+                        rate:rate
+                    };
+                    result.push(object);
+                } catch (innerErr) {
+                    console.error(`Error processing trip ID ${single_trip.id}:`, innerErr);
                 }
-            let object = {
-                id: single_trip.id,
-                name: single_trip.name,
-                image : (image? image.image : 1),
-                is_favourite: fav.is_favourite
-            };
-            let reviews = await every_user_review.findAll({ where: { TripId: single_trip.id } });
-            let rate = 0.0;
-            let cnt = 0;
-            reviews.forEach(element => {
-                // console.log(element.dataValues);
-                if(element.rate){
-                    cnt++;
-                    rate += element.rate;
-                    console.log(element.rate);
-                }
-            });
-            if (!cnt) rate = 0;
-            else {
-                rate = rate * 1.0 / cnt;
-            } 
-            rate=rate.toFixed(1);
-            object.rate = rate;
-            result.push(object);
         }
         result.sort((b, a) => a.rate - b.rate);
 
@@ -561,7 +575,7 @@ module.exports.popular_trips = async (req, res, next) => {
                     is_favourite: fav.is_favourite,
                     duration: diffDays,
                     destenation: dist ? dist.name : null,
-                    price: single_trip.price,
+                    price: single_trip.trip_price,
                     rate:rate
                 };
 
