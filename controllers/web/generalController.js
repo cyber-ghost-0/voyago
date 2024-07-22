@@ -291,7 +291,7 @@ module.exports.add_trip = async (req, res, nxt) => {
             await DAY.save();
         }
         trp.name = name; trp.DestenationId = DestenationId; trp.description = description; trp.trip_price = price; trp.start_date = start_date;trp.end_date=end_date, trp.capacity = capacity, trp.AdminId = req.user_id; trp.meeting_point_location = meeting_point_location;
-        trp.TimeLimitCancellation = TimeLimitCancellation; trp.avilable = true;
+        trp.TimeLimitCancellation = TimeLimitCancellation; trp.avilable = 1;trp.available_capacity=capacity;
         await trp.save();
         return res.json({ data: {},msg:'Added!'}).status(200);
     } catch(error) {

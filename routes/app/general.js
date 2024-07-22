@@ -75,6 +75,9 @@ router.get('/Attraction_full_review/:id',is_auth,generalController.full_review_A
 
 router.get('/attraction_review/:id', is_auth, generalController.reviews_Attraction)
 
+router.get('/search/', generalController.search);
+
+
 
 
 module.exports = router;

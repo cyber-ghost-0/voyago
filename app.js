@@ -24,12 +24,8 @@ const Wallet = require('./models/wallet.js');
 const Transaction = require('./models/transaction.js');
 const ChargeRequest = require('./models/chargeRequest');
 const every_user_review = require('./models/EveryUserReview.js');
+const imageRoutes=require('./models/image.js');
 
-app.use(BP.urlencoded({ extended: true })); 
-app.use(BP.json()); 
- 
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: true }));
 
 
 app.use(BP.json());
@@ -96,13 +92,17 @@ Destenation.hasMany(Favourites, ({ constraints: true, onDelete: 'CASCADE' }));
 Favourites.belongsTo(Destenation, { constraints: true, onDelete: 'CASCADE' });
 Attraction.hasMany(Favourites, ({ constraints: true, onDelete: 'CASCADE' }));
 Favourites.belongsTo(Attraction, { constraints: true, onDelete: 'CASCADE' });
-
+app.use(BP.urlencoded({ extended: true })); 
+app.use(BP.json()); 
+ 
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', appAuth);
 app.use('/web', webAuth);
 app.use('/api', appRoutes);
 app.use('/web', webRoutes);
-
+app.use('/web',imageRoutes);
 sequelize
     // .sync({  force:true})
     .sync()

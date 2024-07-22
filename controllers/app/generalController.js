@@ -7,6 +7,7 @@ const Joi = require('joi');
 const User = require('../../models/User');
 const Trip=require('../../models/Trip')
 const Image=require('../../models/image');
+const {Op}=require('sequelize')
 const { Sequelize, where } = require('sequelize');
 const { SequelizeMethod } = require('sequelize/lib/utils');
 const Every_user_review =require('../../models/EveryUserReview');
@@ -146,6 +147,13 @@ module.exports.reserve_on_trip = async (req, res, next) => {
     const password = req.body.password;
     const user = await User.findByPk(req.user_id);
     let flag = await bcrypt.compare(password, user.password);
+    const trip=await Trip.findByPk(trip_id);
+    if( trip.available_capacity < adult+child ){
+        return res.status(500).json({data:{},err:"No capacity enough"});
+    }
+    let Available_capacity = trip.available_capacity - ( adult + child );
+    trip.available_capacity=Available_capacity;
+    await trip.save();
     if (!flag) {
         let response = { data: {}, msg: "fail" ,err:"password is not correct !"};
         return res.json(response).status(500);
@@ -1243,7 +1251,8 @@ module.exports.reviews_destenation=async(req,res,next)=>{
         element.dataValues.username = user.dataValues.username;
         reviews[i] = element;
         console.log(element);
-    }
+    }        result = result.slice(0, 10);
+
 
         return res.status(200).json({ data: reviews, err: {}, msg: 'success' });
     
@@ -1465,3 +1474,187 @@ module.exports.full_review_Attraction=async(req,res,next)=>{
     
 
 }
+
+module.exports.search = async (req, res, next) => {
+    try {
+      let { destination, price, travelers, checkIn, checkOut, priceLtoH, priceHtoL, topRated } = req.query;
+      let trips = [],
+          trips_1 = [],
+          trips_00 = [],
+          trips_01 = [],
+          trips_02 = [],
+          trips_03 = [],
+          trips_04 = [];
+  
+      if (destination) {
+        let destenations = await Destenation.findAll({
+          where: {
+            name: {
+              [Op.like]: `${destination}%`
+            }
+          }
+        });
+  
+        trips_00 = await Trip.findAll({
+          where: {
+            avilable: { [Op.eq]: 1},
+            DestenationId: destenations.map(d => d.id),
+          } 
+        });
+    }
+    else{
+        trips_00 = await Trip.findAll();
+    }
+
+    if (trips_00.length === 0) {
+        return res.status(404).json({ err: 'No trips found' });
+    }
+        //trips_00.forEach(trip => trips_0.push(trip));
+      
+  
+      if (price) {
+        trips_01 = await Trip.findAll({
+          where: {
+            avilable: { [Op.eq]: 1},
+            trip_price: price,
+          }
+        });
+    }
+    else{
+        trips_01 = await Trip.findAll();
+    }
+        //trips_01.forEach(trip => trips_0.push(trip));
+        if (trips_01.length === 0) {
+            return res.status(404).json({ err: 'No trips found' });
+        } 
+
+      if (travelers) {
+        trips_02 = await Trip.findAll({
+            where: { 
+                avilable: { [Op.eq]: 1},
+                availble_capacity: { [Op.gte]: travelers }
+            }
+        });
+        
+    }
+    else{
+        trips_02 = await Trip.findAll();
+    }
+        //trips_02.forEach(trip => trips_0.push(trip));
+        if (trips_02.length === 0) {
+            return res.status(404).json({ err: 'No trips found' });
+        }
+       let startDateMap = {};
+        if (checkIn) {
+             checkInDate = new Date(Date.parse(checkIn));
+             checkInDateString = `${checkInDate.getFullYear()}-${String(checkInDate.getMonth() + 1).padStart(2, '0')}-${String(checkInDate.getDate()).padStart(2, '0')}`;
+
+             trips = await Trip.findAll({
+               where: {
+                 avilable: { [Op.eq]: 1 }
+                }
+            });
+
+            trips.forEach(trip => {
+                let startDate = new Date(Date.parse(trip.start_date));
+                let startDateString = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
+                startDateMap[trip.id] = startDateString;
+
+                 if (startDateString === checkInDateString) {
+                    trips_03.push(trip);
+    }
+});
+}
+
+else{
+  trips_03 = await Trip.findAll();
+}
+if (trips_03.length === 0) {
+  return res.status(404).json({ err: 'No trips found' });
+}
+
+let endDateMap = {};
+let object;
+
+if (checkOut) {
+  let checkOutDate = new Date(Date.parse(checkOut));
+  let checkOutDateString = `${checkOutDate.getFullYear()}-${String(checkOutDate.getMonth() + 1).padStart(2, '0')}-${String(checkOutDate.getDate()).padStart(2, '0')}`;
+
+  trips = await Trip.findAll({
+    where: {
+      avilable: { [Op.eq]: 1 }
+     }
+ });
+
+ trips.forEach(trip => {
+     let endDate = new Date(Date.parse(trip.end_date));
+     let endDateString = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
+     endDateMap[trip.id] = endDateString;
+
+      if (endDateString === checkOutDateString) {
+         trips_04.push(trip);
+}
+   });
+}
+
+else{
+ trips_04 = await Trip.findAll();
+}
+if (trips_04.length === 0) {
+return res.status(404).json({ err: 'No trips found' });
+}
+
+trips_1 = trips_00.filter(trip => 
+  trips_01.some(t => t.id === trip.id) &&
+  trips_02.some(t => t.id === trip.id) &&
+  trips_03.some(t => t.id === trip.id) &&
+  trips_04.some(t => t.id === trip.id)
+);
+
+let single_trip;
+
+
+if (priceLtoH == 1) {
+  trips_1.sort((a, b) => a.trip_price - b.trip_price);
+}
+else if (priceHtoL == 1) {
+  trips_1.sort((a, b) => b.trip_price - a.trip_price);
+}
+else if (topRated == 1) {
+                
+    //console.log(trips_1);
+    
+    
+for (let i = 0; i < trips_1.length; i++) {
+  let single_trip = trips_1[i];
+  
+  let reviews = await every_user_review.findAll({ where: { TripId: single_trip.id } });
+  let rate = 0.0;
+  let cnt = 0;
+
+  reviews.forEach(element => {
+    if (element.rate) {
+      cnt++;
+      rate += element.rate;
+    }
+  });
+
+  if (cnt > 0) {
+    rate = (rate / cnt).toFixed(1);
+  }
+
+  trips_1[i].rate = parseFloat(rate);
+}
+console.log(trips_1);
+
+trips_1.sort((a, b) => b.rate - a.rate);
+trips_1 = trips_1.slice(0, 10);
+}
+return res.status(200).json({ msg: {}, data: { trips_1 }
+});
+
+} catch (error) {
+console.error(error);
+return res.status(500).json({ msg: "Internal server error.", data: null });
+}
+};

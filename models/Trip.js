@@ -31,7 +31,7 @@ const Trip = sequelize.define('Trip', {
         //allowMull: false
     },
     avilable: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.INTEGER,
         //allowMull: false
     },
     start_date: {
@@ -51,6 +51,9 @@ const Trip = sequelize.define('Trip', {
         //allowMull: true
     },
     TimeLimitCancellation: {
+        type: Sequelize.INTEGER
+    },
+    available_capacity: {
         type: Sequelize.INTEGER
     }
 });
