@@ -1,21 +1,21 @@
-const BP = require('body-parser');
-const validateImageUpload = require('../../middleware/imageValidation');
-const Image = require('../../models/image');
-const Attraction = require('../../models/Attraction'); 
-const Trip = require('../../models/Trip');
-const Destination = require('../../models/Destenation'); // Corrected typo here
-const multer = require('multer');
-const path = require('path');
+const BP = require("body-parser");
+const validateImageUpload = require("../../middleware/imageValidation");
+const Image = require("../../models/image");
+const Attraction = require("../../models/Attraction");
+const Trip = require("../../models/Trip");
+const Destination = require("../../models/Destenation"); // Corrected typo here
+const multer = require("multer");
+const path = require("path");
 
 // Define the imageFilter function
 const imageFilter = (req, file, cb) => {
-  const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp']; // Add more extensions if needed
+  const allowedExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp"]; // Add more extensions if needed
   const fileExtension = path.extname(file.originalname).toLowerCase();
 
   if (allowedExtensions.includes(fileExtension)) {
     cb(null, true); // Accept the file
   } else {
-    cb(new Error('Invalid file type. Only images are allowed')); // Reject the file
+    cb(new Error("Invalid file type. Only images are allowed")); // Reject the file
   }
 };
 
@@ -24,7 +24,7 @@ const imageFilter = (req, file, cb) => {
 //   filename: (req, file, cb) => {
 //     const uniqueSuffix = Date.now();
 //     const fileExtension = path.extname(file.originalname);
-//     const fileName = `${Date.now()}_${file.originalname}`; 
+//     const fileName = `${Date.now()}_${file.originalname}`;
 //     cb(null, fileName, fileExtension); // Corrected here to preserve the file extension
 //   },
 // });
@@ -39,24 +39,24 @@ const imageFilter = (req, file, cb) => {
 //   },
 // });
 
-const storage = multer.diskStorage({ 
-  destination: async function (req, file, cb) { 
-          const uploadPath = path.join(__dirname, `../../uploads/`); 
-          await fs.mkdir(uploadPath, { recursive: true }); 
-          cb(null, uploadPath); 
-  }, 
-  filename: function (req, file, cb) { 
-      const fileName = `${file.originalname}`; 
-      cb(null, fileName); 
-  } 
-}); 
+const storage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const uploadPath = path.join(__dirname, `../../uploads/`);
+    await fs.mkdir(uploadPath, { recursive: true });
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    const fileName = `${file.originalname}`;
+    cb(null, fileName);
+  },
+});
 
-const fileFilter = (req, file, cb) => { 
-  if (!file.mimetype.startsWith('image/')) { 
-      return cb(new Error('Only image files are allowed'), false); 
-  } 
-  cb(null, true); 
-}; 
+const fileFilter = (req, file, cb) => {
+  if (!file.mimetype.startsWith("image/")) {
+    return cb(new Error("Only image files are allowed"), false);
+  }
+  cb(null, true);
+};
 
 const upload = multer({
   storage: storage,
@@ -70,7 +70,9 @@ module.exports.add_image = async (req, res, next) => {
     const imageRecords = await Promise.all(
       files.map(async (file) => {
         const fileExtension = path.extname(file.originalname);
-        const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}${fileExtension}`; // Changed to use file.path
+        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
+          file.filename
+        }${fileExtension}`; // Changed to use file.path
         let image;
 
         if (attractionId) {
@@ -89,15 +91,16 @@ module.exports.add_image = async (req, res, next) => {
             image = await destination.createImage({ url: imageUrl });
           }
         }
-        
+
         return image;
       })
     );
 
-    res.status(200).json({ message: 'Images uploaded successfully', images: imageRecords });
+    res
+      .status(200)
+      .json({ message: "Images uploaded successfully", images: imageRecords });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to upload images' });
+    res.status(500).json({ error: "Failed to upload images" });
   }
 };
-
