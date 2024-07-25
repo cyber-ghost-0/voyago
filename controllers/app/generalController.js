@@ -1236,6 +1236,8 @@ module.exports.reviews_trip = async (req, res, next) => {
   let reviews = await every_user_review.findAll({ where: { TripId: Trip_id } });
   // let reviews = await destination.getEveryuserreviews();
   let cnt = 0;
+  let rate = 0.0;
+
   for (let i = 0; i < reviews.length; i++) {
     let element = reviews[i];
     let user = await User.findByPk(element.UserId);
@@ -1248,9 +1250,27 @@ module.exports.reviews_trip = async (req, res, next) => {
 
   reviews = reviews.slice(0, 3);
 
-  return res
-    .status(200)
-    .json({ data: { cnt_reviews: cnt, reviews }, err: {}, msg: "success" });
+  let CNT = 0;
+  rate = 0;
+  reviews.forEach((element) => {
+    console.log(element.dataValues);
+    if (element.rate) {
+      CNT++;
+      rate += element.rate;
+      console.log(element.rate);
+    }
+  });
+  if (!CNT) rate = 0;
+  else {
+    rate = (rate * 1.0) / CNT;
+  }
+  rate = rate.toFixed(1);
+
+  return res.status(200).json({
+    data: { cnt_reviews: cnt, reviews, rate: rate },
+    err: {},
+    msg: "success",
+  });
 };
 module.exports.itenerary = async (req, res, next) => {
   let Trip_id = req.params.id;
@@ -1495,8 +1515,24 @@ module.exports.reviews_destenation = async (req, res, next) => {
   reviews.sort((b, a) => a.comment - b.comment);
 
   reviews = reviews.slice(0, 3);
+
+  let CNT = 0;
+  rate = 0;
+  reviews.forEach((element) => {
+    console.log(element.dataValues);
+    if (element.rate) {
+      CNT++;
+      rate += element.rate;
+      console.log(element.rate);
+    }
+  });
+  if (!CNT) rate = 0;
+  else {
+    rate = (rate * 1.0) / CNT;
+  }
+  rate = rate.toFixed(1);
   return res.status(200).json({
-    data: { cnt_reviews: cnt, reviews: reviews },
+    data: { cnt_reviews: cnt, reviews: reviews, rate: rate },
     err: {},
     msg: "success",
   });
@@ -1513,7 +1549,7 @@ module.exports.full_review_destenation = async (req, res, next) => {
     where: { DestenationId: destenation_id },
   });
   // let reviews = await destination.getEveryuserreviews();
-  let cnt_rates = {0 :0, 1 :0, 2 : 0,3: 0,4: 0,5: 0};
+  let cnt_rates = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   let cnt2 = 0;
   for (let i = 0; i < reviews.length; i++) {
     cnt2++;
@@ -1527,9 +1563,24 @@ module.exports.full_review_destenation = async (req, res, next) => {
     reviews[i] = element;
     // console.log(element);
   }
+  let CNT = 0;
+  rate = 0;
+  reviews.forEach((element) => {
+    console.log(element.dataValues);
+    if (element.rate) {
+      CNT++;
+      rate += element.rate;
+      console.log(element.rate);
+    }
+  });
+  if (!CNT) rate = 0;
+  else {
+    rate = (rate * 1.0) / CNT;
+  }
+  rate = rate.toFixed(1);
 
   return res.status(200).json({
-    data: { cnt_rates, reviews, cnt_reviews: cnt2 },
+    data: { cnt_rates, reviews, cnt_reviews: cnt2, rate: rate },
     err: {},
     msg: "success",
   });
@@ -1544,7 +1595,7 @@ module.exports.full_review_trip = async (req, res, next) => {
   }
   let reviews = await every_user_review.findAll({ where: { TripId: trip_id } });
   // let reviews = await destination.getEveryuserreviews();
-  let cnt_rates = {0 :0, 1 :0, 2 : 0,3: 0,4: 0,5: 0};
+  let cnt_rates = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   let cnt2 = 0;
   for (let i = 0; i < reviews.length; i++) {
     let element = reviews[i];
@@ -1558,9 +1609,23 @@ module.exports.full_review_trip = async (req, res, next) => {
     cnt2++;
     // console.log(element);
   }
-
+  let CNT = 0;
+  rate = 0;
+  reviews.forEach((element) => {
+    console.log(element.dataValues);
+    if (element.rate) {
+      CNT++;
+      rate += element.rate;
+      console.log(element.rate);
+    }
+  });
+  if (!CNT) rate = 0;
+  else {
+    rate = (rate * 1.0) / CNT;
+  }
+  rate = rate.toFixed(1);
   return res.status(200).json({
-    data: { cnt_rates, reviews, cnt_reviews: cnt2 },
+    data: { cnt_rates, reviews, cnt_reviews: cnt2, rate: rate },
     err: {},
     msg: "success",
   });
@@ -1726,10 +1791,28 @@ module.exports.reviews_Attraction = async (req, res, next) => {
     cnt++;
   }
   reviews = reviews.slice(0, 3);
-
+  let CNT = 0;
+  rate = 0;
+  reviews.forEach((element) => {
+    console.log(element.dataValues);
+    if (element.rate) {
+      CNT++;
+      rate += element.rate;
+      console.log(element.rate);
+    }
+  });
+  if (!CNT) rate = 0;
+  else {
+    rate = (rate * 1.0) / CNT;
+  }
+  rate = rate.toFixed(1);
   return res
     .status(200)
-    .json({ data: { reviews, cnt_reviews: cnt }, err: {}, msg: "success" });
+    .json({
+      data: { reviews, cnt_reviews: cnt, rate: rate },
+      err: {},
+      msg: "success",
+    });
 };
 
 module.exports.full_review_Attraction = async (req, res, next) => {
@@ -1744,7 +1827,7 @@ module.exports.full_review_Attraction = async (req, res, next) => {
     where: { AttractionId: attraction_id },
   });
   // let reviews = await destination.getEveryuserreviews();
-  let cnt_rates = {0 :0, 1 :0, 2 : 0,3: 0,4: 0,5: 0};
+  let cnt_rates = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   let cnt2 = 0;
   for (let i = 0; i < reviews.length; i++) {
     let element = reviews[i];
@@ -1758,9 +1841,24 @@ module.exports.full_review_Attraction = async (req, res, next) => {
     reviews[i] = element;
     // console.log(element);
   }
+  let CNT = 0;
+  rate = 0;
+  reviews.forEach((element) => {
+    console.log(element.dataValues);
+    if (element.rate) {
+      CNT++;
+      rate += element.rate;
+      console.log(element.rate);
+    }
+  });
+  if (!CNT) rate = 0;
+  else {
+    rate = (rate * 1.0) / CNT;
+  }
+  rate = rate.toFixed(1);
 
   return res.status(200).json({
-    data: { cnt_rates, reviews, cnt_reviews: cnt2 },
+    data: { cnt_rates, reviews, cnt_reviews: cnt2, rate: rate },
     err: {},
     msg: "success",
   });
