@@ -302,26 +302,6 @@
 				{
 					"name": "Trip_review",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [
 							{
@@ -332,7 +312,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"comment\" : \"KKK\",\r\n    \"rate\" : 1\r\n}",
+							"raw": "{\r\n    \"comment\" : \"88\",\r\n    \"rate\" : 2\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -340,7 +320,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/trip_review/11",
+							"raw": "http://localhost:3000/api/trip_review/4",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -349,7 +329,7 @@
 							"path": [
 								"api",
 								"trip_review",
-								"11"
+								"4"
 							]
 						}
 					},
@@ -1393,20 +1373,10 @@
 				{
 					"name": "trip_full_review",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/trip_full_review/11",
+							"raw": "http://localhost:3000/api/trip_full_review/4",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1415,7 +1385,7 @@
 							"path": [
 								"api",
 								"trip_full_review",
-								"11"
+								"4"
 							]
 						}
 					},
@@ -1561,6 +1531,32 @@
 								"api",
 								"destenationInfo1",
 								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/search?destination=Q",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/search?destination=Q",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"search"
+							],
+							"query": [
+								{
+									"key": "destination",
+									"value": "Q"
+								}
 							]
 						}
 					},
@@ -1936,31 +1932,11 @@
 				{
 					"name": "add_trip",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Nesw\",\r\n    \"destenation_id\":1,\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"attraction_id\":4,\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
+							"raw": "{\r\n    \"name\" : \"Nesw\",\r\n    \"destenation_id\":1,\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"attraction_id\":2,\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2442,6 +2418,36 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
