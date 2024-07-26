@@ -2051,3 +2051,33 @@ module.exports.search = async (req, res, next) => {
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
 };
+
+module.exports.getOptionalEvents=async(req,res,next)=>{
+  const trip=await Trip.findByPk(req.params.id);
+  if(!trip){
+    return res.status(500).json('There is no trip with this id');
+  }
+  let list=[];
+  let days =await DayTrips.findAll({wher:{TripId : trip.id}});
+  for(let i=0;i<days.length;i++){
+    let element=days[i];
+    let temp=await Events.findAll({where:{DayTripId:element.id,type:'optional'}});
+    if(temp.length){
+      temp.forEach(element => {
+        
+        delete element.dataValues.createdAt;
+        delete element.dataValues.DayTripId;
+        delete element.dataValues.AttractionId;
+        delete element.dataValues.type;
+
+        // element=services.removeProperty(element,'updatedAt')
+        // element=services.removeProperty(element,'DayTripId')
+        // element=services.removeProperty(element,'AttractionId')
+        // element=services.removeProperty(element,'type')
+        list.push( element);
+      });
+    }
+  }
+  return res.status(200).json({data:list,err:{},msg:'Done'});
+
+};

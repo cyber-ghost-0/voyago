@@ -25,6 +25,7 @@ const Transaction = require("./models/transaction.js");
 const ChargeRequest = require("./models/chargeRequest");
 const every_user_review = require("./models/EveryUserReview.js");
 const imageRoutes = require("./models/image.js");
+const everyReservationEvent=require("./models/everyResrvationEvent.js")
 
 app.use(BP.json());
 // trip;
@@ -58,6 +59,11 @@ Trip.hasMany(Day_trip, { onDelete: "CASCADE" });
 Day_trip.belongsTo(Trip, { constraints: true, onDelete: "CASCADE" });
 Day_trip.hasMany(Event, { constraints: true, onDelete: "CASCADE" });
 Event.belongsTo(Day_trip, { constraints: true, onDelete: "CASCADE" });
+
+reservation.hasMany(everyReservationEvent, { constraints: true, onDelete: "CASCADE" });
+everyReservationEvent.belongsTo(reservation, { constraints: true, onDelete: "CASCADE" });
+Event.hasMany(everyReservationEvent, { constraints: true, onDelete: "CASCADE" });
+everyReservationEvent.belongsTo(Event, { constraints: true, onDelete: "CASCADE" });
 
 Trip.hasMany(Every_user_review, { constraints: true, onDelete: "CASCADE" });
 Every_user_review.belongsTo(Trip, { constraints: true, onDelete: "CASCADE" });

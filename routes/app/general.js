@@ -77,6 +77,8 @@ router.get('/attraction_review/:id', is_auth, generalController.reviews_Attracti
 
 router.get('/search/', generalController.search);
 
+router.get('/optionalEvents/:id',is_auth,generalController.getOptionalEvents);
+
 
 
 
