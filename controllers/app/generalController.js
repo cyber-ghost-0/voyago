@@ -173,15 +173,17 @@ module.exports.reserve_on_trip = async (req, res, next) => {
   const adult = req.body.adult;
   const child = req.body.child;
   const optional_choices = req.body.optional_choices;
-  const fname = req.body.first_name;
-  const lname = req.body.last_name;
+  const email=req.body.email;
   const phone = req.body.phone;
   const password = req.body.password;
   const user = await User.findByPk(req.user_id);
   let flag = await bcrypt.compare(password, user.password);
   const trip = await Trip.findByPk(trip_id);
+  if(!trip){
+    return res.status(500).json({ data: {}, err: "there is no trip with this id" });
+  }
   if (trip.available_capacity < adult + child) {
-    return res.status(500).json({ data: {}, err: "No capacity enough" });
+    return res.status(500).json({ data: {}, err: "No capacity enough!" });
   }
   let Available_capacity = trip.available_capacity - (adult + child);
   trip.available_capacity = Available_capacity;
@@ -192,8 +194,7 @@ module.exports.reserve_on_trip = async (req, res, next) => {
   }
 
   await reservation.create({
-    fname: fname,
-    lname: lname,
+    email:email,
     adult: adult,
     child: child,
     phone: phone,

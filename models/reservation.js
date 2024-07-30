@@ -8,14 +8,6 @@ const reservation = sequelize.define("reservation", {
     allowNull: false,
     primaryKey: true,
   },
-  fname: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
-  lname: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
   adult: {
     type: Sequelize.INTEGER,
     allowNull: false,
@@ -28,6 +20,10 @@ const reservation = sequelize.define("reservation", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  email :{
+    type: Sequelize.STRING,
+    allowNull: false,
+  }
 });
 
 module.exports = reservation;
