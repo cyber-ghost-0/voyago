@@ -1868,22 +1868,8 @@ module.exports.full_review_Attraction = async (req, res, next) => {
 module.exports.search = async (req, res, next) => {
   try {
     let {
-      destination,
-      price,
-      travelers,
-      checkIn,
-      checkOut,
-      priceLtoH,
-      priceHtoL,
-      topRated,
-    } = req.query;
-    let trips = [],
-      trips_1 = [],
-      trips_00 = [],
-      trips_01 = [],
-      trips_02 = [],
-      trips_03 = [],
-      trips_04 = [];
+      destination, price, travelers, checkIn, checkOut, priceLtoH, priceHtoL, topRated } = req.query;
+    let trips = [], trips_1 = [], trips_00 = [], trips_01 = [], trips_02 = [], trips_03 = [], trips_04 = [];
 
     if (destination) {
       let destenations = await Destenation.findAll({
@@ -1899,15 +1885,30 @@ module.exports.search = async (req, res, next) => {
           avilable: { [Op.eq]: 1 },
           DestenationId: destenations.map((d) => d.id),
         },
+        include: [
+          {
+            model: Destenation,
+            attributes: ['name'],
+          },
+        ],
       });
     } else {
-      trips_00 = await Trip.findAll();
+      trips_00 = await Trip.findAll({
+        where: {
+          avilable: { [Op.eq]: 1 }
+        },
+        include: [
+          {
+            model: Destenation,
+            attributes: ['name'],
+          },
+        ],
+      });
     }
 
     if (trips_00.length === 0) {
       return res.status(404).json({ err: "No trips found" });
     }
-    //trips_00.forEach(trip => trips_0.push(trip));
 
     if (price) {
       trips_01 = await Trip.findAll({
@@ -1915,11 +1916,26 @@ module.exports.search = async (req, res, next) => {
           avilable: { [Op.eq]: 1 },
           trip_price: price,
         },
+        include: [
+          {
+            model: Destenation,
+            attributes: ['name'],
+          },
+        ],
       });
     } else {
-      trips_01 = await Trip.findAll();
+      trips_01 = await Trip.findAll({
+        where: {
+          avilable: { [Op.eq]: 1 }
+        },
+        include: [
+          {
+            model: Destenation,
+            attributes: ['name'],
+          },
+        ],
+      });
     }
-    //trips_01.forEach(trip => trips_0.push(trip));
     if (trips_01.length === 0) {
       return res.status(404).json({ err: "No trips found" });
     }
@@ -1928,16 +1944,32 @@ module.exports.search = async (req, res, next) => {
       trips_02 = await Trip.findAll({
         where: {
           avilable: { [Op.eq]: 1 },
-          availble_capacity: { [Op.gte]: travelers },
+          available_capacity: { [Op.gte]: travelers },
         },
+        include: [
+          {
+            model: Destenation,
+            attributes: ['name'],
+          },
+        ],
       });
     } else {
-      trips_02 = await Trip.findAll();
+      trips_02 = await Trip.findAll({
+        where: {
+          avilable: { [Op.eq]: 1 }
+        },
+        include: [
+          {
+            model: Destenation,
+            attributes: ['name'],
+          },
+        ],
+      });
     }
-    //trips_02.forEach(trip => trips_0.push(trip));
     if (trips_02.length === 0) {
       return res.status(404).json({ err: "No trips found" });
     }
+
     let startDateMap = {};
     if (checkIn) {
       checkInDate = new Date(Date.parse(checkIn));
@@ -1948,7 +1980,12 @@ module.exports.search = async (req, res, next) => {
       trips = await Trip.findAll({
         where: {
           avilable: { [Op.eq]: 1 },
-        },
+        },include: [
+          {
+            model: Destenation,
+            attributes: ['name'],
+          },
+        ],
       });
 
       trips.forEach((trip) => {
@@ -1963,15 +2000,23 @@ module.exports.search = async (req, res, next) => {
         }
       });
     } else {
-      trips_03 = await Trip.findAll();
+      trips_03 = await Trip.findAll({
+        where: {
+          avilable: { [Op.eq]: 1 }
+        },
+        include: [
+          {
+            model: Destenation,
+            attributes: ['name'],
+          },
+        ],
+      });
     }
     if (trips_03.length === 0) {
       return res.status(404).json({ err: "No trips found" });
     }
 
     let endDateMap = {};
-    let object;
-
     if (checkOut) {
       let checkOutDate = new Date(Date.parse(checkOut));
       let checkOutDateString = `${checkOutDate.getFullYear()}-${String(
@@ -1981,7 +2026,12 @@ module.exports.search = async (req, res, next) => {
       trips = await Trip.findAll({
         where: {
           avilable: { [Op.eq]: 1 },
-        },
+        },include: [
+          {
+            model: Destenation,
+            attributes: ['name'],
+          },
+        ],
       });
 
       trips.forEach((trip) => {
@@ -1996,7 +2046,17 @@ module.exports.search = async (req, res, next) => {
         }
       });
     } else {
-      trips_04 = await Trip.findAll();
+      trips_04 = await Trip.findAll({
+        where: {
+          avilable: { [Op.eq]: 1 }
+        },
+        include: [
+          {
+            model: Destenation,
+            attributes: ['name'],
+          },
+        ],
+      });
     }
     if (trips_04.length === 0) {
       return res.status(404).json({ err: "No trips found" });
@@ -2010,14 +2070,11 @@ module.exports.search = async (req, res, next) => {
         trips_04.some((t) => t.id === trip.id)
     );
 
-    let single_trip;
-
     if (priceLtoH == 1) {
       trips_1.sort((a, b) => a.trip_price - b.trip_price);
     } else if (priceHtoL == 1) {
       trips_1.sort((a, b) => b.trip_price - a.trip_price);
     } else if (topRated == 1) {
-      //console.log(trips_1);
 
       for (let i = 0; i < trips_1.length; i++) {
         let single_trip = trips_1[i];
@@ -2046,13 +2103,13 @@ module.exports.search = async (req, res, next) => {
       trips_1.sort((a, b) => b.rate - a.rate);
       trips_1 = trips_1.slice(0, 10);
     }
+    
     return res.status(200).json({ msg: {}, data: { trips_1 } });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
 };
-
 module.exports.getOptionalEvents=async(req,res,next)=>{
   const trip=await Trip.findByPk(req.params.id);
   if(!trip){

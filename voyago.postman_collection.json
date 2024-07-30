@@ -388,31 +388,11 @@
 				{
 					"name": "reservation",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"adult\":5,\r\n    \"child\":2,\r\n    \"optional_choices\":[],\r\n    \"first_name\":\"Amas\",\r\n    \"last_name\":\"lplp\",\r\n    \"phone\":\"0937402356\",\r\n    \"password\":\"12345678\"\r\n}",
+							"raw": "{\r\n    \"adult\":5,\r\n    \"child\":2,\r\n    \"optional_choices\":[\r\n        {\r\n            \"id\":1,\r\n            \"adult\":5,\r\n            \"child\":3\r\n        },\r\n        {\r\n            \"id\":1,\r\n            \"adult\":5,\r\n            \"child\":3\r\n        }\r\n    ],\r\n    \"first_name\":\"Amas\",\r\n    \"last_name\":\"lplp\",\r\n    \"phone\":\"0937402356\",\r\n    \"password\":\"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -420,7 +400,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/reservation/1",
+							"raw": "http://localhost:3000/api/reservation/6",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -429,7 +409,7 @@
 							"path": [
 								"api",
 								"reservation",
-								"1"
+								"6"
 							]
 						}
 					},
@@ -1138,7 +1118,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/tripInfo2/1",
+							"raw": "http://localhost:3000/api/tripInfo2/4",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1147,7 +1127,7 @@
 							"path": [
 								"api",
 								"tripInfo2",
-								"1"
+								"4"
 							]
 						}
 					},
@@ -1156,20 +1136,10 @@
 				{
 					"name": "http://localhost:3000/api/tripInfo3/1",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/tripInfo3/1",
+							"raw": "http://localhost:3000/api/tripInfo3/4",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1178,7 +1148,7 @@
 							"path": [
 								"api",
 								"tripInfo3",
-								"1"
+								"4"
 							]
 						}
 					},
@@ -1187,20 +1157,10 @@
 				{
 					"name": "http://localhost:3000/api/reviews_trip/1",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/reviews_trip/1",
+							"raw": "http://localhost:3000/api/reviews_trip/4",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1209,7 +1169,7 @@
 							"path": [
 								"api",
 								"reviews_trip",
-								"1"
+								"4"
 							]
 						}
 					},
@@ -1557,6 +1517,27 @@
 									"key": "destination",
 									"value": "Q"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/OptionalEvents/4",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/OptionalEvents/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"OptionalEvents",
+								"6"
 							]
 						}
 					},
