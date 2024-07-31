@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
-const every_user_review = sequelize.define('EveryUserReview', {
+const every_user_review = sequelize.define('everyReservationEvent', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,

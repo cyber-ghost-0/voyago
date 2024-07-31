@@ -173,14 +173,16 @@ module.exports.reserve_on_trip = async (req, res, next) => {
   const adult = req.body.adult;
   const child = req.body.child;
   const optional_choices = req.body.optional_choices;
-  const email=req.body.email;
+  const email = req.body.email;
   const phone = req.body.phone;
   const password = req.body.password;
   const user = await User.findByPk(req.user_id);
   let flag = await bcrypt.compare(password, user.password);
   const trip = await Trip.findByPk(trip_id);
-  if(!trip){
-    return res.status(500).json({ data: {}, err: "there is no trip with this id" });
+  if (!trip) {
+    return res
+      .status(500)
+      .json({ data: {}, err: "there is no trip with this id" });
   }
   if (trip.available_capacity < adult + child) {
     return res.status(500).json({ data: {}, err: "No capacity enough!" });
@@ -194,7 +196,7 @@ module.exports.reserve_on_trip = async (req, res, next) => {
   }
 
   await reservation.create({
-    email:email,
+    email: email,
     adult: adult,
     child: child,
     phone: phone,
@@ -506,56 +508,55 @@ module.exports.top_attractions = async (req, res, next) => {
     let result = [];
     let attractions = await Attraction.findAll();
 
-    await Promise.all(
-      attractions.map(async (single_attr) => {
-        let image = await Image.findOne({
-          where: { AttractionId: single_attr.id },
-        });
-        let fav = await favourites.findOne({
-          where: { UserId: req.user_id, AttractionId: single_attr.id },
-        });
+    for (let i = 0; i < attractions.length; i++) {
+      let single_attr = attractions[i];
+      let image = await Image.findOne({
+        where: { AttractionId: single_attr.id },
+      });
+      let fav = await favourites.findOne({
+        where: { UserId: req.user_id, AttractionId: single_attr.id },
+      });
 
-        if (!fav) {
-          fav = await favourites.create({
-            UserId: req.user_id,
-            AttractionId: single_attr.id,
-            is_favourite: false,
-          });
-        }
-        let trpID = single_attr.id;
-        if (!image) {
-          return res
-            .status(404)
-            .json({ err: ("attraction ", trpID, " is not completed") });
-        }
-        let object = {
-          id: single_attr.id,
-          name: single_attr.name,
-          image: image.image,
-          is_favourite: fav.is_favourite,
-        };
-        let reviews = await every_user_review.findAll({
-          where: { AttractionId: single_attr.id },
+      if (!fav) {
+        fav = await favourites.create({
+          UserId: req.user_id,
+          AttractionId: single_attr.id,
+          is_favourite: false,
         });
-        let rate = 0.0;
-        let cnt = 0;
-        reviews.forEach((element) => {
-          console.log(element.dataValues);
-          if (element.rate) {
-            cnt++;
-            rate += element.rate;
-            console.log(element.rate);
-          }
-        });
-        if (!cnt) rate = 0;
-        else {
-          rate = (rate * 1.0) / cnt;
+      }
+      let trpID = single_attr.id;
+      if (!image) {
+        return res
+          .status(404)
+          .json({ err: ("attraction ", trpID, " is not completed") });
+      }
+      let object = {
+        id: single_attr.id,
+        name: single_attr.name,
+        image: image.image,
+        is_favourite: fav.is_favourite,
+      };
+      let reviews = await every_user_review.findAll({
+        where: { AttractionId: single_attr.id },
+      });
+      let rate = 0.0;
+      let cnt = 0;
+      reviews.forEach((element) => {
+        console.log(element.dataValues);
+        if (element.rate) {
+          cnt++;
+          rate += element.rate;
+          console.log(element.rate);
         }
-        rate = rate.toFixed(1);
-        object.rate = rate;
-        result.push(object);
-      })
-    );
+      });
+      if (!cnt) rate = 0;
+      else {
+        rate = (rate * 1.0) / cnt;
+      }
+      rate = rate.toFixed(1);
+      object.rate = rate;
+      result.push(object);
+    }
     result.sort((b, a) => a.rate - b.rate);
 
     result = result.slice(0, 10);
@@ -567,7 +568,7 @@ module.exports.top_attractions = async (req, res, next) => {
 };
 
 module.exports.top_trips = async (req, res, next) => {
-  try {
+  // try {
     let result = [];
     let trips = await Trip.findAll();
 
@@ -637,10 +638,10 @@ module.exports.top_trips = async (req, res, next) => {
     result = result.slice(0, 10);
 
     return res.status(200).json({ msg: {}, data: { result } });
-  } catch (err) {
-    console.error(err);
-    next(err);
-  }
+  // } catch (err) {
+  //   console.error(err);
+  //   next(err);
+  // }
 };
 
 module.exports.popular_trips = async (req, res, next) => {
@@ -1807,13 +1808,11 @@ module.exports.reviews_Attraction = async (req, res, next) => {
     rate = (rate * 1.0) / CNT;
   }
   rate = rate.toFixed(1);
-  return res
-    .status(200)
-    .json({
-      data: { reviews, cnt_reviews: cnt, rate: rate },
-      err: {},
-      msg: "success",
-    });
+  return res.status(200).json({
+    data: { reviews, cnt_reviews: cnt, rate: rate },
+    err: {},
+    msg: "success",
+  });
 };
 
 module.exports.full_review_Attraction = async (req, res, next) => {
@@ -1868,8 +1867,22 @@ module.exports.full_review_Attraction = async (req, res, next) => {
 module.exports.search = async (req, res, next) => {
   try {
     let {
-      destination, price, travelers, checkIn, checkOut, priceLtoH, priceHtoL, topRated } = req.query;
-    let trips = [], trips_1 = [], trips_00 = [], trips_01 = [], trips_02 = [], trips_03 = [], trips_04 = [];
+      destination,
+      price,
+      travelers,
+      checkIn,
+      checkOut,
+      priceLtoH,
+      priceHtoL,
+      topRated,
+    } = req.query;
+    let trips = [],
+      trips_1 = [],
+      trips_00 = [],
+      trips_01 = [],
+      trips_02 = [],
+      trips_03 = [],
+      trips_04 = [];
 
     if (destination) {
       let destenations = await Destenation.findAll({
@@ -1888,19 +1901,19 @@ module.exports.search = async (req, res, next) => {
         include: [
           {
             model: Destenation,
-            attributes: ['name'],
+            attributes: ["name"],
           },
         ],
       });
     } else {
       trips_00 = await Trip.findAll({
         where: {
-          avilable: { [Op.eq]: 1 }
+          avilable: { [Op.eq]: 1 },
         },
         include: [
           {
             model: Destenation,
-            attributes: ['name'],
+            attributes: ["name"],
           },
         ],
       });
@@ -1919,19 +1932,19 @@ module.exports.search = async (req, res, next) => {
         include: [
           {
             model: Destenation,
-            attributes: ['name'],
+            attributes: ["name"],
           },
         ],
       });
     } else {
       trips_01 = await Trip.findAll({
         where: {
-          avilable: { [Op.eq]: 1 }
+          avilable: { [Op.eq]: 1 },
         },
         include: [
           {
             model: Destenation,
-            attributes: ['name'],
+            attributes: ["name"],
           },
         ],
       });
@@ -1949,19 +1962,19 @@ module.exports.search = async (req, res, next) => {
         include: [
           {
             model: Destenation,
-            attributes: ['name'],
+            attributes: ["name"],
           },
         ],
       });
     } else {
       trips_02 = await Trip.findAll({
         where: {
-          avilable: { [Op.eq]: 1 }
+          avilable: { [Op.eq]: 1 },
         },
         include: [
           {
             model: Destenation,
-            attributes: ['name'],
+            attributes: ["name"],
           },
         ],
       });
@@ -1980,10 +1993,11 @@ module.exports.search = async (req, res, next) => {
       trips = await Trip.findAll({
         where: {
           avilable: { [Op.eq]: 1 },
-        },include: [
+        },
+        include: [
           {
             model: Destenation,
-            attributes: ['name'],
+            attributes: ["name"],
           },
         ],
       });
@@ -2002,12 +2016,12 @@ module.exports.search = async (req, res, next) => {
     } else {
       trips_03 = await Trip.findAll({
         where: {
-          avilable: { [Op.eq]: 1 }
+          avilable: { [Op.eq]: 1 },
         },
         include: [
           {
             model: Destenation,
-            attributes: ['name'],
+            attributes: ["name"],
           },
         ],
       });
@@ -2026,10 +2040,11 @@ module.exports.search = async (req, res, next) => {
       trips = await Trip.findAll({
         where: {
           avilable: { [Op.eq]: 1 },
-        },include: [
+        },
+        include: [
           {
             model: Destenation,
-            attributes: ['name'],
+            attributes: ["name"],
           },
         ],
       });
@@ -2048,12 +2063,12 @@ module.exports.search = async (req, res, next) => {
     } else {
       trips_04 = await Trip.findAll({
         where: {
-          avilable: { [Op.eq]: 1 }
+          avilable: { [Op.eq]: 1 },
         },
         include: [
           {
             model: Destenation,
-            attributes: ['name'],
+            attributes: ["name"],
           },
         ],
       });
@@ -2075,7 +2090,6 @@ module.exports.search = async (req, res, next) => {
     } else if (priceHtoL == 1) {
       trips_1.sort((a, b) => b.trip_price - a.trip_price);
     } else if (topRated == 1) {
-
       for (let i = 0; i < trips_1.length; i++) {
         let single_trip = trips_1[i];
 
@@ -2103,26 +2117,27 @@ module.exports.search = async (req, res, next) => {
       trips_1.sort((a, b) => b.rate - a.rate);
       trips_1 = trips_1.slice(0, 10);
     }
-    
+
     return res.status(200).json({ msg: {}, data: { trips_1 } });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
 };
-module.exports.getOptionalEvents=async(req,res,next)=>{
-  const trip=await Trip.findByPk(req.params.id);
-  if(!trip){
-    return res.status(500).json('There is no trip with this id');
+module.exports.getOptionalEvents = async (req, res, next) => {
+  const trip = await Trip.findByPk(req.params.id);
+  if (!trip) {
+    return res.status(500).json("There is no trip with this id");
   }
-  let list=[];
-  let days =await DayTrips.findAll({wher:{TripId : trip.id}});
-  for(let i=0;i<days.length;i++){
-    let element=days[i];
-    let temp=await Events.findAll({where:{DayTripId:element.id,type:'optional'}});
-    if(temp.length){
-      temp.forEach(element => {
-        
+  let list = [];
+  let days = await DayTrips.findAll({ wher: { TripId: trip.id } });
+  for (let i = 0; i < days.length; i++) {
+    let element = days[i];
+    let temp = await Events.findAll({
+      where: { DayTripId: element.id, type: "optional" },
+    });
+    if (temp.length) {
+      temp.forEach((element) => {
         delete element.dataValues.createdAt;
         delete element.dataValues.DayTripId;
         delete element.dataValues.AttractionId;
@@ -2132,10 +2147,9 @@ module.exports.getOptionalEvents=async(req,res,next)=>{
         // element=services.removeProperty(element,'DayTripId')
         // element=services.removeProperty(element,'AttractionId')
         // element=services.removeProperty(element,'type')
-        list.push( element);
+        list.push(element);
       });
     }
   }
-  return res.status(200).json({data:list,err:{},msg:'Done'});
-
+  return res.status(200).json({ data: list, err: {}, msg: "Done" });
 };
