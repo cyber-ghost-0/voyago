@@ -2226,30 +2226,33 @@ module.exports.my_reviwes = async (req, res, next) => {
     .json({ data: { trip_n, dest_n, attr_n }, err: {}, msg: "done" });
 };
 
-// module.exports.wallet_history = async (req, res, next) => {
-//   const user = await User.findByPk(req.user_id);
-//   const wallet = await Wallet.findOne({ where: { UserId: user.id } });
-//   let history = await Transaction.findAll({ where: { walletId: wallet.id } });
-//   return res.status(200).json({ data: history, err: {}, msg: "done" });
-// };
+module.exports.wallet_history = async (req, res, next) => {
+  const user = await User.findByPk(req.user_id);
+  const wallet = await Wallet.findOne({ where: { UserId: user.id } });
+  let history = await Transaction.findAll({ where: { walletId: wallet.id } });
+  return res.status(200).json({ data: history, err: {}, msg: "done" });
+};
+
+
 // module.exports.my_favourites = async (req, res, next) => {
 //   const id = req.user_id;
-//   let result1, result2, result3;
+//   let result1=[], result2=[], result3=[];
 //   const user = await User.findByPk(id);
 //   let trips, attraction, destenation;
 //   trips = await favourites.findAll({
 //     where: { UserId: id, AttractionId: null, DestenationId: null },
 //   });
-//   attraction = await every_user_review.findAll({
+//   attraction = await favourites.findAll({
 //     where: { UserId: id, DestenationId: null, TripId: null },
 //   });
-//   destenation = await every_user_review.findAll({
+//   destenation = await favourites.findAll({
 //     where: { UserId: id, AttractionId: null, TripId: null },
 //   });
-
+  
 //   await Promise.all(
 //     destenation.map(async (single_dist) => {
-//       single_dist = await Destenation.findByPk(single_dist);
+//       console.log(single_dist);
+//       // single_dist = await Destenation.findByPk(single_dist.id);
 //       let image = await Image.findOne({
 //         where: { DestenationId: single_dist.id },
 //       });
@@ -2296,7 +2299,7 @@ module.exports.my_reviwes = async (req, res, next) => {
 //   );
 
 //   for (let i = 0; i < attraction.length; i++) {
-//     let single_attr = await Attraction.findByPk(attraction[i]);
+//     let single_attr =attraction[i];
 //     let image = await Image.findOne({
 //       where: { AttractionId: single_attr.id },
 //     });
@@ -2346,7 +2349,7 @@ module.exports.my_reviwes = async (req, res, next) => {
 //   }
 
 //   for (let i = 0; i < trips.length; i++) {
-//     single_trip = await Trip.findByPk(trips[i]);
+//     single_trip = trips[i];
 //     try {
 //       let image = await Image.findOne({ where: { TripId: single_trip.id } });
 //       let fav = await favourites.findOne({

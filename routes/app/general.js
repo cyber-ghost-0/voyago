@@ -87,6 +87,16 @@ router.get('/profile/wallet',is_auth,generalController.wallet);
 
 router.get('/profile/reviews',is_auth,generalController.my_reviwes);
 
+router.get('/profile/reviews',is_auth,generalController.my_reviwes);
+
+router.get('/profile/wallet_history',is_auth,generalController.wallet_history);
+
+router.get('/profile/favourites',is_auth,generalController.my_favourites);
+
+
+
+
+
 
 
 module.exports = router;
