@@ -79,6 +79,13 @@ router.get('/search/', generalController.search);
 
 router.get('/optionalEvents/:id',is_auth,generalController.getOptionalEvents);
 
+router.get('/profile/main',is_auth,generalController.profile_main);
+
+router.get('/profile/personal_information',is_auth,generalController.profile_personal_information);
+
+router.get('/profile/wallet',is_auth,generalController.wallet);
+
+router.get('/profile/reviews',is_auth,generalController.my_reviwes);
 
 
 

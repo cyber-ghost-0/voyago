@@ -40,6 +40,6 @@ module.exports.get_user_by_any = async (name, model, col) => {
 
 module.exports.removeProperty = async (obj, key) => {
   let { [key]: _, ...newObj } = obj;
-  console.log(newObj)
+  // console.log(newObj)
   return newObj;
 };
