@@ -682,6 +682,11 @@ module.exports.approve_charge = async (req, res, next) => {
   let wallet = chargeRequest.UserId;
   wallet = await User.findByPk(wallet);
   wallet = await wallet.getWallet();
+  if(!wallet){
+    return res
+      .status(500)
+      .json({ data: {}, err: {}, msg: "wallet not found" });
+  }
   wallet.balance += chargeRequest.amount;
   await wallet.save();
   console.log(wallet.id, req.user_id);

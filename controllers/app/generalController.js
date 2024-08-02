@@ -2161,7 +2161,7 @@ module.exports.profile_personal_information = async (req, res, next) => {
 module.exports.wallet = async (req, res, next) => {
   const id = req.user_id;
   const user = await User.findByPk(id);
-  const wallet = await Wallet.findOne({ wher: { UserId: id } });
+  const wallet = await Wallet.findOne({ where: { UserId: id } });
   return res
     .status(200)
     .json({ data: { balance: wallet.balance }, msg: "Done!" });
@@ -2229,6 +2229,7 @@ module.exports.my_reviwes = async (req, res, next) => {
 module.exports.wallet_history = async (req, res, next) => {
   const user = await User.findByPk(req.user_id);
   const wallet = await Wallet.findOne({ where: { UserId: user.id } });
+  console.log(wallet.id);
   let history = await Transaction.findAll({ where: { walletId: wallet.id } });
   return res.status(200).json({ data: history, err: {}, msg: "done" });
 };

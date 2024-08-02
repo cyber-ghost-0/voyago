@@ -5,6 +5,7 @@ const services = require("../../services/public");
 const BP = require("body-parser");
 const Joi = require("joi");
 const User = require("../../models/User");
+const Wallet=require("../../models/wallet")
 
 // require('dotenv').config()
 
@@ -81,10 +82,11 @@ module.exports.register = async (req, res, next) => {
 
     mail(req.body.email, cod);
     console.log(cod, req.body.email);
-    bcrypt
+    let userr;
+    await bcrypt
       .hash(password, 12)
-      .then((hashpassword) => {
-        User.create({
+      .then(async(hashpassword) => {
+       userr= await User.create({
           username: username,
           password: hashpassword,
           email: email,
@@ -95,6 +97,8 @@ module.exports.register = async (req, res, next) => {
       .catch((err) => {
         console.log(err);
       });
+      console.log(userr);
+      await Wallet.create({balance : 0 , UserId :userr.id});
 
     return res.status(201).json({
       err: {},
