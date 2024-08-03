@@ -35,13 +35,14 @@ const User = sequelize.define('User', {
     allowNull : false
   },
   location: {
-    type: Sequelize.GEOMETRY,
+    type: Sequelize.STRING,
     allowNull : true
   },
   profile_pic: {
     type: Sequelize.STRING,
     allowNull : true
-  }
+  },
+  
 });
 
 module.exports = User;
