@@ -1,5 +1,5 @@
 const BP = require("body-parser");
-const validateImageUpload = require("../../middleware/imageValidation");
+const validateImageUpload = require("../../middleware/imageValidation.js");
 const Image = require("../../models/image");
 const Attraction = require("../../models/Attraction");
 const Trip = require("../../models/Trip");

@@ -3,7 +3,11 @@ const is_exsists = require('../../middleware/is_exsists');
 const authController = require('../../controllers/web/authController');
 const generalController = require('../../controllers/web/generalController');
 const is_auth = require('../../middleware/is_auth');
+const multer = require('multer');
+const validateImageUpload = require('../../middleware/imageValidation');
+const upload = multer({ dest: 'uploads/' });
 const router = express.Router();
+
 
 
 router.get('/users', generalController.users);
@@ -32,7 +36,7 @@ router.get('/trip_cards',generalController.trips_card);
 
 router.delete('/delete_trip/:id',generalController.delete_trip);
 
-router.post('/add_destenation', is_auth, generalController.add_destenation);
+router.post('/add_destenation', upload.array('images', 30), validateImageUpload, is_auth, generalController.add_destenation);
 
 router.post('/add_attraction', is_auth, generalController.add_attraction);
 
