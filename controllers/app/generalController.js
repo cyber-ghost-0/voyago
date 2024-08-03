@@ -26,6 +26,7 @@ const Events = require("../../models/Event.js");
 const Every_features = require("../../models/every_feture.js");
 const every_feature = require("../../models/every_feture.js");
 const features_included = require("../../models/features_included.js");
+const transaction = require("../../models/transaction.js");
 
 // require('dotenv').config()
 
@@ -73,13 +74,15 @@ module.exports.EditMyProfile = async (req, res, next) => {
   let array;
   const user = await User.findOne({ where: { id: req.user_id } });
 
-  let flag = req.body.old_password && await bcrypt.compare(req.body.old_password, user.password);
+  let flag =
+    req.body.old_password &&
+    (await bcrypt.compare(req.body.old_password, user.password));
   if (!flag) {
     return res
       .status(401)
       .json({ msg: "fault", err: "Old password is not correct", data: {} });
   }
-  if(req.body.password)
+  if (req.body.password)
     if (req.body.password != req.body.confirm_password) {
       return res.status(401).json({
         msg: "fault",
@@ -87,9 +90,9 @@ module.exports.EditMyProfile = async (req, res, next) => {
         data: {},
       });
     }
-  if(user.username!==req.body.username){
-    console.log(await is_unique(req.body.username,User,'username'))
-    if(await is_unique(req.body.username,User,'username')){
+  if (user.username !== req.body.username) {
+    console.log(await is_unique(req.body.username, User, "username"));
+    if (await is_unique(req.body.username, User, "username")) {
       return res.status(401).json({
         msg: "fault",
         err: "username isnot unique",
@@ -98,12 +101,11 @@ module.exports.EditMyProfile = async (req, res, next) => {
     }
   }
 
-
   user.username = req.body.username;
   user.phone_number = req.body.phone_number;
-  if(req.body.password)
-  user.password = await bcrypt.hash(req.body.password, 12);
-  user.location=req.body.country;
+  if (req.body.password)
+    user.password = await bcrypt.hash(req.body.password, 12);
+  user.location = req.body.country;
   await user.save();
   return res.json({ msg: "edited", data: {}, err: {} }).status(200);
 };
@@ -2207,13 +2209,15 @@ module.exports.my_reviwes = async (req, res, next) => {
   destenation = await every_user_review.findAll({
     where: { UserId: id, AttractionId: null, TripId: null },
   });
-  let trip_n=[],attr_n=[],dest_n=[];
+  let trip_n = [],
+    attr_n = [],
+    dest_n = [];
   for (let i = 0; i < trips.length; i++) {
     let element = trips[i];
     element = await services.removeProperty(element.dataValues, "AttractionId");
-    element =await services.removeProperty(element, "TripId");
-    element =await services.removeProperty(element, "DestenationId");
-    trip_n.push(element)
+    element = await services.removeProperty(element, "TripId");
+    element = await services.removeProperty(element, "DestenationId");
+    trip_n.push(element);
     console.log("=>", element, "<=");
   }
   for (let i = 0; i < destenation.length; i++) {
@@ -2221,8 +2225,7 @@ module.exports.my_reviwes = async (req, res, next) => {
     element = await services.removeProperty(element.dataValues, "AttractionId");
     element = await services.removeProperty(element, "TripId");
     element = await services.removeProperty(element, "DestenationId");
-    dest_n.push(element)
-
+    dest_n.push(element);
   }
   for (let i = 0; i < attraction.length; i++) {
     let element = attraction[i];
@@ -2230,8 +2233,7 @@ module.exports.my_reviwes = async (req, res, next) => {
     element = await services.removeProperty(element.dataValues, "AttractionId");
     element = await services.removeProperty(element, "TripId");
     element = await services.removeProperty(element, "DestenationId");
-    attr_n.push(element)
-
+    attr_n.push(element);
   }
   return res
     .status(200)
@@ -2243,13 +2245,44 @@ module.exports.wallet_history = async (req, res, next) => {
   const wallet = await Wallet.findOne({ where: { UserId: user.id } });
   console.log(wallet.id);
   let history = await Transaction.findAll({ where: { walletId: wallet.id } });
-  return res.status(200).json({ data: history, err: {}, msg: "done" });
+  let data=[];
+  for(let i=0;i<history.length;i++){
+    let object={};
+    object.amount=Math.abs(history[i].last_balance - history[i].new_balance);
+    object.status=history[i].status;
+    object.type=history[i].type;
+    object.date=history[i].createdAt;
+    object.id=history[i].id;
+    data.push(object);
+  }
+  return res.status(200).json({ data, err: {}, msg: "done" });
 };
 
+module.exports.every_wallet_history = async (req, res, next) => {
+  const user = await User.findByPk(req.user_id);
+  const wallet_id=(await Wallet.findOne({where:{UserId:user.id}})).id;
+  
+  const trans = await transaction.findOne({where:{id : req.params.id, WalletId:wallet_id}});
+  if(!trans){
+    return res.status(500).json({ data:{}, err: "there is no transiction with this parametars", msg: "failed" });
+  }
+  console.log(trans);
+  let object={};
+    object.amount=Math.abs(trans.last_balance - trans.new_balance);
+    object.status=trans.status;
+    object.type=trans.type;
+    object.date=trans.createdAt;
+    object.new_balance=trans.new_balance;
+    object.last_balance=trans.last_balance;
+  
+  return res.status(200).json({ data:object, err: {}, msg: "done" });
+};
 
 module.exports.my_favourites = async (req, res, next) => {
   const id = req.user_id;
-  let result1=[], result2=[], result3=[];
+  let result1 = [],
+    result2 = [],
+    result3 = [];
   const user = await User.findByPk(id);
   let trips, attraction, destenation;
   trips = await favourites.findAll({
@@ -2261,7 +2294,7 @@ module.exports.my_favourites = async (req, res, next) => {
   destenation = await favourites.findAll({
     where: { UserId: id, AttractionId: null, TripId: null },
   });
-  
+
   await Promise.all(
     destenation.map(async (single_dist) => {
       console.log(single_dist);
@@ -2312,7 +2345,7 @@ module.exports.my_favourites = async (req, res, next) => {
   );
 
   for (let i = 0; i < attraction.length; i++) {
-    let single_attr =attraction[i];
+    let single_attr = attraction[i];
     let image = await Image.findOne({
       where: { AttractionId: single_attr.id },
     });
@@ -2428,10 +2461,8 @@ module.exports.my_favourites = async (req, res, next) => {
     }
   }
 
-  return res
-    .status(200)
-    .json({
-      data: { trips: result1, attraction: result2, destenation: result3 },
-      msg: "Done",
-    });
+  return res.status(200).json({
+    data: { trips: result1, attraction: result2, destenation: result3 },
+    msg: "Done",
+  });
 };
