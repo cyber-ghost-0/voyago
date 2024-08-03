@@ -73,13 +73,20 @@ module.exports.EditMyProfile = async (req, res, next) => {
   let array;
   const user = await User.findOne({ where: { id: req.user_id } });
 
-  let flag = await bcrypt.compare(req.body.old_password, user.password);
+  let flag = req.body.old_password && await bcrypt.compare(req.body.old_password, user.password);
   if (!flag) {
     return res
       .status(401)
       .json({ msg: "fault", err: "Old password is not correct", data: {} });
   }
-  
+  if(req.body.password)
+    if (req.body.password != req.body.confirm_password) {
+      return res.status(401).json({
+        msg: "fault",
+        err: "password is not equal confirmation password",
+        data: {},
+      });
+    }
   if(user.username!==req.body.username){
     console.log(await is_unique(req.body.username,User,'username'))
     if(await is_unique(req.body.username,User,'username')){
@@ -91,19 +98,11 @@ module.exports.EditMyProfile = async (req, res, next) => {
     }
   }
 
-  if(user.email!=req.body.email){
-    if(await is_unique(req.body.email,User,'email')){
-      return res.status(401).json({
-        msg: "fault",
-        err: "email isnot unique",
-        data: {},
-      });
-    }
-  }
 
   user.username = req.body.username;
-  user.email = req.body.email;
   user.phone_number = req.body.phone_number;
+  if(req.body.password)
+  user.password = await bcrypt.hash(req.body.password, 12);
   user.location=req.body.country;
   await user.save();
   return res.json({ msg: "edited", data: {}, err: {} }).status(200);
