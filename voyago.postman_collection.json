@@ -140,7 +140,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"aya\",\r\n    \"email\" : \"aya.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"aya12345\",\r\n    \"confirm_password\" : \"aya12345\"\r\n}",
+							"raw": "{\r\n    \"username\" : \"awssnss\",\r\n    \"email\" : \"answsss.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anas1234\",\r\n    \"confirm_password\" : \"anas1234\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -169,7 +169,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"correct_code\" : \"811192\",\r\n    \"in_code\" : \"811192\",\r\n    \"username\" : \"Anas\",\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anasanas\",\r\n    \"confirm_password\" : \"anasanas\"\r\n}",
+							"raw": "{\r\n    \"correct_code\" : \"76533\",\r\n    \"in_code\" : \"76533\",\r\n    \"username\" : \"awssnss\",\r\n    \"email\" : \"answsss.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anas1234\",\r\n    \"confirm_password\" : \"anas1234\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -479,26 +479,6 @@
 				{
 					"name": "EditMyProfike",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [
 							{
@@ -509,7 +489,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"anas_ver2\",\r\n    \"email\" : \"anas.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anasanas\",\r\n    \"confirm_password\" : \"anasanas\",\r\n    \"old_password\" :\"anassana\" \r\n}",
+							"raw": "{\r\n    \"username\" : \"anas\",\r\n    \"country\" : \"syria\",\r\n    \"phone_number\":\"0937402356\",\r\n    \"old_password\" :\"11111111\" ,\r\n    \"password\":\"12345678\",\r\n    \"confirm_password\":\"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -687,30 +667,10 @@
 				{
 					"name": "add_destenation_favourite",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/add_destenation_favourite/1",
+							"raw": "http://localhost:3000/api/add_destenation_favourite/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -719,7 +679,7 @@
 							"path": [
 								"api",
 								"add_destenation_favourite",
-								"1"
+								"2"
 							]
 						}
 					},
@@ -769,30 +729,10 @@
 				{
 					"name": "add_attraction_favourite",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/add_attraction_favourite/1",
+							"raw": "http://localhost:3000/api/add_attraction_favourite/3",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -801,7 +741,7 @@
 							"path": [
 								"api",
 								"add_attraction_favourite",
-								"1"
+								"3"
 							]
 						}
 					},
