@@ -474,7 +474,7 @@ module.exports.add_destenation = async (req, res, next) => {
 
       return res.status(500).json({ msg: "fault", err: "name is not unique" });
     }
-
+    //if(images){
     const files = req.files;
     const imageRecords = await Promise.all(
       files.map(async (file) => {
@@ -485,7 +485,7 @@ module.exports.add_destenation = async (req, res, next) => {
         images = await dest.createImage({ url: imageUrl });
       })
     );
-    
+    //}   
     dest.name = name;
     dest.AdminId = AdminId;
     dest.description = desc;
@@ -546,19 +546,30 @@ module.exports.Attractions = async (req, res, next) => {
 };
 
 module.exports.Destenations = async (req, res, next) => {
-  let Dst = await Destenation.findAll();
+  let Dst = await Destenation.findAll({
+    include: [
+      {
+        model: image,
+        attributes: ['url']
+      }
+    ],
+  });
   let arr = [];
   for (let i = 0; i < Dst.length; i++) {
     let cur = Dst[i].dataValues;
-    let all_images = await Dst[i].getImages();
-    let URL_images = [];
-    all_images.forEach((element) => {
-      URL_images.push(element.image);
-    });
-    cur.images = URL_images;
+   // let all_images = await Dst[i].getImages();
+    //let URL_images = [];
+    // all_images.forEach((element) => {
+    //   URL_images.push(element.image);
+    // });
+    // cur.images = URL_images;
     let reviews = await every_user_review.findAll({
       where: { DestenationId: Dst[i].id },
     });
+    let images = await image.findAll({
+      where: { DestenationId: Dst[i].id},
+    })
+    
     let rate = 0.0;
     let cnt = 0;
     reviews.forEach((element) => {
