@@ -252,31 +252,11 @@
 				{
 					"name": "attraction_review",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"comment\":\"Bob\",\r\n    \"rate\": 4\r\n}",
+							"raw": "{\r\n    \"comment\":\"dcs\",\r\n    \"rate\": 4\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -284,7 +264,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/attraction_review/1",
+							"raw": "http://localhost:3000/api/attraction_review/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -293,7 +273,7 @@
 							"path": [
 								"api",
 								"attraction_review",
-								"1"
+								"2"
 							]
 						}
 					},
@@ -312,7 +292,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"comment\" : \"88\",\r\n    \"rate\" : 2\r\n}",
+							"raw": "{\r\n    \"comment\" : \"bad\",\r\n    \"rate\" : 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -320,7 +300,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/trip_review/4",
+							"raw": "http://localhost:3000/api/trip_review/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -329,7 +309,7 @@
 							"path": [
 								"api",
 								"trip_review",
-								"4"
+								"1"
 							]
 						}
 					},
@@ -338,26 +318,6 @@
 				{
 					"name": "destenation_review",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -1136,20 +1096,10 @@
 				{
 					"name": "http://localhost:3000/api/attraction_full_review/1",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/attraction_full_review/1",
+							"raw": "http://localhost:3000/api/attraction_full_review/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1158,7 +1108,7 @@
 							"path": [
 								"api",
 								"attraction_full_review",
-								"1"
+								"2"
 							]
 						}
 					},
@@ -1167,20 +1117,10 @@
 				{
 					"name": "attraction_review",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/attraction_review/1",
+							"raw": "http://localhost:3000/api/attraction_review/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1189,7 +1129,7 @@
 							"path": [
 								"api",
 								"attraction_review",
-								"1"
+								"2"
 							]
 						}
 					},
@@ -1263,7 +1203,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/trip_full_review/4",
+							"raw": "http://localhost:3000/api/trip_full_review/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1272,7 +1212,7 @@
 							"path": [
 								"api",
 								"trip_full_review",
-								"4"
+								"1"
 							]
 						}
 					},
@@ -1281,16 +1221,6 @@
 				{
 					"name": "destenation_full_review",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -1595,6 +1525,66 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/profile/wallet_history/1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/profile/wallet_history/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"profile",
+								"wallet_history",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/web/upload",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/C:/Users/anas/Pictures/photo_5830104971595596537_y.jpg"
+								},
+								{
+									"key": "destinationId",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/upload",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"upload"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1868,31 +1858,11 @@
 				{
 					"name": "add_destenation",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"QAQ\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ],\r\n    \"description\":\"snjfsdklfns\",\r\n    \"location\":\"Syria\"\r\n}",
+							"raw": "{\r\n    \"name\": \"QANAsQ\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ],\r\n    \"description\":\"snjfsdklfns\",\r\n    \"location\":\"Syria\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1917,31 +1887,11 @@
 				{
 					"name": "add_attraction",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"ajnas\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ],\r\n    \"description\" : \"asdfsdijaklfjasdf\",\r\n    \"destenation_id\":3\r\n}",
+							"raw": "{\r\n    \"name\": \"aNas\",\r\n    \"images\":[\r\n        \"Third\",\r\n        \"second_d\"\r\n    ],\r\n    \"description\" : \"asdfsdijaklfjasdf\",\r\n    \"destenation_id\":1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1970,7 +1920,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Nesw\",\r\n    \"destenation_id\":1,\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"attraction_id\":2,\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"asdf\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
+							"raw": "{\r\n    \"name\" : \"Trip_5\",\r\n    \"destenation_id\":2,\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"attraction_id\":3,\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"optional\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ijbari\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"optional\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2413,30 +2363,10 @@
 				{
 					"name": "reject_charge",
 					"request": {
-						"auth": {
-							"type": "oauth2",
-							"oauth2": [
-								{
-									"key": "tokenName",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "tokenType",
-									"value": "",
-									"type": "string"
-								},
-								{
-									"key": "addTokenTo",
-									"value": "header",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/web/reject_charge/2",
+							"raw": "http://localhost:3000/web/reject_charge/7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2445,7 +2375,7 @@
 							"path": [
 								"web",
 								"reject_charge",
-								"2"
+								"7"
 							]
 						}
 					},

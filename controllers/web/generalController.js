@@ -4,6 +4,10 @@ const mail = require("../../services/Mails");
 const services = require("../../services/public");
 const BP = require("body-parser");
 const Joi = require("joi");
+const validateImageUpload = require("../../middleware/imageValidation.js");
+//const Image = require("../../models/image");
+const multer = require("multer");
+const path = require("path");
 const Admin = require("../../models/Admin");
 const User = require("../../models/User");
 const Trip = require("../../models/Trip");
@@ -62,6 +66,34 @@ async function is_unique(name, model, col) {
   let admin = await model.findOne({ where: whereClause });
   return admin;
 }
+
+const imageFilter = (req, file, cb) => {
+  const allowedExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp"]; 
+  const fileExtension = path.extname(file.originalname).toLowerCase();
+
+  if (allowedExtensions.includes(fileExtension)) {
+    cb(null, true); 
+  } else {
+    cb(new Error("Invalid file type. Only images are allowed")); 
+  }
+};
+
+const storage = multer.diskStorage({
+  destination: async function (req, file, cb) {
+    const uploadPath = path.join(__dirname, `../../uploads/`);
+    await fs.mkdir(uploadPath, { recursive: true });
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    const fileName = `${file.originalname}`;
+    cb(null, fileName);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  fileFilter: imageFilter,
+});
 
 module.exports.users = async (req, res, next) => {
   try {
@@ -426,25 +458,45 @@ module.exports.delete_trip = async (req, res, next) => {
 };
 
 module.exports.add_destenation = async (req, res, next) => {
-  let name = req.body.name;
-  let images = req.body.images;
-  let desc = req.body.description;
-  let location = req.body.location;
+  await Destenation.create({ name: "ZZZZAAAANNAASS" });
+  const dest = await Destenation.findOne({ where: { name: "ZZZZAAAANNAASS" } });
   try {
-    await Destenation.create({
-      name: name,
-      AdminId: req.user_id,
-      description: desc,
-      location: location,
-    });
-    const Dst = await Destenation.findOne({ where: { name: name } });
-    images.forEach(async (element) => {
-      await image.create({ DestenationId: Dst.id, image: element });
-    });
+    let name = req.body.name,
+    images,
+    desc = req.body.description,
+    location = req.body.location,
+    AdminId = req.user_id;
+    
+    err = await is_unique(name, Destenation, "name");
+    if (err) {
+      await dest.destroy();
+
+      return res.status(500).json({ msg: "fault", err: "name is not unique" });
+    }
+
+    const files = req.files;
+    const imageRecords = await Promise.all(
+      files.map(async (file) => {
+        const fileExtension = path.extname(file.originalname);
+        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
+          file.filename
+        }${fileExtension}`;
+        images = await dest.createImage({ url: imageUrl });
+      })
+    );
+    
+    dest.name = name;
+    dest.AdminId = AdminId;
+    dest.description = desc;
+    dest.location = location;
+    dest.images = images;
+    await dest.save();
+    
     return res
       .status(200)
       .json({ data: {}, err: {}, msg: "Destenation has added successfully !" });
   } catch (err) {
+    await dest.destroy();
     console.log(err);
     return res.status(500).json({ data: {}, err: err, msg: "error" });
   }
