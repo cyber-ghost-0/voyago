@@ -23,9 +23,10 @@ const image = require("../../models/image");
 const Transaction = require("../../models/transaction.js");
 const ChargeRequest = require("../../models/chargeRequest");
 const Wallet = require("../../models/wallet");
+const FCM=require("../../models/FCM_Tokens")
 const { use } = require("../../routes/app/auth.js");
 const every_user_review = require("../../models/EveryUserReview.js");
-
+const Notification=require("../../services/Notification.js")
 // require('dotenv').config()
 
 function validateUserInfo(info) {
@@ -743,17 +744,22 @@ module.exports.approve_charge = async (req, res, next) => {
   await wallet.save();
   console.log(wallet.id, req.user_id);
   let walletid = wallet.id;
-  await Transaction.create({
-    AdminId: req.user_id,
-    walletId: walletid,
-    new_balance: wallet.balance,
-    last_balance: wallet.balance - chargeRequest.amount,
-    type: "credit",
-    status: "Success",
-  });
-
+  let temp=await Transaction.findOne({where:{
+    chargeRequestId:chargeRequest.id
+  }});
+  console.log(chargeRequest.id);
+  if(!temp){
+    return res.status(500).json("there is no ")
+  }
+  temp.status="Success";
+  temp.save();
+  const fcm=await FCM.findOne({where:{UserId:req.user_id}});
+  console.log(fcm)
   await chargeRequest.destroy();
-  return res.status(200).json({ data: {}, err: {}, msg: "success" });
+  Notification.notify(fcm.token,'crediting','Your request is Acceted !',res,next);
+
+  
+  // return res.status(200).json({ data: {}, err: {}, msg: "success" });
 };
 
 module.exports.reject_charge = async (req, res, next) => {
@@ -768,17 +774,22 @@ module.exports.reject_charge = async (req, res, next) => {
   wallet = await User.findByPk(wallet);
   wallet = await wallet.getWallet();
   let walletid = wallet.id;
-  await Transaction.create({
-    AdminId: req.user_id,
-    walletId: walletid,
-    new_balance: wallet.balance,
-    last_balance: wallet.balance,
-    type: "credit",
-    status: "Failed",
-  });
-
+  let temp=await Transaction.findOne({where:{
+    chargeRequestId:chargeRequest.id
+  }});
+  console.log(temp);
+  if(!temp){
+    return res.status(500).json("there is no ")
+  }
+  temp.status="Failed";
+  temp.save();
+  const fcm=await FCM.findOne({where:{UserId:req.user_id}});
+  console.log(fcm)
   await chargeRequest.destroy();
-  return res.status(200).json({ data: {}, err: {}, msg: "success" });
+  Notification.notify(fcm.token,'crediting','Your request is Acceted !',res,next);
+
+  
+  // return res.status(200).json({ data: {}, err: {}, msg: "success" });
 };
 
 module.exports.transactions = async (req, res, next) => {

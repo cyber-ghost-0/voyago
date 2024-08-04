@@ -1,3 +1,4 @@
+const FCM=require("./models/FCM_Tokens.js")
 const express = require("express");
 const sequelize = require("./util/database");
 const appAuth = require("./routes/app/auth");
@@ -25,7 +26,9 @@ const Transaction = require("./models/transaction.js");
 const ChargeRequest = require("./models/chargeRequest");
 const every_user_review = require("./models/EveryUserReview.js");
 const imageRoutes = require("./models/image.js");
-const everyReservationEvent=require("./models/everyResrvationEvent.js")
+const everyReservationEvent=require("./models/everyResrvationEvent.js");
+const charge_request = require("./models/chargeRequest");
+const transaction = require("./models/transaction.js");
 
 app.use(BP.json());
 // trip;
@@ -113,6 +116,12 @@ Destenation.hasMany(Favourites, { constraints: true, onDelete: "CASCADE" });
 Favourites.belongsTo(Destenation, { constraints: true, onDelete: "CASCADE" });
 Attraction.hasMany(Favourites, { constraints: true, onDelete: "CASCADE" });
 Favourites.belongsTo(Attraction, { constraints: true, onDelete: "CASCADE" });
+
+User.hasMany(FCM, { constraints: true, onDelete: "CASCADE" });
+FCM.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+
+charge_request.hasOne(transaction, { constraints: true, onDelete: "CASCADE" });
+transaction.belongsTo(charge_request, { constraints: true, onDelete: "CASCADE" });
 app.use(BP.urlencoded({ extended: true }));
 app.use(BP.json());
 
