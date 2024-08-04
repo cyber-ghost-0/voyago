@@ -134,7 +134,7 @@ app.use("/api", appRoutes);
 app.use("/web", webRoutes);
 app.use("/web", imageRoutes);
 sequelize
-  // .sync({  force:true})
+  //.sync({  force:true})
   .sync()
   .then((result) => {
     app.listen(3000);

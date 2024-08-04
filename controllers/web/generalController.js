@@ -26,7 +26,9 @@ const Wallet = require("../../models/wallet");
 const FCM=require("../../models/FCM_Tokens")
 const { use } = require("../../routes/app/auth.js");
 const every_user_review = require("../../models/EveryUserReview.js");
-const Notification=require("../../services/Notification.js")
+const Notification=require("../../services/Notification.js");
+const reservation = require("../../models/reservation.js");
+
 // require('dotenv').config()
 
 function validateUserInfo(info) {
@@ -474,7 +476,7 @@ module.exports.add_destenation = async (req, res, next) => {
 
       return res.status(500).json({ msg: "fault", err: "name is not unique" });
     }
-
+    //if(images){
     const files = req.files;
     const imageRecords = await Promise.all(
       files.map(async (file) => {
@@ -485,7 +487,7 @@ module.exports.add_destenation = async (req, res, next) => {
         images = await dest.createImage({ url: imageUrl });
       })
     );
-    
+    //}   
     dest.name = name;
     dest.AdminId = AdminId;
     dest.description = desc;
@@ -546,19 +548,30 @@ module.exports.Attractions = async (req, res, next) => {
 };
 
 module.exports.Destenations = async (req, res, next) => {
-  let Dst = await Destenation.findAll();
+  let Dst = await Destenation.findAll({
+    include: [
+      {
+        model: image,
+        attributes: ['url']
+      }
+    ],
+  });
   let arr = [];
   for (let i = 0; i < Dst.length; i++) {
     let cur = Dst[i].dataValues;
-    let all_images = await Dst[i].getImages();
-    let URL_images = [];
-    all_images.forEach((element) => {
-      URL_images.push(element.image);
-    });
-    cur.images = URL_images;
+   // let all_images = await Dst[i].getImages();
+    //let URL_images = [];
+    // all_images.forEach((element) => {
+    //   URL_images.push(element.image);
+    // });
+    // cur.images = URL_images;
     let reviews = await every_user_review.findAll({
       where: { DestenationId: Dst[i].id },
     });
+    let images = await image.findAll({
+      where: { DestenationId: Dst[i].id},
+    })
+    
     let rate = 0.0;
     let cnt = 0;
     reviews.forEach((element) => {
@@ -793,6 +806,58 @@ module.exports.reject_charge = async (req, res, next) => {
 };
 
 module.exports.transactions = async (req, res, next) => {
-  let transactions = await Transaction.findall();
+  let transactions = await Transaction.findAll();
   return res.status(200).json({ data: transactions, err: {}, msg: {} });
+};
+
+module.exports.show_all_transactions = async (req, res, next) => {
+  try {
+
+    const transactions = await Transaction.findAll({
+      include: [
+        {
+          model: Wallet,
+          include: [
+            {
+              model: User,
+              attributes: ['username']              }
+          ]
+        },
+        {
+          model: Admin,
+          attributes: ['username']
+        }
+      ],
+    });
+
+    return res.status(200).json({ data: transactions, err: {}, msg: {} });
+    
+  } catch (err){
+    return res.status(500).json({ data: {}, err: err, msg: "error" });
+  }
+};
+
+module.exports.show_all_reservations = async (req, res, nest) => {
+  try{
+    const reservations = await reservation.findAll({
+          //model: Wallet,
+          include: [
+            {
+              model: User,
+              attributes: ['username']            
+          
+            },
+            {
+              model: Trip,
+              attributes: ['name']
+           }
+          ],
+         });
+
+    return res.status(200).json({ data: reservations, err: {}, msg: {} });
+    
+  }catch(error){
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
 };
