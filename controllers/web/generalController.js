@@ -68,62 +68,33 @@ async function is_unique(name, model, col) {
   return admin;
 }
 
-// const imageFilter = (req, file, cb) => {
-//   const allowedExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp"]; 
-//   const fileExtension = path.extname(file.originalname).toLowerCase();
+const imageFilter = (req, file, cb) => {
+  const allowedExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp"]; 
+  const fileExtension = path.extname(file.originalname).toLowerCase();
 
-//   if (allowedExtensions.includes(fileExtension)) {
-//     cb(null, true); 
-//   } else {
-//     cb(new Error("Invalid file type. Only images are allowed")); 
-//   }
-// };
-
-// const storage = multer.diskStorage({
-//   destination: async function (req, file, cb) {
-//     const uploadPath = path.join(__dirname, `../../uploads/`);
-//     await fs.mkdir(uploadPath, { recursive: true });
-//     cb(null, uploadPath);
-//   },
-//   filename: function (req, file, cb) {
-//     const fileName = `${file.originalname}`;
-//     cb(null, fileName);
-//   },
-// });
-
-// const upload = multer({
-//   storage: storage,
-//   fileFilter: imageFilter,
-// });
+  if (allowedExtensions.includes(fileExtension)) {
+    cb(null, true); 
+  } else {
+    cb(new Error("Invalid file type. Only images are allowed")); 
+  }
+};
 
 const storage = multer.diskStorage({
-  destination: (req, file, cd) => {
-    cd(null, 'uploads')
+  destination: async function (req, file, cb) {
+    const uploadPath = path.join(__dirname, `../../uploads/`);
+    await fs.mkdir(uploadPath, { recursive: true });
+    cb(null, uploadPath);
   },
-  filename: (req, file, cd) => {
-    cd(null, Date.now() + path.extname(file.originalname))
-  }
+  filename: function (req, file, cb) {
+    const fileName = `${file.originalname}`;
+    cb(null, fileName);
+  },
 });
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: '100000000'},
-  fileFilter: (req, file, cd) => {
-    const fileTypes = /jpeg|jpg|png|gif|bmp/
-    const mimeType = fileTypes.test(file.mimetype)
-    const extname = fileTypes.test(path.extname(file.originalname))
-
-    if(mimeType && extname) {
-      return cd(null, true)
-    }
-    cd('Give  proper files formate to upload')
-  }
-}).array('image', 30);
-
-module.exports = {
-  storage,
-  upload
-};
+  fileFilter: imageFilter,
+});
 
 module.exports.users = async (req, res, next) => {
   try {
@@ -492,7 +463,7 @@ module.exports.add_destenation = async (req, res, next) => {
   const dest = await Destenation.findOne({ where: { name: "ZZZZAAAANNAASS" } });
   try {
     let name = req.body.name,
-    //images = req.files.path,
+    images,
     desc = req.body.description,
     location = req.body.location,
     AdminId = req.user_id;
@@ -504,29 +475,22 @@ module.exports.add_destenation = async (req, res, next) => {
       return res.status(500).json({ msg: "fault", err: "name is not unique" });
     }
 
-    // const files = req.files;
-    // const imageRecords = await Promise.all(
-    //   files.map(async (file) => {
-    //     const fileExtension = path.extname(file.originalname);
-    //     const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
-    //       file.filename
-    //     }${fileExtension}`;
-    //     images = await dest.createImage({ url: imageUrl });
-    //   })
-    // );
+    const files = req.files;
+    const imageRecords = await Promise.all(
+      files.map(async (file) => {
+        const fileExtension = path.extname(file.originalname);
+        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
+          file.filename
+        }${fileExtension}`;
+        images = await dest.createImage({ url: imageUrl });
+      })
+    );
     
-    for (const file of req.files) {
-      await Image.create({
-        url: `http://localhost:3000/uploads/${file.filename}`,
-        DestinationId: dest.id
-      });
-    }
-
     dest.name = name;
     dest.AdminId = AdminId;
     dest.description = desc;
     dest.location = location;
-    //dest.images = images;
+    dest.images = images;
     await dest.save();
     
     return res
@@ -536,8 +500,8 @@ module.exports.add_destenation = async (req, res, next) => {
     await dest.destroy();
     console.log(err);
     return res.status(500).json({ data: {}, err: err, msg: "error" });
-  }
-};
+    }
+    };
 
 module.exports.add_attraction = async (req, res, next) => {
   let name = req.body.name;
@@ -582,19 +546,30 @@ module.exports.Attractions = async (req, res, next) => {
 };
 
 module.exports.Destenations = async (req, res, next) => {
-  let Dst = await Destenation.findAll();
+  let Dst = await Destenation.findAll({
+    include: [
+      {
+        model: image,
+        attributes: ['url']
+      }
+    ],
+  });
   let arr = [];
   for (let i = 0; i < Dst.length; i++) {
     let cur = Dst[i].dataValues;
-    let all_images = await Dst[i].getImages();
-    let URL_images = [];
-    all_images.forEach((element) => {
-      URL_images.push(element.image);
-    });
-    cur.images = URL_images;
+   // let all_images = await Dst[i].getImages();
+    //let URL_images = [];
+    // all_images.forEach((element) => {
+    //   URL_images.push(element.image);
+    // });
+    // cur.images = URL_images;
     let reviews = await every_user_review.findAll({
       where: { DestenationId: Dst[i].id },
     });
+    let images = await image.findAll({
+      where: { DestenationId: Dst[i].id},
+    })
+    
     let rate = 0.0;
     let cnt = 0;
     reviews.forEach((element) => {
