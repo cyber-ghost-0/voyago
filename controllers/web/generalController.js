@@ -25,6 +25,7 @@ const ChargeRequest = require("../../models/chargeRequest");
 const Wallet = require("../../models/wallet");
 const { use } = require("../../routes/app/auth.js");
 const every_user_review = require("../../models/EveryUserReview.js");
+const reservation = require("../../models/reservation.js");
 
 // require('dotenv').config()
 
@@ -782,6 +783,58 @@ module.exports.reject_charge = async (req, res, next) => {
 };
 
 module.exports.transactions = async (req, res, next) => {
-  let transactions = await Transaction.findall();
+  let transactions = await Transaction.findAll();
   return res.status(200).json({ data: transactions, err: {}, msg: {} });
+};
+
+module.exports.show_all_transactions = async (req, res, next) => {
+  try {
+
+    const transactions = await Transaction.findAll({
+      include: [
+        {
+          model: Wallet,
+          include: [
+            {
+              model: User,
+              attributes: ['username']              }
+          ]
+        },
+        {
+          model: Admin,
+          attributes: ['username']
+        }
+      ],
+    });
+
+    return res.status(200).json({ data: transactions, err: {}, msg: {} });
+    
+  } catch (err){
+    return res.status(500).json({ data: {}, err: err, msg: "error" });
+  }
+};
+
+module.exports.show_all_reservations = async (req, res, nest) => {
+  try{
+    const reservations = await reservation.findAll({
+          //model: Wallet,
+          include: [
+            {
+              model: User,
+              attributes: ['username']            
+          
+            },
+            {
+              model: Trip,
+              attributes: ['name']
+           }
+          ],
+         });
+
+    return res.status(200).json({ data: reservations, err: {}, msg: {} });
+    
+  }catch(error){
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
 };

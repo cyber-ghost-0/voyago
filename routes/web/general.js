@@ -58,6 +58,10 @@ router.get('/approve_charge/:id', is_auth,generalController.approve_charge);
 
 router.get('/reject_charge/:id', is_auth,generalController.reject_charge);
 
+router.get('/show_all_transactions', is_auth, generalController.show_all_transactions);
+
+router.get('/show_all_reservations', is_auth, generalController.show_all_reservations);
+
 //
 
 
