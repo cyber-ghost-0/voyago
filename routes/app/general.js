@@ -96,6 +96,8 @@ router.get('/profile/wallet_history/:id',is_auth,generalController.every_wallet_
 
 router.get('/profile/favourites',is_auth,generalController.my_favourites);
 
+router.get('/send',generalController.notify);
+
 
 
 

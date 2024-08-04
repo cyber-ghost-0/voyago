@@ -27,6 +27,9 @@ const Every_features = require("../../models/every_feture.js");
 const every_feature = require("../../models/every_feture.js");
 const features_included = require("../../models/features_included.js");
 const transaction = require("../../models/transaction.js");
+const { initializeApp, applicationDefault,cert } = require('firebase-admin/app');
+const { getMessaging } = require('firebase-admin/messaging');
+const serviceAccount = require('../../voyago-21981-firebase-adminsdk-l8yyy-4f7c452517.json');
 
 // require('dotenv').config()
 
@@ -2465,4 +2468,44 @@ module.exports.my_favourites = async (req, res, next) => {
     data: { trips: result1, attraction: result2, destenation: result3 },
     msg: "Done",
   });
+};
+
+
+
+let appInitialized = false;
+
+module.exports.notify = async (req, res, next) => {
+  if (!appInitialized) {
+    initializeApp({
+      credential: cert(serviceAccount),
+      projectId: 'voyago-21981', // Ensure this matches your actual project ID
+    });
+    appInitialized = true;
+  }
+
+  const receivedToken = req.body.fcmToken;
+
+  if (!receivedToken) {
+    return res.status(400).json({ error: 'FCM token is required' });
+  }
+
+  const message = {
+    notification: {
+      title: 'Heryyyy-UPPPP',
+          body: 'له له له هلأ ما عاد عرفتينا يا اكابر',
+    },
+    token: receivedToken,
+  };
+
+  try {
+    const response = await getMessaging().send(message);
+    res.status(200).json({
+      message: 'Successfully sent message',
+      token: receivedToken,
+    });
+    console.log('Successfully sent message:', response);
+  } catch (error) {
+    res.status(400).json({ error: 'Error sending message', details: error });
+    console.log('Error sending message:', error);
+  }
 };
