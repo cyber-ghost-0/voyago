@@ -101,6 +101,6 @@ module.exports.add_image = async (req, res, next) => {
       .json({ message: "Images uploaded successfully", images: imageRecords });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to upload images" });
+    res.status(500).json({ error: "Failed" });
   }
 };
