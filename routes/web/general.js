@@ -36,7 +36,7 @@ router.get('/trip_cards',generalController.trips_card);
 
 router.delete('/delete_trip/:id',generalController.delete_trip);
 
-router.post('/add_destenation', upload.array('images', 30), validateImageUpload, is_auth, generalController.add_destenation);
+router.post('/add_destenation', is_auth, generalController.upload, generalController.add_destenation);
 
 router.post('/add_attraction', is_auth, generalController.add_attraction);
 
