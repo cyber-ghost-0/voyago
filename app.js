@@ -28,6 +28,7 @@ const imageRoutes = require("./models/image.js");
 const everyReservationEvent=require("./models/everyResrvationEvent.js")
 
 app.use(BP.json());
+app.use('/uploads', express.static('./uploads'));
 // trip;
 Admin.hasMany(Destenation, { onDelete: "CASCADE" });
 Destenation.belongsTo(Admin, { constraints: true, onDelete: "CASCADE" });

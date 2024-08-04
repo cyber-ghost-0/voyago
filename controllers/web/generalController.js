@@ -68,33 +68,32 @@ async function is_unique(name, model, col) {
   return admin;
 }
 
-const imageFilter = (req, file, cb) => {
-  const allowedExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp"]; 
-  const fileExtension = path.extname(file.originalname).toLowerCase();
-
-  if (allowedExtensions.includes(fileExtension)) {
-    cb(null, true); 
-  } else {
-    cb(new Error("Invalid file type. Only images are allowed")); 
-  }
-};
-
 const storage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    const uploadPath = path.join(__dirname, `../../uploads/`);
-    await fs.mkdir(uploadPath, { recursive: true });
-    cb(null, uploadPath);
+destination: (req, file, cd) => {
+  cd(null, 'uploads')
   },
-  filename: function (req, file, cb) {
-    const fileName = `${file.originalname}`;
-    cb(null, fileName);
-  },
-});
+  filename: (req, file, cd) => {
+  cd(null, Date.now() + path.extname(file.originalname))
+  }
+  });
+  const upload = multer({
+    storage: storage,
+    limits: { fileSize: '100000000'},
+    fileFilter: (req, file, cd) => {
+    const fileTypes = /jpeg|jpg|png|gif|bmp/
+    const mimeType = fileTypes.test(file.mimetype)
+    const extname = fileTypes.test(path.extname(file.originalname))
+    if(mimeType && extname) {
+      return cd(null, true)
+    }
+    cd('Give  proper files formate to upload')
+  }
+}).array('image', 30);
 
-const upload = multer({
-  storage: storage,
-  fileFilter: imageFilter,
-});
+module.exports = {
+  storage,
+  upload
+};
 
 module.exports.users = async (req, res, next) => {
   try {
@@ -462,46 +461,42 @@ module.exports.add_destenation = async (req, res, next) => {
   await Destenation.create({ name: "ZZZZAAAANNAASS" });
   const dest = await Destenation.findOne({ where: { name: "ZZZZAAAANNAASS" } });
   try {
-    let name = req.body.name,
-    images,
-    desc = req.body.description,
-    location = req.body.location,
-    AdminId = req.user_id;
+  let name = req.body.name,
+  //images = req.files.path,
+  desc = req.body.description,
+  location = req.body.location,
+  AdminId = req.user_id;
     
-    err = await is_unique(name, Destenation, "name");
-    if (err) {
-      await dest.destroy();
-
-      return res.status(500).json({ msg: "fault", err: "name is not unique" });
-    }
-    //if(images){
-    const files = req.files;
-    const imageRecords = await Promise.all(
-      files.map(async (file) => {
-        const fileExtension = path.extname(file.originalname);
-        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
-          file.filename
-        }${fileExtension}`;
-        images = await dest.createImage({ url: imageUrl });
-      })
-    );
-    //}   
-    dest.name = name;
-    dest.AdminId = AdminId;
-    dest.description = desc;
-    dest.location = location;
-    dest.images = images;
-    await dest.save();
-    
-    return res
-      .status(200)
-      .json({ data: {}, err: {}, msg: "Destenation has added successfully !" });
+  err = await is_unique(name, Destenation, "name");
+  if (err) {
+    await dest.destroy();
+  
+    return res.status(500).json({ msg: "fault", err: "name is not unique" });
+  }
+  
+  for (const file of req.files) {
+    await Image.create({
+      url: `http://localhost:3000/uploads/${file.filename}`,
+      DestenationId: dest.id
+    });
+  }
+  
+  dest.name = name;
+  dest.AdminId = AdminId;
+  dest.description = desc;
+  dest.location = location;
+  //dest.images = images;
+  await dest.save();
+  
+  return res
+    .status(200)
+    .json({ data: {}, err: {}, msg: "Destenation has added successfully !" });
   } catch (err) {
     await dest.destroy();
     console.log(err);
     return res.status(500).json({ data: {}, err: err, msg: "error" });
-  }
-};
+    }
+    };
 
 module.exports.add_attraction = async (req, res, next) => {
   let name = req.body.name;
