@@ -771,7 +771,7 @@ module.exports.approve_charge = async (req, res, next) => {
   await chargeRequest.destroy();
   let title = "crediting";
   let body = "Your request is Accepted !";
-  await Notification_mod.create({ UserId: user_id, title: title, body: body ,type:"wallet"});
+  await Notification_mod.create({ UserId: req.user_id, title: title, body: body ,type:"wallet"});
   Notification.notify(
     fcm.token,
     title,
@@ -811,7 +811,7 @@ module.exports.reject_charge = async (req, res, next) => {
   await chargeRequest.destroy();
   let title = "crediting";
   let body = "Your request is denied ... for more information contact us !";
-  await Notification_mod.create({ UserId: user_id, title: title, body: body ,type:"wallet"});
+  await Notification_mod.create({ UserId: req.user_id, title: title, body: body ,type:"wallet"});
   Notification.notify(
     fcm.token,
     title,
