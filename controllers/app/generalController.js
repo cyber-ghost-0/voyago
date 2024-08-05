@@ -27,9 +27,9 @@ const Every_features = require("../../models/every_feture.js");
 const every_feature = require("../../models/every_feture.js");
 const features_included = require("../../models/features_included.js");
 const transaction = require("../../models/transaction.js");
-const Notification=require('../../services/Notification')
-const FCM=require('../../models/FCM_Tokens');
-
+const Notification = require("../../services/Notification");
+const FCM = require("../../models/FCM_Tokens");
+const Notification_mod = require("../../models/Notification");
 // require('dotenv').config()
 
 function validateUserInfo(info) {
@@ -463,17 +463,10 @@ module.exports.trending_destenation = async (req, res, next) => {
             is_favourite: false,
           });
         }
-        let dstID = single_dist.id;
-        if (!image) {
-          return res
-            .status(404)
-            .json({ err: ("distenation ", dst, " is not completed") });
-        }
 
         let object = {
           id: single_dist.id,
           name: single_dist.name,
-          image: image.image,
           is_favourite: fav.is_favourite,
         };
 
@@ -525,16 +518,10 @@ module.exports.top_attractions = async (req, res, next) => {
           is_favourite: false,
         });
       }
-      let trpID = single_attr.id;
-      if (!image) {
-        return res
-          .status(404)
-          .json({ err: ("attraction ", trpID, " is not completed") });
-      }
+
       let object = {
         id: single_attr.id,
         name: single_attr.name,
-        image: image.image,
         is_favourite: fav.is_favourite,
       };
       let reviews = await every_user_review.findAll({
@@ -2188,26 +2175,29 @@ module.exports.charge_wallet = async (req, res, next) => {
   const bank_ticket = req.body.bank_ticket;
   let amount = req.body.amount;
 
-  const charge_req=await  ChargeRequest.create({
+  const charge_req = await ChargeRequest.create({
     UserId: user_id,
     bank_ticket: bank_ticket,
     amount: amount,
   });
-  let wallet=await Wallet.findOne({where:{UserId:user_id}});
-  let nw= parseInt(wallet.balance)+parseInt(amount);
+  let wallet = await Wallet.findOne({ where: { UserId: user_id } });
+  let nw = parseInt(wallet.balance) + parseInt(amount);
   console.log(nw);
   await Transaction.create({
     AdminId: null,
     walletId: wallet.id,
     new_balance: nw,
-    last_balance: wallet.balance ,
+    last_balance: wallet.balance,
     type: "credit",
     status: "pending",
-    chargeRequestId:charge_req.id
+    chargeRequestId: charge_req.id,
   });
-  const fcm=await FCM.findOne({where:{UserId:user_id}});
-  console.log(fcm)
-  Notification.notify(fcm.token,'crediting','Your requist is pending ... we will respond as soon as!',res,next);
+  const fcm = await FCM.findOne({ where: { UserId: user_id } });
+  console.log(fcm);
+  let title = "crediting";
+  let body = "Your requist is pending ... we will respond as soon as!";
+  await Notification_mod.create({ UserId: user_id, title: title, body: body ,type:"wallet"});
+  Notification.notify(fcm.token, title, body, res, next);
   // return res
   //   .status(200)
   //   .json({ data: {}, err: {}, msg: "wait for admin response <3" });
@@ -2261,15 +2251,15 @@ module.exports.wallet_history = async (req, res, next) => {
   const user = await User.findByPk(req.user_id);
   const wallet = await Wallet.findOne({ where: { UserId: user.id } });
   let history = await Transaction.findAll({ where: { walletId: wallet.id } });
-  console.log(history,'<=');
-  let data=[];
-  for(let i=0;i<history.length;i++){
-    let object={};
-    object.amount=Math.abs(history[i].last_balance - history[i].new_balance);
-    object.status=history[i].status;
-    object.type=history[i].type;
-    object.date=history[i].createdAt;
-    object.id=history[i].id;
+  console.log(history, "<=");
+  let data = [];
+  for (let i = 0; i < history.length; i++) {
+    let object = {};
+    object.amount = Math.abs(history[i].last_balance - history[i].new_balance);
+    object.status = history[i].status;
+    object.type = history[i].type;
+    object.date = history[i].createdAt;
+    object.id = history[i].id;
     data.push(object);
   }
   return res.status(200).json({ data, err: {}, msg: "done" });
@@ -2277,22 +2267,28 @@ module.exports.wallet_history = async (req, res, next) => {
 
 module.exports.every_wallet_history = async (req, res, next) => {
   const user = await User.findByPk(req.user_id);
-  const wallet_id=(await Wallet.findOne({where:{UserId:user.id}})).id;
-  
-  const trans = await transaction.findOne({where:{id : req.params.id, WalletId:wallet_id}});
-  if(!trans){
-    return res.status(500).json({ data:{}, err: "there is no transiction with this parametars", msg: "failed" });
+  const wallet_id = (await Wallet.findOne({ where: { UserId: user.id } })).id;
+
+  const trans = await transaction.findOne({
+    where: { id: req.params.id, WalletId: wallet_id },
+  });
+  if (!trans) {
+    return res.status(500).json({
+      data: {},
+      err: "there is no transiction with this parametars",
+      msg: "failed",
+    });
   }
   console.log(trans);
-  let object={};
-    object.amount=Math.abs(trans.last_balance - trans.new_balance);
-    object.status=trans.status;
-    object.type=trans.type;
-    object.date=trans.createdAt;
-    object.new_balance=trans.new_balance;
-    object.last_balance=trans.last_balance;
-  
-  return res.status(200).json({ data:object, err: {}, msg: "done" });
+  let object = {};
+  object.amount = Math.abs(trans.last_balance - trans.new_balance);
+  object.status = trans.status;
+  object.type = trans.type;
+  object.date = trans.createdAt;
+  object.new_balance = trans.new_balance;
+  object.last_balance = trans.last_balance;
+
+  return res.status(200).json({ data: object, err: {}, msg: "done" });
 };
 
 module.exports.my_favourites = async (req, res, next) => {
@@ -2315,7 +2311,7 @@ module.exports.my_favourites = async (req, res, next) => {
   await Promise.all(
     destenation.map(async (single_dist) => {
       console.log(single_dist);
-      // single_dist = await Destenation.findByPk(single_dist.id);
+      single_dist = await Destenation.findByPk(single_dist.DestenationId);
       let image = await Image.findOne({
         where: { DestenationId: single_dist.id },
       });
@@ -2331,16 +2327,10 @@ module.exports.my_favourites = async (req, res, next) => {
         });
       }
       let dstID = single_dist.id;
-      if (!image) {
-        return res
-          .status(404)
-          .json({ err: ("distenation ", dst, " is not completed") });
-      }
 
       let object = {
         id: single_dist.id,
         name: single_dist.name,
-        image: image.image,
         is_favourite: fav.is_favourite,
       };
 
@@ -2362,7 +2352,7 @@ module.exports.my_favourites = async (req, res, next) => {
   );
 
   for (let i = 0; i < attraction.length; i++) {
-    let single_attr = attraction[i];
+    let single_attr = await Attraction.findByPk(attraction[i].AttractionId);
     let image = await Image.findOne({
       where: { AttractionId: single_attr.id },
     });
@@ -2378,15 +2368,10 @@ module.exports.my_favourites = async (req, res, next) => {
       });
     }
     let trpID = single_attr.id;
-    if (!image) {
-      return res
-        .status(404)
-        .json({ err: ("attraction ", trpID, " is not completed") });
-    }
+
     let object = {
       id: single_attr.id,
       name: single_attr.name,
-      image: image.image,
       is_favourite: fav.is_favourite,
     };
     let reviews = await every_user_review.findAll({
@@ -2412,7 +2397,7 @@ module.exports.my_favourites = async (req, res, next) => {
   }
 
   for (let i = 0; i < trips.length; i++) {
-    single_trip = trips[i];
+    let single_trip = await Trip.findByPk(trips[i].TripId);
     try {
       let image = await Image.findOne({ where: { TripId: single_trip.id } });
       let fav = await favourites.findOne({
@@ -2427,11 +2412,7 @@ module.exports.my_favourites = async (req, res, next) => {
         });
       }
       let trpID = single_trip.id;
-      if (!image) {
-        return res
-          .status(404)
-          .json({ err: ("trip ", trpID, " is not completed") });
-      }
+
       const diffTime = Math.abs(
         new Date(single_trip.end_date) - new Date(single_trip.start_date)
       );
@@ -2460,18 +2441,12 @@ module.exports.my_favourites = async (req, res, next) => {
       let object = {
         id: single_trip.id,
         name: single_trip.name,
-        image: image ? image.image : null,
         is_favourite: fav.is_favourite,
         duration: diffDays,
         destenation: dist ? dist.name : null,
         price: single_trip.trip_price,
         rate: rate,
       };
-
-      let reservationCount = (
-        await reservation.findAll({ where: { TripId: single_trip.id } })
-      ).length;
-      object.cnt = reservationCount;
       result1.push(object);
     } catch (innerErr) {
       console.error(`Error processing trip ID ${single_trip.id}:`, innerErr);
@@ -2484,5 +2459,8 @@ module.exports.my_favourites = async (req, res, next) => {
   });
 };
 
-
-
+module.exports.get_Notifications = async (req, res, next) => {
+  const user = await User.findByPk(req.user_id);
+  let notif = await Notification_mod.findAll({ where: { UserId: user.id } });
+  return res.status(200).json({ data: notif, err: {}, msg: {} });
+};

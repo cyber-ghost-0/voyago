@@ -1,6 +1,6 @@
 const { initializeApp, applicationDefault,cert } = require('firebase-admin/app');
 const { getMessaging } = require('firebase-admin/messaging');
-const serviceAccount = require('../voyago-21981-firebase-adminsdk-l8yyy-4468837ba9.json');
+const serviceAccount = require('../voyago-21981-firebase-adminsdk-l8yyy-57e787793b.json');
 
 let appInitialized = false;
 

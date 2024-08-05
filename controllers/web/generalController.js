@@ -23,12 +23,12 @@ const image = require("../../models/image");
 const Transaction = require("../../models/transaction.js");
 const ChargeRequest = require("../../models/chargeRequest");
 const Wallet = require("../../models/wallet");
-const FCM=require("../../models/FCM_Tokens")
+const FCM = require("../../models/FCM_Tokens");
 const { use } = require("../../routes/app/auth.js");
 const every_user_review = require("../../models/EveryUserReview.js");
-const Notification=require("../../services/Notification.js");
+const Notification = require("../../services/Notification.js");
 const reservation = require("../../models/reservation.js");
-
+const Notification_mod = require("../../models/Notification.js");
 // require('dotenv').config()
 
 function validateUserInfo(info) {
@@ -71,13 +71,13 @@ async function is_unique(name, model, col) {
 }
 
 const imageFilter = (req, file, cb) => {
-  const allowedExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp"]; 
+  const allowedExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp"];
   const fileExtension = path.extname(file.originalname).toLowerCase();
 
   if (allowedExtensions.includes(fileExtension)) {
-    cb(null, true); 
+    cb(null, true);
   } else {
-    cb(new Error("Invalid file type. Only images are allowed")); 
+    cb(new Error("Invalid file type. Only images are allowed"));
   }
 };
 
@@ -465,11 +465,11 @@ module.exports.add_destenation = async (req, res, next) => {
   const dest = await Destenation.findOne({ where: { name: "ZZZZAAAANNAASS" } });
   try {
     let name = req.body.name,
-    images,
-    desc = req.body.description,
-    location = req.body.location,
-    AdminId = req.user_id;
-    
+      images,
+      desc = req.body.description,
+      location = req.body.location,
+      AdminId = req.user_id;
+
     err = await is_unique(name, Destenation, "name");
     if (err) {
       await dest.destroy();
@@ -487,14 +487,14 @@ module.exports.add_destenation = async (req, res, next) => {
         images = await dest.createImage({ url: imageUrl });
       })
     );
-    //}   
+    //}
     dest.name = name;
     dest.AdminId = AdminId;
     dest.description = desc;
     dest.location = location;
     dest.images = images;
     await dest.save();
-    
+
     return res
       .status(200)
       .json({ data: {}, err: {}, msg: "Destenation has added successfully !" });
@@ -552,14 +552,14 @@ module.exports.Destenations = async (req, res, next) => {
     include: [
       {
         model: image,
-        attributes: ['url']
-      }
+        attributes: ["url"],
+      },
     ],
   });
   let arr = [];
   for (let i = 0; i < Dst.length; i++) {
     let cur = Dst[i].dataValues;
-   // let all_images = await Dst[i].getImages();
+    // let all_images = await Dst[i].getImages();
     //let URL_images = [];
     // all_images.forEach((element) => {
     //   URL_images.push(element.image);
@@ -569,9 +569,9 @@ module.exports.Destenations = async (req, res, next) => {
       where: { DestenationId: Dst[i].id },
     });
     let images = await image.findAll({
-      where: { DestenationId: Dst[i].id},
-    })
-    
+      where: { DestenationId: Dst[i].id },
+    });
+
     let rate = 0.0;
     let cnt = 0;
     reviews.forEach((element) => {
@@ -737,7 +737,6 @@ module.exports.charge_requests = async (req, res, next) => {
   return res.status(200).json({ data: requests, err: {}, msg: "success" });
 };
 
-
 module.exports.approve_charge = async (req, res, next) => {
   const request_id = req.params.id;
   const chargeRequest = await ChargeRequest.findByPk(request_id);
@@ -749,30 +748,38 @@ module.exports.approve_charge = async (req, res, next) => {
   let wallet = chargeRequest.UserId;
   wallet = await User.findByPk(wallet);
   wallet = await wallet.getWallet();
-  if(!wallet){
-    return res
-      .status(500)
-      .json({ data: {}, err: {}, msg: "wallet not found" });
+  if (!wallet) {
+    return res.status(500).json({ data: {}, err: {}, msg: "wallet not found" });
   }
   wallet.balance += chargeRequest.amount;
   await wallet.save();
   console.log(wallet.id, req.user_id);
   let walletid = wallet.id;
-  let temp=await Transaction.findOne({where:{
-    chargeRequestId:chargeRequest.id
-  }});
+  let temp = await Transaction.findOne({
+    where: {
+      chargeRequestId: chargeRequest.id,
+    },
+  });
   console.log(chargeRequest.id);
-  if(!temp){
-    return res.status(500).json("there is no ")
+  if (!temp) {
+    return res.status(500).json("there is no ");
   }
-  temp.status="Success";
+  temp.status = "Success";
   temp.save();
-  const fcm=await FCM.findOne({where:{UserId:req.user_id}});
-  console.log(fcm)
+  const fcm = await FCM.findOne({ where: { UserId: req.user_id } });
+  console.log(fcm);
   await chargeRequest.destroy();
-  Notification.notify(fcm.token,'crediting','Your request is Acceted !',res,next);
+  let title = "crediting";
+  let body = "Your request is Accepted !";
+  await Notification_mod.create({ UserId: user_id, title: title, body: body ,type:"wallet"});
+  Notification.notify(
+    fcm.token,
+    title,
+    body,
+    res,
+    next
+  );
 
-  
   // return res.status(200).json({ data: {}, err: {}, msg: "success" });
 };
 
@@ -788,21 +795,31 @@ module.exports.reject_charge = async (req, res, next) => {
   wallet = await User.findByPk(wallet);
   wallet = await wallet.getWallet();
   let walletid = wallet.id;
-  let temp=await Transaction.findOne({where:{
-    chargeRequestId:chargeRequest.id
-  }});
+  let temp = await Transaction.findOne({
+    where: {
+      chargeRequestId: chargeRequest.id,
+    },
+  });
   console.log(temp);
-  if(!temp){
-    return res.status(500).json("there is no ")
+  if (!temp) {
+    return res.status(500).json("there is no ");
   }
-  temp.status="Failed";
+  temp.status = "Failed";
   temp.save();
-  const fcm=await FCM.findOne({where:{UserId:req.user_id}});
-  console.log(fcm)
+  const fcm = await FCM.findOne({ where: { UserId: req.user_id } });
+  console.log(fcm);
   await chargeRequest.destroy();
-  Notification.notify(fcm.token,'crediting','Your request is Acceted !',res,next);
+  let title = "crediting";
+  let body = "Your request is denied ... for more information contact us !";
+  await Notification_mod.create({ UserId: user_id, title: title, body: body ,type:"wallet"});
+  Notification.notify(
+    fcm.token,
+    title,
+    body,
+    res,
+    next
+  );
 
-  
   // return res.status(200).json({ data: {}, err: {}, msg: "success" });
 };
 
@@ -813,7 +830,6 @@ module.exports.transactions = async (req, res, next) => {
 
 module.exports.show_all_transactions = async (req, res, next) => {
   try {
-
     const transactions = await Transaction.findAll({
       include: [
         {
@@ -821,43 +837,41 @@ module.exports.show_all_transactions = async (req, res, next) => {
           include: [
             {
               model: User,
-              attributes: ['username']              }
-          ]
+              attributes: ["username"],
+            },
+          ],
         },
         {
           model: Admin,
-          attributes: ['username']
-        }
+          attributes: ["username"],
+        },
       ],
     });
 
     return res.status(200).json({ data: transactions, err: {}, msg: {} });
-    
-  } catch (err){
+  } catch (err) {
     return res.status(500).json({ data: {}, err: err, msg: "error" });
   }
 };
 
 module.exports.show_all_reservations = async (req, res, nest) => {
-  try{
+  try {
     const reservations = await reservation.findAll({
-          //model: Wallet,
-          include: [
-            {
-              model: User,
-              attributes: ['username']            
-          
-            },
-            {
-              model: Trip,
-              attributes: ['name']
-           }
-          ],
-         });
+      //model: Wallet,
+      include: [
+        {
+          model: User,
+          attributes: ["username"],
+        },
+        {
+          model: Trip,
+          attributes: ["name"],
+        },
+      ],
+    });
 
     return res.status(200).json({ data: reservations, err: {}, msg: {} });
-    
-  }catch(error){
+  } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }

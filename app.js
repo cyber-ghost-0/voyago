@@ -29,6 +29,8 @@ const imageRoutes = require("./models/image.js");
 const everyReservationEvent=require("./models/everyResrvationEvent.js");
 const charge_request = require("./models/chargeRequest");
 const transaction = require("./models/transaction.js");
+const Notification_mod=require("./models/Notification.js")
+const cors = require("cors");
 
 app.use(BP.json());
 // trip;
@@ -122,6 +124,12 @@ FCM.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
 charge_request.hasOne(transaction, { constraints: true, onDelete: "CASCADE" });
 transaction.belongsTo(charge_request, { constraints: true, onDelete: "CASCADE" });
+
+User.hasMany(Notification_mod, { constraints: true, onDelete: "CASCADE" });
+Notification_mod.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+
+
+app.use(cors());
 app.use(BP.urlencoded({ extended: true }));
 app.use(BP.json());
 
@@ -134,7 +142,7 @@ app.use("/api", appRoutes);
 app.use("/web", webRoutes);
 app.use("/web", imageRoutes);
 sequelize
-  //.sync({  force:true})
+  // .sync({  force:true})
   .sync()
   .then((result) => {
     app.listen(3000);
