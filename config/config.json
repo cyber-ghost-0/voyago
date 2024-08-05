@@ -1,8 +1,8 @@
 {
   "development": {
     "username": "root",
-    "password": "",
-    "database": "voyago_000",
+    "password": "anas",
+    "database": "voyago",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },

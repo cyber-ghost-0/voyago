@@ -7,7 +7,7 @@ const Joi = require("joi");
 const User = require("../../models/User");
 const Trip = require("../../models/Trip");
 const Image = require("../../models/image");
-const { Op } = require("sequelize");
+const { Op, INTEGER } = require("sequelize");
 const { Sequelize, where } = require("sequelize");
 const { SequelizeMethod } = require("sequelize/lib/utils");
 const Every_user_review = require("../../models/EveryUserReview");
@@ -27,6 +27,8 @@ const Every_features = require("../../models/every_feture.js");
 const every_feature = require("../../models/every_feture.js");
 const features_included = require("../../models/features_included.js");
 const transaction = require("../../models/transaction.js");
+const Notification=require('../../services/Notification')
+const FCM=require('../../models/FCM_Tokens');
 
 // require('dotenv').config()
 
@@ -2200,16 +2202,31 @@ module.exports.wallet = async (req, res, next) => {
 module.exports.charge_wallet = async (req, res, next) => {
   const user_id = req.user_id;
   const bank_ticket = req.body.bank_ticket;
-  const amount = req.body.amount;
+  let amount = req.body.amount;
 
-  await ChargeRequest.create({
+  const charge_req=await  ChargeRequest.create({
     UserId: user_id,
     bank_ticket: bank_ticket,
     amount: amount,
   });
-  return res
-    .status(200)
-    .json({ data: {}, err: {}, msg: "wait for admin response <3" });
+  let wallet=await Wallet.findOne({where:{UserId:user_id}});
+  let nw= parseInt(wallet.balance)+parseInt(amount);
+  console.log(nw);
+  await Transaction.create({
+    AdminId: null,
+    walletId: wallet.id,
+    new_balance: nw,
+    last_balance: wallet.balance ,
+    type: "credit",
+    status: "pending",
+    chargeRequestId:charge_req.id
+  });
+  const fcm=await FCM.findOne({where:{UserId:user_id}});
+  console.log(fcm)
+  Notification.notify(fcm.token,'crediting','Your requist is pending ... we will respond as soon as!',res,next);
+  // return res
+  //   .status(200)
+  //   .json({ data: {}, err: {}, msg: "wait for admin response <3" });
 };
 
 module.exports.my_reviwes = async (req, res, next) => {
@@ -2259,8 +2276,8 @@ module.exports.my_reviwes = async (req, res, next) => {
 module.exports.wallet_history = async (req, res, next) => {
   const user = await User.findByPk(req.user_id);
   const wallet = await Wallet.findOne({ where: { UserId: user.id } });
-  console.log(wallet.id);
   let history = await Transaction.findAll({ where: { walletId: wallet.id } });
+  console.log(history,'<=');
   let data=[];
   for(let i=0;i<history.length;i++){
     let object={};
