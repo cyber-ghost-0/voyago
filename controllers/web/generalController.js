@@ -85,16 +85,29 @@ const storage = multer.diskStorage({
     await fs.mkdir(uploadPath, { recursive: true });
     cb(null, uploadPath);
   },
-  filename: function (req, file, cb) {
-    const fileName = `${file.originalname}`;
-    cb(null, fileName);
-  },
-});
+  filename: (req, file, cd) => {
+  cd(null, Date.now() + path.extname(file.originalname))
+  }
+  });
 
 const upload = multer({
-  storage: storage,
-  fileFilter: imageFilter,
-});
+    storage: storage,
+    limits: { fileSize: '100000000'},
+    fileFilter: (req, file, cd) => {
+    const fileTypes = /jpeg|jpg|png|gif|bmp/
+    const mimeType = fileTypes.test(file.mimetype)
+    const extname = fileTypes.test(path.extname(file.originalname))
+    if(mimeType && extname) {
+      return cd(null, true)
+    }
+    cd('Give  proper files formate to upload')
+  }
+}).array('image', 30);
+
+module.exports = {
+  storage,
+  upload
+};
 
 module.exports.users = async (req, res, next) => {
   try {
@@ -292,17 +305,17 @@ module.exports.add_trip = async (req, res, nxt) => {
       price = req.body.price,
       capacity = req.body.capacity,
       description = req.body.description,
-      images,
+      //images,
       features,
       meeting_point_location = req.body.meeting_point_location,
       TimeLimitCancellation = req.body.TimeLimitCancellation;
     let end_date = new Date(start_date);
 
     // Add the duration in days
-    images = req.body.images;
+    //images = req.body.images;
     features = req.body.features;
     let days = [];
-    days = req.body.days;
+    days = req.body.days || [];
     console.log(days);
     end_date.setDate(end_date.getDate() + days.length);
     let err = await Destenation.findByPk(DestenationId);
@@ -319,11 +332,11 @@ module.exports.add_trip = async (req, res, nxt) => {
 
       return res.status(500).json({ msg: "fault", err: "name is not unique" });
     }
-    for (let i = 0; i < images.length; i++) {
-      let image = images[i];
-      console.log(trp.id);
-      await Image.create({ image: image, TripId: trp.id });
-    }
+    // for (let i = 0; i < images.length; i++) {
+    //   let image = images[i];
+    //   console.log(trp.id);
+    //   await Image.create({ image: image, TripId: trp.id });
+    // }
     for (let i = 0; i < features.length; i++) {
       let feature = features[i];
       err = await Features_included.findByPk(feature);
@@ -388,6 +401,8 @@ module.exports.add_trip = async (req, res, nxt) => {
       DAY.TripId = trp.id;
       await DAY.save();
     }
+  
+
     trp.name = name;
     trp.DestenationId = DestenationId;
     trp.description = description;
@@ -408,6 +423,30 @@ module.exports.add_trip = async (req, res, nxt) => {
     return res
       .json({ msg: "fault", err: "Internal Server Error", data: {} })
       .status(500);
+  }
+};
+
+module.exports.upload_trip_images = async (req, res, next) => {
+  try{
+    const {tripId} = req.body;
+    console.log(tripId);
+    const trip = await Trip.findByPk(tripId);
+        if (trip) {
+            //image = await trip.createImage({ url: imageUrl });
+           for (const file of req.files) {
+              await Image.create({
+                url: `http://localhost:3000/uploads/${file.filename}`,
+                TripId: tripId
+             });
+           }
+           return res.status(200).json({ msg: "Added!", data: {} });
+        }
+        else {
+           return res.status(404).json({ msg: "The trip does not exists!", data: null });
+        }
+  }catch(error){
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
   }
 };
 
@@ -504,42 +543,74 @@ module.exports.add_destenation = async (req, res, next) => {
     };
 
 module.exports.add_attraction = async (req, res, next) => {
-  let name = req.body.name;
-  let images = req.body.images;
-  let description = req.body.description;
-  let DestenationId = req.body.destenation_id;
+  await Attraction.create({ name: "ZZZZAAAANNAASS" });
+  const atr = await Attraction.findOne({ where: { name: "ZZZZAAAANNAASS" } });
 
   try {
-    await Attraction.create({
-      name: name,
-      AdminId: req.user_id,
-      description: description,
-      DestenationId: DestenationId,
-    });
-    const Atr = await Attraction.findOne({ where: { name: name } });
-    images.forEach(async (element) => {
-      await image.create({ AttractionId: Atr.id, image: element });
-    });
+
+    let name = req.body.name,
+    //images = req.body.images,
+    description = req.body.description,
+    DestenationId = req.body.destenation_id,
+    AdminId = req.user_id;
+
+    let err = await is_unique(name, Attraction, "name");
+    if (err) {
+      await atr.destroy();
+      return res.status(500).json({ msg: "fault", err: "name is not unique" });
+    }
+
+    err = await Destenation.findByPk(DestenationId);
+    if (!err) {
+      await atr.destroy();
+
+      return res
+        .status(500)
+        .json({ msg: "fault", err: "Destenation is not exist" });
+    }
+
+    for (const file of req.files) {
+      await Image.create({
+        url: `http://localhost:3000/uploads/${file.filename}`,
+        AttractionId: atr.id
+      });
+    }
+    
+    atr.name = name;
+    atr.description = description;
+    atr.AdminId = AdminId;
+    atr.DestenationId = DestenationId;
+
+    await atr.save();
+
     return res
       .status(200)
       .json({ data: {}, err: {}, msg: "Attraction has added successfully !" });
   } catch (err) {
+    await atr.destroy();
     console.log(err);
     return res.status(500).json({ data: {}, err: err, msg: "error" });
   }
 };
 
 module.exports.Attractions = async (req, res, next) => {
-  let Atr = await Attraction.findAll();
+  let Atr = await Attraction.findAll({
+    include: [
+      {
+        model: image,
+        attributes: ['url']
+      }
+    ],
+});
   let arr = [];
   for (let i = 0; i < Atr.length; i++) {
     let cur = Atr[i].dataValues;
-    let all_images = await Atr[i].getImages();
-    let URL_images = [];
-    all_images.forEach((element) => {
-      URL_images.push(element.image);
-    });
-    cur.images = URL_images;
+    // let all_images = await Atr[i].getImages();
+    // let URL_images = [];
+    // all_images.forEach((element) => {
+    //   URL_images.push(element.image);
+    // });
+    // cur.images = URL_images;
     arr.push(cur);
   }
   return res.status(200).json({ data: arr, err: {}, msg: "success" });
