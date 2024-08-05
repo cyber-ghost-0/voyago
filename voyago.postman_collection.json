@@ -1485,7 +1485,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/profile/wallet_history",
+					"name": "wallet_history",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1506,7 +1506,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/profile/favourites",
+					"name": "favourites",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1527,7 +1527,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/profile/wallet_history/1",
+					"name": "wallet_history_id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1581,6 +1581,26 @@
 							"path": [
 								"web",
 								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/Notification",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/Notifications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"Notifications"
 							]
 						}
 					},

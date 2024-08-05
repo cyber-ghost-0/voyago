@@ -1872,6 +1872,8 @@ module.exports.search = async (req, res, next) => {
       trips_03 = [],
       trips_04 = [];
 
+      const userId = req.user_id;
+
     if (destination) {
       let destenations = await Destenation.findAll({
         where: {
@@ -2072,6 +2074,20 @@ module.exports.search = async (req, res, next) => {
         trips_03.some((t) => t.id === trip.id) &&
         trips_04.some((t) => t.id === trip.id)
     );
+
+    const favorites = await favourites.findAll({
+      where: {
+        TripId: trips_1.map(t => t.id),
+        UserId: userId,
+      },
+    });
+
+    const favoriteTripIds = favorites.map(f => f.TripId);
+
+    trips_1 = trips_1.map(trip => ({
+      ...trip.toJSON(),
+      favorites: favoriteTripIds.includes(trip.id),
+    }));
 
     if (priceLtoH == 1) {
       trips_1.sort((a, b) => a.trip_price - b.trip_price);

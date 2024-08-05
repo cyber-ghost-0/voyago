@@ -33,6 +33,7 @@ const Notification_mod=require("./models/Notification.js")
 const cors = require("cors");
 
 app.use(BP.json());
+app.use('/uploads', express.static('./uploads'));
 // trip;
 Admin.hasMany(Destenation, { onDelete: "CASCADE" });
 Destenation.belongsTo(Admin, { constraints: true, onDelete: "CASCADE" });
