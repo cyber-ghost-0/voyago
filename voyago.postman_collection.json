@@ -1585,6 +1585,26 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/Notification",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/Notifications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"Notifications"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
