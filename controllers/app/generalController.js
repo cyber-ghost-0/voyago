@@ -30,6 +30,9 @@ const transaction = require("../../models/transaction.js");
 const Notification = require("../../services/Notification");
 const FCM = require("../../models/FCM_Tokens");
 const Notification_mod = require("../../models/Notification");
+const Event = require("../../models/Event.js");
+const everyReservationEvent=require('../../models/everyResrvationEvent');
+const Reservation = require("../../models/reservation");
 // require('dotenv').config()
 
 function validateUserInfo(info) {
@@ -188,13 +191,14 @@ module.exports.reserve_on_trip = async (req, res, next) => {
   const trip_id = req.params.id;
   const adult = req.body.adult;
   const child = req.body.child;
-  const optional_choices = req.body.optional_choices;
+  let optional_choices = req.body.optional_choices;
   const email = req.body.email;
   const phone = req.body.phone;
   const password = req.body.password;
   const user = await User.findByPk(req.user_id);
   let flag = await bcrypt.compare(password, user.password);
   const trip = await Trip.findByPk(trip_id);
+  const wallet=await Wallet.findOne({where:{UserId : user.id}});
   if (!trip) {
     return res
       .status(500)
@@ -203,15 +207,30 @@ module.exports.reserve_on_trip = async (req, res, next) => {
   if (trip.available_capacity < adult + child) {
     return res.status(500).json({ data: {}, err: "No capacity enough!" });
   }
-  let Available_capacity = trip.available_capacity - (adult + child);
-  trip.available_capacity = Available_capacity;
-  await trip.save();
   if (!flag) {
     let response = { data: {}, msg: "fail", err: "password is not correct !" };
     return res.json(response).status(500);
   }
-
-  await reservation.create({
+  let cost=(adult+child)*trip.trip_price;
+  for(let i=0;i<optional_choices.length;i++){
+    let event=await Event.findByPk(optional_choices[i].id);
+    let day;
+    if(event)
+      day=await DayTrips.findByPk(event.DayTripId);
+    if(!event || event.type!='optional' || day.TripId!=trip.id){
+      return res.status(500).json({ data: {}, err: `No optional event with id ${event.id}!` });
+    }
+    cost+=event.price_adult*optional_choices[i].adult + event.price_child*optional_choices[i].child; 
+  }  
+  cost+=trip.trip_price
+  console.log(wallet.balance, cost);
+  if (cost > wallet.balance  ) {
+    return res.status(500).json({ data: {}, err: "No balance enough!" });
+  }
+  let Available_capacity = trip.available_capacity - (adult + child);
+  trip.available_capacity = Available_capacity;
+  
+  let reservation= await Reservation.create({
     email: email,
     adult: adult,
     child: child,
@@ -219,12 +238,38 @@ module.exports.reserve_on_trip = async (req, res, next) => {
     UserId: req.user_id,
     TripId: trip_id,
   });
-  let response = {
-    data: {},
-    msg: "you have regesterd on this trip !",
-    err: {},
-  };
-  return res.json(response).status(200);
+  for(let i=0;i<optional_choices.length;i++){
+    await everyReservationEvent.create({adult: optional_choices[i].adult,child: optional_choices[i].child,reservationId:reservation.id,EventId:optional_choices[i].id});
+    
+  }
+  
+  let nw = parseInt(wallet.balance) - parseInt(cost);
+  console.log(nw);
+  await Transaction.create({
+    AdminId: null,
+    walletId: wallet.id,
+    new_balance: nw,
+    last_balance: wallet.balance,
+    type: "Deposite",
+    status: "Success",
+    chargeRequestId: null,
+  });
+  const fcm = await FCM.findOne({ where: { UserId: req.user_id } });
+  console.log(fcm);
+  let title = "Reserving";
+  let body = `Your have regestered on ${trip.name} trip !`;
+  wallet.balance-=cost;
+  await wallet.save();
+  await trip.save();
+  await Notification_mod.create({ UserId: req.user_id, title: title, body: body ,type:"Reserving"});
+  Notification.notify(fcm.token, title, body, res, next);
+  
+  // let response = {
+  //   data: {},
+  //   msg: "you have regesterd on this trip !",
+  //   err: {},
+  // };
+  // return res.json(response).status(200);
 };
 
 module.exports.Attractions = async (req, res, next) => {
@@ -475,7 +520,7 @@ module.exports.trending_destenation = async (req, res, next) => {
         });
         let reservationCount = await Promise.all(
           trips.map(async (single_trip) => {
-            let reservations = await reservation.findAll({
+            let reservations = await Reservation.findAll({
               where: { TripId: single_trip.id },
             });
             return reservations.length;
@@ -684,7 +729,7 @@ module.exports.popular_trips = async (req, res, next) => {
         };
 
         let reservationCount = (
-          await reservation.findAll({ where: { TripId: single_trip.id } })
+          await Reservation.findAll({ where: { TripId: single_trip.id } })
         ).length;
         object.cnt = reservationCount;
         result.push(object);
@@ -878,7 +923,7 @@ module.exports.all_trips_by_destenation = async (req, res, next) => {
         new Date(single_trip.end_date) - new Date(single_trip.start_date)
       );
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      const reservations = await reservation.findAll({
+      const reservations = await Reservation.findAll({
         where: { TripId: single_trip.id },
       });
       let regestered = 0;
@@ -1048,13 +1093,13 @@ module.exports.TripInfo2 = async (req, res, next) => {
   const duration = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   const start_date = trip.start_date;
   const capacity = trip.capacity;
-  let reservs = await reservation.findAll({ where: { TripId: Trip_id } });
+  let reservs = await Reservation.findAll({ where: { TripId: Trip_id } });
   let cnt = 0;
   reservs.forEach((element) => {
     cnt += element.adult + element.child;
   });
   const available = capacity - cnt;
-  let Days = await DayTrips.findAll({ wher: { TripId: Trip_id } });
+  let Days = await DayTrips.findAll({ where: { TripId: Trip_id } });
   let ATTRACTIONS = [];
   for (let j = 0; j < Days.length; j++) {
     let DAY = Days[j];
@@ -1099,7 +1144,7 @@ module.exports.TripInfo3 = async (req, res, next) => {
       .json({ msg: "fault", err: "there is no trip with this id" });
   }
 
-  let Days = await DayTrips.findAll({ wher: { TripId: Trip_id } });
+  let Days = await DayTrips.findAll({ where: { TripId: Trip_id } });
   let ATTRACTIONS = [];
   for (let j = 0; j < Days.length; j++) {
     let DAY = Days[j];
@@ -2077,7 +2122,7 @@ module.exports.getOptionalEvents = async (req, res, next) => {
     return res.status(500).json("There is no trip with this id");
   }
   let list = [];
-  let days = await DayTrips.findAll({ wher: { TripId: trip.id } });
+  let days = await DayTrips.findAll({ where: { TripId: trip.id } });
   for (let i = 0; i < days.length; i++) {
     let element = days[i];
     let temp = await Events.findAll({
@@ -2154,7 +2199,7 @@ module.exports.charge_wallet = async (req, res, next) => {
   const fcm = await FCM.findOne({ where: { UserId: user_id } });
   console.log(fcm);
   let title = "crediting";
-  let body = "Your requist is pending ... we will respond as soon as!";
+  let body = "Your requist is pending ... we will respond as soon as possible!";
   await Notification_mod.create({ UserId: user_id, title: title, body: body ,type:"wallet"});
   Notification.notify(fcm.token, title, body, res, next);
   // return res
@@ -2298,7 +2343,7 @@ module.exports.my_favourites = async (req, res, next) => {
       });
       let reservationCount = await Promise.all(
         trips.map(async (single_trip) => {
-          let reservations = await reservation.findAll({
+          let reservations = await Reservation.findAll({
             where: { TripId: single_trip.id },
           });
           return reservations.length;
@@ -2411,6 +2456,10 @@ module.exports.my_favourites = async (req, res, next) => {
       console.error(`Error processing trip ID ${single_trip.id}:`, innerErr);
     }
   }
+   result1 = Array.from(new Set(result1));
+   result2 = Array.from(new Set(result2));
+   result3 = Array.from(new Set(result3));
+
 
   return res.status(200).json({
     data: { trips: result1, attraction: result2, destenation: result3 },
