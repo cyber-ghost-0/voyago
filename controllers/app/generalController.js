@@ -575,12 +575,7 @@ module.exports.top_trips = async (req, res, next) => {
           is_favourite: false,
         });
       }
-      let trpID = single_trip.id;
-      if (!image) {
-        return res
-          .status(404)
-          .json({ err: ("trip ", trpID, " is not completed") });
-      }
+      
       const diffTime = Math.abs(
         new Date(single_trip.end_date) - new Date(single_trip.start_date)
       );
@@ -609,7 +604,7 @@ module.exports.top_trips = async (req, res, next) => {
       let object = {
         id: single_trip.id,
         name: single_trip.name,
-        image: image ? image.image : null,
+        // image: image ? image.image : null,
         is_favourite: fav.is_favourite,
         duration: diffDays,
         destenation: dist ? dist.name : null,
@@ -652,12 +647,7 @@ module.exports.popular_trips = async (req, res, next) => {
             is_favourite: false,
           });
         }
-        let trpID = single_trip.id;
-        if (!image) {
-          return res
-            .status(404)
-            .json({ err: ("trip ", trpID, " is not completed") });
-        }
+        
         const diffTime = Math.abs(
           new Date(single_trip.end_date) - new Date(single_trip.start_date)
         );
@@ -686,7 +676,6 @@ module.exports.popular_trips = async (req, res, next) => {
         let object = {
           id: single_trip.id,
           name: single_trip.name,
-          image: image ? image.image : null,
           is_favourite: fav.is_favourite,
           duration: diffDays,
           destenation: dist ? dist.name : null,
@@ -746,16 +735,10 @@ module.exports.recommended_attractions_by_destenation = async (
           is_favourite: false,
         });
       }
-      let trpID = single_attr.id;
-      if (!image) {
-        return res
-          .status(404)
-          .json({ err: ("attraction ", trpID, " is not completed") });
-      }
+      
       let object = {
         id: single_attr.id,
         name: single_attr.name,
-        image: image.image,
         is_favourite: fav.is_favourite,
       };
       let reviews = await every_user_review.findAll({
@@ -816,12 +799,6 @@ module.exports.recommended_trips_by_destenation = async (req, res, next) => {
             is_favourite: false,
           });
         }
-        let trpID = single_trip.id;
-        if (!image) {
-          return res
-            .status(404)
-            .json({ err: ("trip ", trpID, " is not completed") });
-        }
         const diffTime = Math.abs(
           new Date(single_trip.end_date) - new Date(single_trip.start_date)
         );
@@ -850,7 +827,6 @@ module.exports.recommended_trips_by_destenation = async (req, res, next) => {
         let object = {
           id: single_trip.id,
           name: single_trip.name,
-          image: image ? image.image : null,
           is_favourite: fav.is_favourite,
           duration: diffDays,
           destenation: dist ? dist.name : null,
@@ -911,7 +887,7 @@ module.exports.all_trips_by_destenation = async (req, res, next) => {
       });
 
       let trpID = single_trip.id;
-      if (!image || !single_trip) {
+      if (!single_trip) {
         return res
           .status(404)
           .json({ err: ("trip ", trpID, " is not completed") });
@@ -919,7 +895,6 @@ module.exports.all_trips_by_destenation = async (req, res, next) => {
       let object = {
         id: single_trip.id,
         name: single_trip.name,
-        image: image.image,
         is_favourite: fav.is_favourite,
         start_date: single_trip.start_date,
         end_date: single_trip.end_date,
@@ -984,16 +959,9 @@ module.exports.all_attractions_by_destenation = async (req, res, next) => {
           is_favourite: false,
         });
       }
-      let trpID = single_attr.id;
-      if (!image) {
-        return res
-          .status(404)
-          .json({ err: ("attraction ", trpID, " is not completed") });
-      }
       let object = {
         id: single_attr.id,
         name: single_attr.name,
-        image: image.image,
         is_favourite: fav.is_favourite,
       };
       let reviews = await every_user_review.findAll({
@@ -1160,16 +1128,10 @@ module.exports.TripInfo3 = async (req, res, next) => {
           is_favourite: false,
         });
       }
-      let trpID = element.id;
-      if (!image) {
-        return res
-          .status(404)
-          .json({ err: ("attraction ", trpID, " is not completed") });
-      }
+    
       let object = {
         id: element.id,
         name: element.name,
-        image: image.image,
         is_favourite: fav.is_favourite,
       };
       let reviews = await every_user_review.findAll({
@@ -1355,16 +1317,10 @@ module.exports.destenationInfo2 = async (req, res, next) => {
           is_favourite: false,
         });
       }
-      let trpID = single_attr.id;
-      if (!image) {
-        return res
-          .status(404)
-          .json({ err: ("attraction ", trpID, " is not completed") });
-      }
+      
       let object = {
         id: single_attr.id,
         name: single_attr.name,
-        image: image.image,
         is_favourite: fav.is_favourite,
       };
       let reviews = await every_user_review.findAll({
@@ -1425,12 +1381,7 @@ module.exports.destenationInfo3 = async (req, res, next) => {
             is_favourite: false,
           });
         }
-        let trpID = single_trip.id;
-        if (!image) {
-          return res
-            .status(404)
-            .json({ err: ("trip ", trpID, " is not completed") });
-        }
+        
         const diffTime = Math.abs(
           new Date(single_trip.end_date) - new Date(single_trip.start_date)
         );
@@ -1459,7 +1410,6 @@ module.exports.destenationInfo3 = async (req, res, next) => {
         let object = {
           id: single_trip.id,
           name: single_trip.name,
-          image: image ? image.image : null,
           is_favourite: fav.is_favourite,
           duration: diffDays,
           destenation: dist ? dist.name : null,
@@ -1712,12 +1662,6 @@ module.exports.AttractionInfo2 = async (req, res, next) => {
         is_favourite: false,
       });
     }
-    let trpID = single_trip.id;
-    if (!image) {
-      return res
-        .status(404)
-        .json({ err: ("trip ", trpID, " is not completed") });
-    }
     const diffTime = Math.abs(
       new Date(single_trip.end_date) - new Date(single_trip.start_date)
     );
@@ -1746,7 +1690,6 @@ module.exports.AttractionInfo2 = async (req, res, next) => {
     let object = {
       id: single_trip.id,
       name: single_trip.name,
-      image: image ? image.image : null,
       is_favourite: fav.is_favourite,
       duration: diffDays,
       destenation: dist ? dist.name : null,
@@ -2315,13 +2258,13 @@ module.exports.my_favourites = async (req, res, next) => {
   const user = await User.findByPk(id);
   let trips, attraction, destenation;
   trips = await favourites.findAll({
-    where: { UserId: id, AttractionId: null, DestenationId: null },
+    where: { UserId: id, AttractionId: null, DestenationId: null , is_favourite: true},
   });
   attraction = await favourites.findAll({
-    where: { UserId: id, DestenationId: null, TripId: null },
+    where: { UserId: id, DestenationId: null, TripId: null,is_favourite:true },
   });
   destenation = await favourites.findAll({
-    where: { UserId: id, AttractionId: null, TripId: null },
+    where: { UserId: id, AttractionId: null, TripId: null,is_favourite:true },
   });
 
   await Promise.all(

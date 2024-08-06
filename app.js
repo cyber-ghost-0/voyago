@@ -123,8 +123,8 @@ Favourites.belongsTo(Attraction, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(FCM, { constraints: true, onDelete: "CASCADE" });
 FCM.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
-charge_request.hasOne(transaction, { constraints: true, onDelete: "CASCADE" });
-transaction.belongsTo(charge_request, { constraints: true, onDelete: "CASCADE" });
+charge_request.hasOne(transaction, { constraints: true });
+transaction.belongsTo(charge_request, { constraints: true });
 
 User.hasMany(Notification_mod, { constraints: true, onDelete: "CASCADE" });
 Notification_mod.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
