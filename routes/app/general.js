@@ -98,6 +98,12 @@ router.get('/profile/favourites',is_auth,generalController.my_favourites);
 
 router.get('/Notifications',is_auth,generalController.get_Notifications);
 
+router.get('/bookingTrips',is_auth,generalController.get_reserved_trips);
+
+router.get('/bookingTrips/:id',is_auth,generalController.every_reserved_trip);
+
+
+
 
 // router.get('/send',generalController.notify);
 
