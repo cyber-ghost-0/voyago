@@ -150,7 +150,12 @@ module.exports.Login = async (req, res, next) => {
     "4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419"
   );
   services.black_list.push(refreshToken);
-  await FCM.create({ token: req.body.fcm, UserId: user.id });
+  let f = await FCM.findOne({ where: { UserId: user.id } });
+  if (!f) await FCM.create({ token: req.body.fcm, UserId: user.id });
+  else {
+    f.token = req.body.fcm;
+    await f.save();
+  }
   console.log(55);
 
   // cron.schedule("* * * * * *", async () => {
@@ -193,14 +198,19 @@ module.exports.Login = async (req, res, next) => {
   //     console.error("Error checking for trips starting in an hour:", error);
   //   }
   // });
+
   if (!user.customerStripId) {
+    try{
     const customer = await stripe.customers.create({
       email: user.email,
       name: user.username,
     });
     console.log(customer);
-    user.customerStripId=customer.id;
-    user.save();
+    user.customerStripId = customer.id;
+    user.save();}
+    catch(err){
+      return res.status(500).json({data:{},err:"please connect to internet then try again "});
+    }
   }
   return res.status(200).json({
     data: { accessToken: accessToken, refreshToken: refreshToken },

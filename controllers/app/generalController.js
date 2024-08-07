@@ -258,7 +258,7 @@ module.exports.reserve_on_trip = async (req, res, next) => {
   }
   let nw = 0;
   if (is_stripe) nw = parseInt(wallet.balance) - parseInt(cost);
-  else nw = 0;
+  else nw = parseInt(wallet.balance);
   console.log(nw);
   await Transaction.create({
     AdminId: null,
@@ -273,7 +273,7 @@ module.exports.reserve_on_trip = async (req, res, next) => {
   console.log(fcm);
   let title = "Reserving";
   let body = `Your have regestered on ${trip.name} trip !`;
-  wallet.balance -= cost;
+  if (!is_stripe) wallet.balance -= cost;
   await wallet.save();
   await trip.save();
   await Notification_mod.create({
