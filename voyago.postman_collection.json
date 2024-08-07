@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "0366a52b-9fc6-4410-9905-1669cd0f2fe5",
 		"name": "voyago",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36969951"
 	},
 	"item": [
 		{
@@ -352,7 +353,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"adult\":5,\r\n    \"child\":2,\r\n    \"optional_choices\":[\r\n        {\r\n            \"id\":1,\r\n            \"adult\":5,\r\n            \"child\":3\r\n        },\r\n        {\r\n            \"id\":5,\r\n            \"adult\":5,\r\n            \"child\":3\r\n        }\r\n    ],\r\n    \"email\":\"AA@gmail.com\",\r\n    \"phone\":\"0937402356\",\r\n    \"password\":\"12345678\"\r\n}",
+							"raw": "{\r\n    \"adult\":5,\r\n    \"child\":5,\r\n    \"optional_choices\":[\r\n        {\r\n            \"id\":13,\r\n            \"adult\":5,\r\n            \"child\":3\r\n        }\r\n        \r\n    ],\r\n    \"email\":\"AA@gmail.com\",\r\n    \"phone\":\"0937402356\",\r\n    \"password\":\"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -360,7 +361,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/reservation/1",
+							"raw": "http://localhost:3000/api/reservation/6",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -369,7 +370,7 @@
 							"path": [
 								"api",
 								"reservation",
-								"1"
+								"6"
 							]
 						}
 					},
@@ -384,7 +385,8 @@
 								"exec": [
 									"            "
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -399,7 +401,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"bank_ticket\":\"222\",\r\n    \"amount\":\"35\"\r\n}"
+							"raw": "{\r\n    \"bank_ticket\":\"222\",\r\n    \"amount\":\"4000\"\r\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/api/charge_wallet",
@@ -648,7 +650,7 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/top_attractions",
+					"name": "top_attractions",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1403,44 +1405,6 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/web/upload",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "images",
-									"type": "file",
-									"src": "/C:/Users/anas/Pictures/photo_5830104971595596537_y.jpg"
-								},
-								{
-									"key": "destinationId",
-									"value": "1",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "http://localhost:3000/web/upload",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"web",
-								"upload"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "http://localhost:3000/api/Notification",
 					"request": {
 						"method": "GET",
@@ -1455,6 +1419,47 @@
 							"path": [
 								"api",
 								"Notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/bookingTrips",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/bookingTrips",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"bookingTrips"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:3000/api/bookingTrips/2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/bookingTrips/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"bookingTrips",
+								"2"
 							]
 						}
 					},
@@ -1794,7 +1799,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Trip_5\",\r\n    \"destenation_id\":2,\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"attraction_id\":3,\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"optional\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ijbari\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"optional\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
+							"raw": "{\r\n    \"name\" : \"Trip_3\",\r\n    \"destenation_id\":1,\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 10,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"attraction_id\":3,\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"optional\",\r\n                \"price_adult\":10,\r\n                \"price_child\":10,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ijbari\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"op\",\r\n                \"price_adult\":50,\r\n                \"price_child\":200,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2179,7 +2184,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/web/approve_charge/7",
+							"raw": "http://localhost:3000/web/approve_charge/5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2188,7 +2193,7 @@
 							"path": [
 								"web",
 								"approve_charge",
-								"7"
+								"5"
 							]
 						}
 					},
