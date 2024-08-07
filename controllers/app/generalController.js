@@ -33,6 +33,12 @@ const Notification_mod = require("../../models/Notification");
 const Event = require("../../models/Event.js");
 const everyReservationEvent = require("../../models/everyResrvationEvent");
 const Reservation = require("../../models/reservation");
+const cron = require("node-cron");
+const moment = require("moment");
+const e = require("express");
+const stripe = require("stripe")(
+  "sk_test_51Pl5wSEVUjNtlvUo4Mklo94tk9tBWXEnIlP7ErbPMglgDc4WFrrm2QfOPVYhIeu3Qb5fItTqMoSmk5TQ61Q2lhtY00BmR8RQJ9"
+);
 // require('dotenv').config()
 
 function validateUserInfo(info) {
@@ -195,10 +201,12 @@ module.exports.reserve_on_trip = async (req, res, next) => {
   const email = req.body.email;
   const phone = req.body.phone;
   const password = req.body.password;
+  const is_stripe = req.body.type;
   const user = await User.findByPk(req.user_id);
   let flag = await bcrypt.compare(password, user.password);
   const trip = await Trip.findByPk(trip_id);
   const wallet = await Wallet.findOne({ where: { UserId: user.id } });
+
   if (!trip) {
     return res
       .status(500)
@@ -217,9 +225,7 @@ module.exports.reserve_on_trip = async (req, res, next) => {
     let day;
     if (event) day = await DayTrips.findByPk(event.DayTripId);
     if (!event || event.type != "optional" || day.TripId != trip.id) {
-      return res
-        .status(500)
-        .json({ data: {}, err: `No optional event with id ${event.id}!` });
+      return res.status(500).json({ data: {}, err: `No optional event!` });
     }
     cost +=
       event.price_adult * optional_choices[i].adult +
@@ -227,9 +233,10 @@ module.exports.reserve_on_trip = async (req, res, next) => {
   }
   cost += trip.trip_price;
   console.log(wallet.balance, cost);
-  if (cost > wallet.balance) {
-    return res.status(500).json({ data: {}, err: "No balance enough!" });
-  }
+  if (!is_stripe)
+    if (cost > wallet.balance) {
+      return res.status(500).json({ data: {}, err: "No balance enough!" });
+    }
   let Available_capacity = trip.available_capacity - (adult + child);
   trip.available_capacity = Available_capacity;
 
@@ -249,8 +256,9 @@ module.exports.reserve_on_trip = async (req, res, next) => {
       EventId: optional_choices[i].id,
     });
   }
-
-  let nw = parseInt(wallet.balance) - parseInt(cost);
+  let nw = 0;
+  if (is_stripe) nw = parseInt(wallet.balance) - parseInt(cost);
+  else nw = 0;
   console.log(nw);
   await Transaction.create({
     AdminId: null,
@@ -2512,7 +2520,7 @@ module.exports.get_reserved_trips = async (req, res, next) => {
   trips = Array.from(new Set(trips));
   for (let i = 0; i < trips.length; i++) {
     single_trip = await Trip.findByPk(trips[i]);
-    let reservation =await  Reservation.findOne({
+    let reservation = await Reservation.findOne({
       where: {
         UserId: user.id,
         TripId: single_trip.id,
@@ -2539,45 +2547,78 @@ module.exports.get_reserved_trips = async (req, res, next) => {
   return res.status(200).json({ data: result, err: {}, msg: {} });
 };
 
-module.exports.every_reserved_trip=async(req,res,next)=>{
-  let data={};
+module.exports.every_reserved_trip = async (req, res, next) => {
+  let data = {};
 
-  try{
-  const reservation=await Reservation.findByPk(req.params.id);
-  const user=await User.findByPk(req.user_id);
-  const trip=await Trip.findByPk(reservation.TripId);
-  let optionalEvents=await everyReservationEvent.findAll({where:{reservationId:reservation.id}});
-  let events=[]
-  for(let i=0;i<optionalEvents.length;i++){
-    let optional=optionalEvents[i];
-    let event=await Event.findByPk(optional.EventId);
-    let name=event.action;
-    let object={};
-    if(optional.title)name+=" "+event.title;
-    else{
-      name+=" "+((await Attraction.findByPk(event.AttractionId)).name)
+  try {
+    const reservation = await Reservation.findByPk(req.params.id);
+    const user = await User.findByPk(req.user_id);
+    const trip = await Trip.findByPk(reservation.TripId);
+    let optionalEvents = await everyReservationEvent.findAll({
+      where: { reservationId: reservation.id },
+    });
+    let events = [];
+    for (let i = 0; i < optionalEvents.length; i++) {
+      let optional = optionalEvents[i];
+      let event = await Event.findByPk(optional.EventId);
+      let name = event.action;
+      let object = {};
+      if (optional.title) name += " " + event.title;
+      else {
+        name += " " + (await Attraction.findByPk(event.AttractionId)).name;
+      }
+      object.name = name;
+      object.adult = optional.adult;
+      object.child = optional.child;
+      object.price_adult = event.price_adult;
+      object.price_child = event.price_child;
+      events.push(object);
     }
-    object.name=name;
-    object.adult=optional.adult;
-    object.child=optional.child;
-    object.price_adult=event.price_adult;
-    object.price_child=event.price_child;
-    events.push(object)
+    data.events = events;
+    data.bookingId = reservation.id;
+    data.name = trip.name;
+    data.destenation = await Destenation.findByPk(trip.DestenationId).name;
+    data.meetingPoint = trip.meeting_point_location;
+    data.startDate = trip.start_date;
+    data.endDate = trip.end_date;
+    data.adult = reservation.adult;
+    data.child = reservation.child;
+    data.phone_number = reservation.phone;
+    data.tripId = trip.id;
+  } catch (err) {
+    return res.status(500).json({ data: {}, err: "err", msg: "failed" });
   }
-  data.events=(events);
-  data.bookingId=reservation.id;
-  data.name=trip.name
-  data.destenation=await Destenation.findByPk(trip.DestenationId).name;
-  data.meetingPoint=trip.meeting_point_location;
-  data.startDate=trip.start_date;
-  data.endDate=trip.end_date;
-  data.adult=reservation.adult
-  data.child=reservation.child
-  data.phone_number=reservation.phone;
-  data.tripId=trip.id;}
-  catch(err){
-    return res.status(500).json({data:{},err:"err",msg:"failed"});
-  }
-  return res.status(200).json({data,err:{},msg:"done"});
+  return res.status(200).json({ data, err: {}, msg: "done" });
+};
 
-}
+module.exports.remaining_time = async (req, res, next) => {
+  const user = await User.findByPk(req.user_id);
+  let trips_id = await reservation.findAll({ where: { UserId: user.id } });
+  let name = null;
+  let trips = [];
+  for (let trip of trips_id) {
+    let curTrip = await Trip.findByPk(trip.TripId);
+    // console.log(curTrip.start_date,moment().toDate());
+    if (curTrip.start_date > moment().toDate()) {
+      trips.push(curTrip);
+    }
+  }
+  trips.sort((a, b) => a.start_date - b.start_date);
+  let obj = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  if (trips.length > 0) {
+    const now = moment().toDate();
+    const start = trips[0].start_date;
+    // console.log(now, start);
+    obj = await services.getTimeDifference(now, start);
+    console.log(obj);
+  }
+  return res.json(obj);
+};
+
+module.exports.get_customer = async (req, res, next) => {
+  const user = await User.findByPk(req.user_id);
+
+  return res
+    .status(200)
+    .json({ data: user.customerStripId, err: "", msg: "done" });
+};

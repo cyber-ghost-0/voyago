@@ -42,7 +42,10 @@ const User = sequelize.define('User', {
     type: Sequelize.STRING,
     allowNull : true
   },
-  
+  customerStripId:{
+    type:Sequelize.STRING,
+    allowNull:true
+  }
 });
 
 module.exports = User;
