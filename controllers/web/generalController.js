@@ -70,22 +70,9 @@ async function is_unique(name, model, col) {
   return admin;
 }
 
-const imageFilter = (req, file, cb) => {
-  const allowedExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp"];
-  const fileExtension = path.extname(file.originalname).toLowerCase();
-
-  if (allowedExtensions.includes(fileExtension)) {
-    cb(null, true);
-  } else {
-    cb(new Error("Invalid file type. Only images are allowed"));
-  }
-};
-
 const storage = multer.diskStorage({
-  destination: async function (req, file, cb) {
-    const uploadPath = path.join(__dirname, `../../uploads/`);
-    await fs.mkdir(uploadPath, { recursive: true });
-    cb(null, uploadPath);
+  destination: (req, file, cb) => {
+    cb(null, 'uploads');
   },
   filename: (req, file, cd) => {
   cd(null, Date.now() + path.extname(file.originalname))
@@ -516,16 +503,12 @@ module.exports.add_destenation = async (req, res, next) => {
       return res.status(500).json({ msg: "fault", err: "name is not unique" });
     }
 
-    const files = req.files;
-    const imageRecords = await Promise.all(
-      files.map(async (file) => {
-        const fileExtension = path.extname(file.originalname);
-        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${
-          file.filename
-        }${fileExtension}`;
-        images = await dest.createImage({ url: imageUrl });
-      })
-    );
+    for (const file of req.files) {
+      await Image.create({
+        url: `http://localhost:3000/uploads/${file.filename}`,
+        DestenationId: dest.id
+      });
+    }
     //}
     dest.name = name;
     dest.AdminId = AdminId;
@@ -946,4 +929,50 @@ module.exports.show_all_reservations = async (req, res, nest) => {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
+};
+
+module.exports.destinationInfo1 = async (req, res, next) => {
+  let destenation_id = req.params.id;
+  const destenation = await Destenation.findByPk(destenation_id);
+  if (!destenation) {
+    return res
+      .status(500)
+      .json({ msg: "fault", err: "there is no destenation with this id" });
+  }
+  // let destenation = await Destenation.findByPk(trip.DestenationId);
+  let reviews = await every_user_review.findAll({
+    where: { DestenationId: destenation_id },
+  });
+  let rate = 0.0;
+  let cnt = 0;
+  let cnt2 = 0;
+  reviews.forEach((element) => {
+    console.log(element.dataValues);
+    if (element.rate) {
+      cnt++;
+      rate += element.rate;
+      console.log(element.rate);
+    }
+    cnt2++;
+  });
+  if (!cnt) rate = 0;
+  else {
+    rate = (rate * 1.0) / cnt;
+  }
+  rate = rate.toFixed(1);
+  let images = await Image.findAll({
+    where: {
+      DestenationId: destenation_id
+    },
+    attributes: ['url'],
+  })
+  let result = {
+    name: destenation.name,
+    location: destenation.location,
+    rate: rate,
+    reviews: cnt2,
+    description: destenation.description,
+    images: images
+  };
+  return res.status(200).json({ msg: {}, data: result });
 };

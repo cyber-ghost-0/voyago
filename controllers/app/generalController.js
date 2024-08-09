@@ -4,6 +4,8 @@ const mail = require("../../services/Mails");
 const services = require("../../services/public");
 const BP = require("body-parser");
 const Joi = require("joi");
+const multer = require("multer");
+const path = require("path");
 const User = require("../../models/User");
 const Trip = require("../../models/Trip");
 const Image = require("../../models/image");
@@ -57,6 +59,34 @@ async function is_unique(name, model, col) {
   let user = await model.findOne({ where: whereClause });
   return user;
 }
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads');
+  },
+  filename: (req, file, cd) => {
+  cd(null, Date.now() + path.extname(file.originalname))
+  }
+  });
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: '100000000'},
+    fileFilter: (req, file, cd) => {
+    const fileTypes = /jpeg|jpg|png|gif|bmp/
+    const mimeType = fileTypes.test(file.mimetype)
+    const extname = fileTypes.test(path.extname(file.originalname))
+    if(mimeType && extname) {
+      return cd(null, true)
+    }
+    cd('Give  proper files formate to upload')
+  }
+}).single('image');
+
+module.exports = {
+  storage,
+  upload
+};
 
 module.exports.myProfile = async (req, res, next) => {
   let array;
@@ -228,16 +258,23 @@ module.exports.reserve_on_trip = async (req, res, next) => {
 };
 
 module.exports.Attractions = async (req, res, next) => {
-  let Atr = await Attraction.findAll();
+  let Atr = await Attraction.findAll({
+    include: [
+      {
+        model: image,
+        attributes: ['url']
+      }
+    ],
+});
   let arr = [];
   for (let i = 0; i < Atr.length; i++) {
-    let cur = Atr[i].dataValues;
-    let all_images = await Atr[i].getImages();
-    let URL_images = [];
-    all_images.forEach((element) => {
-      URL_images.push(element.image);
-    });
-    cur.images = URL_images;
+    // let cur = Atr[i].dataValues;
+    // let all_images = await Atr[i].getImages();
+    // let URL_images = [];
+    // all_images.forEach((element) => {
+    //   URL_images.push(element.image);
+    // });
+    // cur.images = URL_images;
     arr.push(cur);
   }
   return res.status(200).json({ data: arr, err: {}, msg: "success" });
@@ -728,6 +765,14 @@ module.exports.recommended_attractions_by_destenation = async (
     }
     let attractions = await Attraction.findAll({
       where: { DestenationId: destenation.id },
+      
+        include: [
+          {
+            model: image,
+            attributes: ['url']
+          }
+        ],
+    
     });
     // console.log(destenation_id);
     for (let i = 0; i < attractions.length; i++) {
@@ -1872,7 +1917,7 @@ module.exports.search = async (req, res, next) => {
       trips_03 = [],
       trips_04 = [];
 
-      const userId = req.user_id;
+    const userId = req.user_id;
 
     if (destination) {
       let destenations = await Destenation.findAll({
@@ -1893,6 +1938,12 @@ module.exports.search = async (req, res, next) => {
             model: Destenation,
             attributes: ["name"],
           },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
+          },
         ],
       });
     } else {
@@ -1904,6 +1955,12 @@ module.exports.search = async (req, res, next) => {
           {
             model: Destenation,
             attributes: ["name"],
+          },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
           },
         ],
       });
@@ -1924,6 +1981,12 @@ module.exports.search = async (req, res, next) => {
             model: Destenation,
             attributes: ["name"],
           },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
+          },
         ],
       });
     } else {
@@ -1935,6 +1998,12 @@ module.exports.search = async (req, res, next) => {
           {
             model: Destenation,
             attributes: ["name"],
+          },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
           },
         ],
       });
@@ -1954,6 +2023,12 @@ module.exports.search = async (req, res, next) => {
             model: Destenation,
             attributes: ["name"],
           },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
+          },
         ],
       });
     } else {
@@ -1965,6 +2040,12 @@ module.exports.search = async (req, res, next) => {
           {
             model: Destenation,
             attributes: ["name"],
+          },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
           },
         ],
       });
@@ -1988,6 +2069,12 @@ module.exports.search = async (req, res, next) => {
           {
             model: Destenation,
             attributes: ["name"],
+          },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
           },
         ],
       });
@@ -2013,6 +2100,12 @@ module.exports.search = async (req, res, next) => {
             model: Destenation,
             attributes: ["name"],
           },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
+          },
         ],
       });
     }
@@ -2035,6 +2128,12 @@ module.exports.search = async (req, res, next) => {
           {
             model: Destenation,
             attributes: ["name"],
+          },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
           },
         ],
       });
@@ -2059,6 +2158,12 @@ module.exports.search = async (req, res, next) => {
           {
             model: Destenation,
             attributes: ["name"],
+          },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
           },
         ],
       });
@@ -2212,7 +2317,7 @@ module.exports.charge_wallet = async (req, res, next) => {
   console.log(fcm);
   let title = "crediting";
   let body = "Your requist is pending ... we will respond as soon as!";
-  await Notification_mod.create({ UserId: user_id, title: title, body: body ,type:"wallet"});
+  await Notification_mod.create({ UserId: user_id, title: title, body: body, type: "wallet" });
   Notification.notify(fcm.token, title, body, res, next);
   // return res
   //   .status(200)
@@ -2480,3 +2585,82 @@ module.exports.get_Notifications = async (req, res, next) => {
   let notif = await Notification_mod.findAll({ where: { UserId: user.id } });
   return res.status(200).json({ data: notif, err: {}, msg: {} });
 };
+
+module.exports.attraction_search = async (req, res, next) => {
+  try {
+    const userId = req.user_id;
+    let { destination } = req.query
+    destination = await Destenation.findAll({
+      where: {
+        name: {
+          [Op.like]: `${destination}%`,
+        },
+      },
+    });
+
+    if (destination.length === 0) {
+      return res.status(404).json({ msg: "No result found1", data: null });
+    }
+
+    let attractions = await Attraction.findAll({
+      where: {
+        DestenationId: destination.map((d) => d.id),
+      },
+      include: [
+        {
+          model: Image,
+          attributes: ["url"],
+          limit: 1,
+          order: [["id", "ASC"]],
+        },
+      ],
+    });
+
+    if (attractions.length === 0) {
+      return res.status(404).json({ msg: "No result found2", data: null });
+    }
+
+    const favorites = await favourites.findAll({
+      where: {
+        AttractionId: attractions.map(a => a.id),
+        UserId: userId,
+      },
+    });
+
+    const favoritre_attractionIds = favorites.map(f => f.AttractionId);
+
+    let reviews = await every_user_review.findAll({
+      where: { AttractionId: attractions.map((a) => a.id) },
+    });
+
+    let rateMap = {};
+    reviews.forEach((review) => {
+      if (review.rate) {
+        if (!rateMap[review.AttractionId]) {
+          rateMap[review.AttractionId] = {
+            total: 0,
+            count: 0,
+          };
+        }
+        rateMap[review.AttractionId].total += review.rate;
+        rateMap[review.AttractionId].count += 1;
+      }
+    });
+
+    attractions = attractions.map((attraction) => {
+      const { total, count } = rateMap[attraction.id] || { total: 0, count: 0 };
+      const rate = count > 0 ? (total / count).toFixed(1) : null;
+      return {
+        ...attraction.toJSON(),
+        favorites: favoritre_attractionIds.includes(attraction.id),
+        rate,
+      };
+    });
+
+    return res.status(200).json({ data: { attractions } });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+

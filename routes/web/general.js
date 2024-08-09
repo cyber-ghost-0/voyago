@@ -63,7 +63,8 @@ router.get('/show_all_transactions', is_auth, generalController.show_all_transac
 router.get('/show_all_reservations', is_auth, generalController.show_all_reservations);
 
 router.post('/upload_trip_images', is_auth, generalController.upload, generalController.upload_trip_images);
-//
+
+router.get('/destinationInfo1/:id', is_auth, generalController.destinationInfo1);
 
 
 module.exports = router;

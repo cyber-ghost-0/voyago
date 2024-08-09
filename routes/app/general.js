@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/myProfile', is_auth, generalController.myProfile);
 
-router.post('/EditMyProfile', is_auth, generalController.EditMyProfile);
+router.post('/EditMyProfile', is_auth,/*generalController.upload,*/ generalController.EditMyProfile);
 
 router.get('/im/:id', generalController.im_t);
 
@@ -75,7 +75,7 @@ router.get('/Attraction_full_review/:id',is_auth,generalController.full_review_A
 
 router.get('/attraction_review/:id', is_auth, generalController.reviews_Attraction)
 
-router.get('/search/', is_auth, generalController.search);
+router.get('/search', is_auth, generalController.search);
 
 router.get('/optionalEvents/:id',is_auth,generalController.getOptionalEvents);
 
@@ -97,6 +97,8 @@ router.get('/profile/wallet_history/:id',is_auth,generalController.every_wallet_
 router.get('/profile/favourites',is_auth,generalController.my_favourites);
 
 router.get('/Notifications',is_auth,generalController.get_Notifications);
+
+router.get('/attraction_search', is_auth, generalController.attraction_search);
 
 
 // router.get('/send',generalController.notify);
