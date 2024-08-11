@@ -5,8 +5,16 @@ const services = require("../../services/public");
 const BP = require("body-parser");
 const Joi = require("joi");
 const User = require("../../models/User");
-const Wallet=require("../../models/wallet")
-const FCM=require("../../models/FCM_Tokens")
+const Wallet = require("../../models/wallet");
+const FCM = require("../../models/FCM_Tokens");
+const reservation = require("../../models/reservation");
+const Trip = require("../../models/Trip");
+const cron = require("node-cron");
+const moment = require("moment");
+const stripe = require("stripe")(
+  "sk_test_51Pl5wSEVUjNtlvUo4Mklo94tk9tBWXEnIlP7ErbPMglgDc4WFrrm2QfOPVYhIeu3Qb5fItTqMoSmk5TQ61Q2lhtY00BmR8RQJ9"
+);
+const { Op, INTEGER } = require("sequelize");
 
 // require('dotenv').config()
 
@@ -86,8 +94,8 @@ module.exports.register = async (req, res, next) => {
     let userr;
     await bcrypt
       .hash(password, 12)
-      .then(async(hashpassword) => {
-       userr= await User.create({
+      .then(async (hashpassword) => {
+        userr = await User.create({
           username: username,
           password: hashpassword,
           email: email,
@@ -98,8 +106,8 @@ module.exports.register = async (req, res, next) => {
       .catch((err) => {
         console.log(err);
       });
-      console.log(userr);
-      await Wallet.create({balance : 0 , UserId :userr.id});
+    console.log(userr);
+    await Wallet.create({ balance: 0, UserId: userr.id });
 
     return res.status(201).json({
       err: {},
@@ -142,7 +150,68 @@ module.exports.Login = async (req, res, next) => {
     "4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419"
   );
   services.black_list.push(refreshToken);
-   await FCM.create({token : req.body.fcm,UserId:user.id})
+  let f = await FCM.findOne({ where: { UserId: user.id } });
+  if (!f) await FCM.create({ token: req.body.fcm, UserId: user.id });
+  else {
+    f.token = req.body.fcm;
+    await f.save();
+  }
+  console.log(55);
+
+  // cron.schedule("* * * * * *", async () => {
+  //   console.log(55);
+  //   console.log(user.id);
+  //   // if (req.user_id)
+  //   try {
+  //     const oneHourLater = moment().add(1, "hour").toDate();
+  //     const oneHourLaterPlusOneMinute = moment(oneHourLater)
+  //       .add(1, "minute")
+  //       .toDate();
+  //     let trips_id = await reservation.findAll({ where: { UserId: user.id } });
+  //     let trips = [];
+  //     for (let trip of trips_id) {
+  //       trips.push(await Trip.findOne({ where: { id: trip.TripId } }));
+  //     }
+  //     let tripsStartingInAnHour=[];
+  //     for (let trip of trips) {
+  //       console.log(trip,'...')
+  //       let start = trip.start_date;
+  //       if(start >= oneHourLater && start <= oneHourLaterPlusOneMinute){
+  //         tripsStartingInAnHour.push(trip);
+  //       }
+  //     }
+
+  //     for (let trip of tripsStartingInAnHour) {
+  //       const fcm = await FCM.findOne({ where: { UserId: req.user_id } });
+  //       const title = "Upcoming Trip Reminder";
+  //       const body = `Your trip to ${trip.name} is starting in an hour!`;
+  //       await Notification_mod.create({
+  //         UserId: req.user_id,
+  //         title: title,
+  //         body: body,
+  //         type: "tripReminder",
+  //       });
+  //       Notification.notify(fcm.token, title, body, res, next, true);
+  //       trip.id;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error checking for trips starting in an hour:", error);
+  //   }
+  // });
+
+  if (!user.customerStripId) {
+    try{
+    const customer = await stripe.customers.create({
+      email: user.email,
+      name: user.username,
+    });
+    console.log(customer);
+    user.customerStripId = customer.id;
+    user.save();}
+    catch(err){
+      return res.status(500).json({data:{},err:"please connect to internet then try again "});
+    }
+  }
   return res.status(200).json({
     data: { accessToken: accessToken, refreshToken: refreshToken },
     err: {},

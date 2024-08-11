@@ -43,3 +43,34 @@ module.exports.removeProperty = async (obj, key) => {
   // console.log(newObj)
   return newObj;
 };
+
+module.exports.getTimeDifference = async (date1, date2) => {
+  // Ensure the input dates are in Date object format
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
+
+  // Calculate the difference in milliseconds
+  let diff = Math.abs(d1 - d2);
+
+  // Calculate days
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  diff -= days * 1000 * 60 * 60 * 24;
+
+  // Calculate hours
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  diff -= hours * 1000 * 60 * 60;
+
+  // Calculate minutes
+  const minutes = Math.floor(diff / (1000 * 60));
+  diff -= minutes * 1000 * 60;
+
+  // Calculate seconds
+  const seconds = Math.floor(diff / 1000);
+  console.log(days,hours)
+  return {
+    'days': days,
+    'hours': hours,
+    'minutes': minutes,
+    'seconds': seconds,
+  };
+};

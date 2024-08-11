@@ -97,8 +97,16 @@ router.get('/profile/wallet_history/:id',is_auth,generalController.every_wallet_
 router.get('/profile/favourites',is_auth,generalController.my_favourites);
 
 router.get('/Notifications',is_auth,generalController.get_Notifications);
+router.get('/bookingTrips',is_auth,generalController.get_reserved_trips);
+
+router.get('/bookingTrips/:id',is_auth,generalController.every_reserved_trip);
+
+router.get('/remainingTime',is_auth,generalController.remaining_time);
+
+router.get('/stripe/customerId',is_auth,generalController.get_customer);
 
 router.get('/attraction_search', is_auth, generalController.attraction_search);
+
 
 
 // router.get('/send',generalController.notify);

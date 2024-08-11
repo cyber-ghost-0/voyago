@@ -31,6 +31,10 @@ const charge_request = require("./models/chargeRequest");
 const transaction = require("./models/transaction.js");
 const Notification_mod=require("./models/Notification.js")
 const cors = require("cors");
+const cron = require("node-cron");
+const moment = require("moment");
+const { Op, INTEGER } = require("sequelize");
+
 
 app.use(BP.json());
 app.use('/uploads', express.static('./uploads'));
@@ -123,8 +127,8 @@ Favourites.belongsTo(Attraction, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(FCM, { constraints: true, onDelete: "CASCADE" });
 FCM.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
-charge_request.hasOne(transaction, { constraints: true, onDelete: "CASCADE" });
-transaction.belongsTo(charge_request, { constraints: true, onDelete: "CASCADE" });
+charge_request.hasOne(transaction, { constraints: true });
+transaction.belongsTo(charge_request, { constraints: true });
 
 User.hasMany(Notification_mod, { constraints: true, onDelete: "CASCADE" });
 Notification_mod.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
@@ -136,6 +140,9 @@ app.use(BP.json());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+
 
 app.use("/api", appAuth);
 app.use("/web", webAuth);
