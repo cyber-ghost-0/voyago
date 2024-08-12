@@ -65,18 +65,18 @@ const storage = multer.diskStorage({
     cb(null, 'uploads');
   },
   filename: (req, file, cd) => {
-  cd(null, Date.now() + path.extname(file.originalname))
+    cd(null, Date.now() + path.extname(file.originalname))
   }
-  });
+});
 
 const upload = multer({
-    storage: storage,
-    limits: { fileSize: '100000000'},
-    fileFilter: (req, file, cd) => {
+  storage: storage,
+  limits: { fileSize: '100000000' },
+  fileFilter: (req, file, cd) => {
     const fileTypes = /jpeg|jpg|png|gif|bmp/
     const mimeType = fileTypes.test(file.mimetype)
     const extname = fileTypes.test(path.extname(file.originalname))
-    if(mimeType && extname) {
+    if (mimeType && extname) {
       return cd(null, true)
     }
     cd('Give  proper files formate to upload')
@@ -265,7 +265,7 @@ module.exports.Attractions = async (req, res, next) => {
         attributes: ['url']
       }
     ],
-});
+  });
   let arr = [];
   for (let i = 0; i < Atr.length; i++) {
     // let cur = Atr[i].dataValues;
@@ -765,14 +765,14 @@ module.exports.recommended_attractions_by_destenation = async (
     }
     let attractions = await Attraction.findAll({
       where: { DestenationId: destenation.id },
-      
-        include: [
-          {
-            model: image,
-            attributes: ['url']
-          }
-        ],
-    
+
+      include: [
+        {
+          model: image,
+          attributes: ['url']
+        }
+      ],
+
     });
     // console.log(destenation_id);
     for (let i = 0; i < attractions.length; i++) {
@@ -2664,3 +2664,143 @@ module.exports.attraction_search = async (req, res, next) => {
   }
 };
 
+module.exports.destination_single_image = async (req, res, next) => {
+  const destination_id = req.params.id;
+  try {
+    let image = await Image.findAll({
+      where: {
+        DestenationId: destination_id,
+      },
+      attributes: ['url'],
+    });
+
+    let firstImage = image.length > 0 ? image[0] : null;
+
+    return res.status(200).json({ data: { firstImage } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.attraction_single_image = async (req, res, next) => {
+  const attraction_id = req.params.id;
+  try {
+    let image = await Image.findAll({
+      where: {
+        AttractionId: attraction_id,
+      },
+      attributes: ['url'],
+    });
+
+    let firstImage = image.length > 0 ? image[0] : null;
+
+    return res.status(200).json({ data: { firstImage } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.trip_single_image = async (req, res, next) => {
+  const trip_id = req.params.id;
+  try {
+    let image = await Image.findAll({
+      where: {
+        TripId: trip_id,
+      },
+      attributes: ['url'],
+    });
+
+    let firstImage = image.length > 0 ? image[0] : null;
+
+    return res.status(200).json({ data: { firstImage } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.all_trip_images = async (req, res, next) => {
+  const trip_id = req.params.id;
+  try {
+    let images = await Image.findAll({
+      where: {
+        TripId: trip_id,
+      },
+      attributes: ['url'],
+    });
+
+    return res.status(200).json({ data: { images } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.all_attraction_images = async (req, res, next) => {
+  const attraction_id = req.params.id;
+  try {
+    let images = await Image.findAll({
+      where: {
+        AttractionId: attraction_id,
+      },
+      attributes: ['url'],
+    });
+
+    return res.status(200).json({ data: { images } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.all_destination_images = async (req, res, next) => {
+  const destination_id = req.params.id;
+  try {
+    let images = await Image.findAll({
+      where: {
+        DestenationId: destination_id,
+      },
+      attributes: ['url'],
+    });
+
+    return res.status(200).json({ data: { images } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.reservation_trip_image = async (req, res, next) => {
+  const reservation_id = req.params.id;
+  try {
+    let reservation0 = await reservation.findByPk(reservation_id,
+      {
+        attributes: ['TripId']
+      }
+    );
+    let trip_id = reservation0.TripId;
+
+    let image = await Image.findAll({
+      where: {
+        TripId: trip_id,
+      },
+      attributes: ['url'],
+    });
+
+    let firstImage = image.length > 0 ? image[0] : null;
+
+    return res.status(200).json({ data: { firstImage } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
