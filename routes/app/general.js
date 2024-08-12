@@ -93,7 +93,6 @@ router.get('/profile/wallet_history',is_auth,generalController.wallet_history);
 
 router.get('/profile/wallet_history/:id',is_auth,generalController.every_wallet_history);
 
-
 router.get('/profile/favourites',is_auth,generalController.my_favourites);
 
 router.get('/Notifications',is_auth,generalController.get_Notifications);
@@ -107,6 +106,19 @@ router.get('/stripe/customerId',is_auth,generalController.get_customer);
 
 router.get('/attraction_search', is_auth, generalController.attraction_search);
 
+router.get('/destination_single_image/:id', is_auth, generalController.destination_single_image);
+
+router.get('/attraction_single_image/:id', is_auth, generalController.attraction_single_image);
+
+router.get('/trip_single_image/:id', is_auth, generalController.trip_single_image);
+
+router.get('/all_trip_images/:id', is_auth, generalController.all_trip_images);
+
+router.get('/all_attraction_images/:id', is_auth, generalController.all_attraction_images);
+
+router.get('/all_destination_images/:id', is_auth, generalController.all_destination_images);
+
+router.get('/reservation_trip_image/:id', is_auth, generalController.reservation_trip_image);
 
 
 // router.get('/send',generalController.notify);
