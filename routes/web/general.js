@@ -66,5 +66,34 @@ router.post('/upload_trip_images', is_auth, generalController.upload, generalCon
 
 router.get('/destinationInfo1/:id', is_auth, generalController.destinationInfo1);
 
+router.get('/destinationInfo2/:id',is_auth,generalController.destinationInfo2);
+
+router.get('/destinationInfo3/:id',is_auth,generalController.destinationInfo3);
+
+router.get('/attractionInfo1/:id',is_auth,generalController.attractionInfo1);
+
+router.get('/attractionInfo2/:id',is_auth,generalController.attractionInfo2);
+
+router.get('/Attraction_full_review/:id',is_auth,generalController.full_review_Attraction);
+
+router.get('/destenation_full_review/:id', is_auth, generalController.full_review_destenation)
+
+router.get('/trip_full_review/:id', is_auth, generalController.full_review_trip)
+
+router.get('/tripInfo1/:id',generalController.TripInfo1);
+
+router.get('/tripInfo2/:id', generalController.TripInfo2);
+
+router.get('/tripInfo3/:id',is_auth, generalController.TripInfo3);
+
+router.get('/check_before_delete_destination/:id',is_auth, generalController.check_before_delete_destination);
+
+router.get('/check_before_delete_attraction/:id',is_auth, generalController.check_before_delete_attraction);
+
+router.get('/overview_users',is_auth, generalController.overview_users);
+
+router.get('/top_trips',is_auth, generalController.top_trips);
+
+router.get('/top_destinations',is_auth, generalController.top_destinations);
 
 module.exports = router;
