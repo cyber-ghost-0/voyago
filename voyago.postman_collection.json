@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "0366a52b-9fc6-4410-9905-1669cd0f2fe5",
+		"_postman_id": "e78bf142-4b05-47f1-9675-7b5c4d430592",
 		"name": "voyago",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "36969951"
+		"_exporter_id": "20212800",
+		"_collection_link": "https://speeding-zodiac-397084.postman.co/workspace/My-Workspace~8170659f-86ba-4831-896a-67f632302642/collection/20212800-e78bf142-4b05-47f1-9675-7b5c4d430592?action=share&source=collection_link&creator=20212800"
 	},
 	"item": [
 		{
@@ -106,7 +107,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"awssnss\",\r\n    \"password\" : \"anas1234\",\r\n    \"fcm\": \"cqPP1uSjRtiH1CgyvX2gkR:APA91bEb9h4g4_0frVdtVrZrWVlA7Oevgcbp60x2O-cqT-bmF2vqbqz9MNF35Xu_1onnnNaQG9PjozeLKViARM_nVsW5WkKyIh1mGZSk1LcnSDNejxoZ9XnRHrDAWZz-gssb8muXc_Rm\"\r\n}",
+							"raw": "{\r\n    \"username\" : \"Aya sareej\",\r\n    \"password\" : \"12345678\",\r\n    \"fcm\": \"cqPP1uSjRtiH1CgyvX2gkR:APA91bEb9h4g4_0frVdtVrZrWVlA7Oevgcbp60x2O-cqT-bmF2vqbqz9MNF35Xu_1onnnNaQG9PjozeLKViARM_nVsW5WkKyIh1mGZSk1LcnSDNejxoZ9XnRHrDAWZz-gssb8muXc_Rm\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -170,7 +171,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"correct_code\" : \"11771\",\r\n    \"in_code\" : \"11771\",\r\n    \"username\" : \"awssnss\",\r\n    \"email\" : \"answsss.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anas1234\",\r\n    \"confirm_password\" : \"anas1234\"\r\n}",
+							"raw": "{\r\n    \"correct_code\" : \"76533\",\r\n    \"in_code\" : \"76533\",\r\n    \"username\" : \"awssnss\",\r\n    \"email\" : \"answsss.sahar.ahmad@gmail.com\",\r\n    \"password\" : \"anas1234\",\r\n    \"confirm_password\" : \"anas1234\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -353,7 +354,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"adult\":0,\r\n    \"child\":0,\r\n    \"optional_choices\":[\r\n        \r\n        \r\n    ],\r\n    \"email\":\"AA@gmail.com\",\r\n    \"phone\":\"0937402356\",\r\n    \"password\":\"12345678\",\r\n    \"type\" : 0\r\n}",
+							"raw": "{\r\n    \"adult\":5,\r\n    \"child\":2,\r\n    \"optional_choices\":[\r\n        {\r\n            \"id\":1,\r\n            \"adult\":5,\r\n            \"child\":3\r\n        },\r\n        {\r\n            \"id\":5,\r\n            \"adult\":5,\r\n            \"child\":3\r\n        }\r\n    ],\r\n    \"email\":\"AA@gmail.com\",\r\n    \"phone\":\"0937402356\",\r\n    \"password\":\"12345678\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -361,7 +362,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/reservation/17",
+							"raw": "http://localhost:3000/api/reservation/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -370,7 +371,7 @@
 							"path": [
 								"api",
 								"reservation",
-								"17"
+								"1"
 							]
 						}
 					},
@@ -385,8 +386,7 @@
 								"exec": [
 									"            "
 								],
-								"type": "text/javascript",
-								"packages": {}
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -401,7 +401,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"bank_ticket\":\"222\",\r\n    \"amount\":\"4000\"\r\n}"
+							"raw": "{\r\n    \"bank_ticket\":\"222\",\r\n    \"amount\":\"35\"\r\n}"
 						},
 						"url": {
 							"raw": "http://localhost:3000/api/charge_wallet",
@@ -650,7 +650,7 @@
 					"response": []
 				},
 				{
-					"name": "top_attractions",
+					"name": "http://localhost:3000/api/top_attractions",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1405,6 +1405,44 @@
 					"response": []
 				},
 				{
+					"name": "http://localhost:3000/web/upload",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": "/C:/Users/anas/Pictures/photo_5830104971595596537_y.jpg"
+								},
+								{
+									"key": "destinationId",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/upload",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "http://localhost:3000/api/Notification",
 					"request": {
 						"method": "GET",
@@ -1425,12 +1463,22 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/bookingTrips",
+					"name": "attraction_single_image",
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/bookingTrips",
+							"raw": "http://localhost:3000/api/attraction_single_image/4",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1438,19 +1486,30 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"bookingTrips"
+								"attraction_single_image",
+								"4"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/bookingTrips/2",
+					"name": "destination_single_image",
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/bookingTrips/2",
+							"raw": "http://localhost:3000/api/destination_single_image/4",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1458,7 +1517,38 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"bookingTrips",
+								"destination_single_image",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trip_single_image",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/trip_single_image/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trip_single_image",
 								"2"
 							]
 						}
@@ -1466,12 +1556,22 @@
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/remaining_time",
+					"name": "all_trip_images",
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/remainingTime",
+							"raw": "http://localhost:3000/api/all_trip_images/2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1479,19 +1579,30 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"remainingTime"
+								"all_trip_images",
+								"2"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "http://localhost:3000/api/stripe",
+					"name": "all_attraction_images",
 					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/stripe",
+							"raw": "http://localhost:3000/api/all_attraction_images/4",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1499,7 +1610,70 @@
 							"port": "3000",
 							"path": [
 								"api",
-								"stripe"
+								"all_attraction_images",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "all_destination_images",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/all_destination_images/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"all_destination_images",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reservation_trip_image",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/reservation_trip_image/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"reservation_trip_image",
+								"1"
 							]
 						}
 					},
@@ -1839,7 +2013,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Trip_22\",\r\n    \"destenation_id\":1,\r\n    \"start_date\" : \"2024-08-07 16:010:21\",\r\n    \"price\" :10,\r\n    \"capacity\" : 10,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"attraction_id\":3,\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"optional\",\r\n                \"price_adult\":10,\r\n                \"price_child\":10,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ijbari\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"op\",\r\n                \"price_adult\":50,\r\n                \"price_child\":200,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
+							"raw": "{\r\n    \"name\" : \"Trip_5\",\r\n    \"destenation_id\":2,\r\n    \"start_date\" : \"10-05-2002\",\r\n    \"price\" :10,\r\n    \"capacity\" : 500,\r\n    \"description\" :\"NoBody Knows\",\r\n    \"images\":[\r\n        \"one\",\"two\",\"URL\",\"HERE\"\r\n    ],\r\n    \"features\":[\r\n        1\r\n    ],\r\n    \"meeting_point_location\" : \"Damas\",\r\n    \"TimeLimitCancellation\" : 5,\r\n    \"days\" : [\r\n        [\r\n            {\r\n                \"action\":\"pass by\",\r\n                \"title\":\"eating\",\r\n                \"attraction_id\":3,\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"optional\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"eating\",\r\n                \"title\":\"fg\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ijbari\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"44\"\r\n            }\r\n        ],\r\n        [\r\n            {\r\n                \"action\":\"sleeping\",\r\n                \"title\":\"badroom\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"5\",\r\n                \"description\":\"asdfasfd\",\r\n                \"type\":\"optional\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"sfddfv\"\r\n            },\r\n            {\r\n                \"action\":\"swimming\",\r\n                \"title\":\"fds\",\r\n                \"start_date\":\"10-05-2002\",\r\n                \"duration\":\"2\",\r\n                \"description\":\"sdf\",\r\n                \"type\":\"ff\",\r\n                \"price_adult\":null,\r\n                \"price_child\":null,\r\n                \"additional_note\":\"4\"\r\n            }\r\n        ]\r\n    ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -2041,27 +2215,6 @@
 					"response": []
 				},
 				{
-					"name": "users/id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/web/users/1",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"web",
-								"users",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "features_included",
 					"request": {
 						"method": "GET",
@@ -2224,7 +2377,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/web/approve_charge/5",
+							"raw": "http://localhost:3000/web/approve_charge/7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -2233,7 +2386,7 @@
 							"path": [
 								"web",
 								"approve_charge",
-								"5"
+								"7"
 							]
 						}
 					},
@@ -2255,6 +2408,558 @@
 								"web",
 								"reject_charge",
 								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "destinationInfo2",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/destinationInfo2/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"destinationInfo2",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "destinationInfo3",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/destinationInfo3/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"destinationInfo3",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "destinationInfo1",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/destinationInfo1/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"destinationInfo1",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "attractionInfo1",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/attractionInfo1/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"attractionInfo1",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "upload_trip_images",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "tripId",
+									"value": "3",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": [
+										"postman-cloud:///1ef3b89a-ec99-46e0-94f4-074a76541eee",
+										"postman-cloud:///1ef3b077-a859-4780-87e4-3dbedadc782e"
+									]
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/web/upload_trip_images",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"upload_trip_images"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "attractionInfo2",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/attractionInfo2/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"attractionInfo2",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Attraction_full_review",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/Attraction_full_review/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"Attraction_full_review",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "destenation_full_review",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/destenation_full_review/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"destenation_full_review",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trip_full_review",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/trip_full_review/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"trip_full_review",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "tripInfo1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/tripInfo1/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"tripInfo1",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "tripInfo2",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/tripInfo2/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"tripInfo2",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "tripInfo3",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/tripInfo3/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"tripInfo3",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users/id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check_before_delete_destination",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/check_before_delete_destination/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"check_before_delete_destination",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check_before_delete_attraction",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/check_before_delete_attraction/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"check_before_delete_attraction",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "overview_users_and_booking",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/overview_users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"overview_users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "top_trips",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/top_trips",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"top_trips"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "top_destinations",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/top_destinations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"top_destinations"
 							]
 						}
 					},
