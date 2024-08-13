@@ -69,26 +69,51 @@ async function is_unique(name, model, col) {
   return user;
 }
 
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'uploads');
+//   },
+//   filename: (req, file, cd) => {
+//     cd(null, Date.now() + path.extname(file.originalname))
+//   }
+// });
+
+// const upload = multer({
+//   storage: storage,
+//   limits: { fileSize: '100000000' },
+//   fileFilter: (req, file, cd) => {
+//     const fileTypes = /jpeg|jpg|png|gif|bmp/
+//     const mimeType = fileTypes.test(file.mimetype)
+//     const extname = fileTypes.test(path.extname(file.originalname))
+//     if (mimeType && extname) {
+//       return cd(null, true)
+//     }
+//     cd('Give  proper files formate to upload')
+//   }
+// }).single('image');
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads');
+    cb(null, 'uploads'); // Specify the uploads directory
   },
-  filename: (req, file, cd) => {
-    cd(null, Date.now() + path.extname(file.originalname))
+  filename: (req, file, cb) => {
+    // Generate a unique filename with the original file extension
+    cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: '100000000' },
-  fileFilter: (req, file, cd) => {
-    const fileTypes = /jpeg|jpg|png|gif|bmp/
-    const mimeType = fileTypes.test(file.mimetype)
-    const extname = fileTypes.test(path.extname(file.originalname))
+  limits: { fileSize: '100000000' }, // Limit file size to 100MB
+  fileFilter: (req, file, cb) => {
+    const fileTypes = /jpeg|jpg|png|gif|bmp/; // Allowed file types
+    const mimeType = fileTypes.test(file.mimetype);
+    const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+
     if (mimeType && extname) {
-      return cd(null, true)
+      return cb(null, true);
     }
-    cd('Give  proper files formate to upload')
+    cb(new Error('Invalid file format. Only JPEG, JPG, PNG, GIF, and BMP are allowed.'));
   }
 }).single('image');
 
@@ -2303,10 +2328,12 @@ module.exports.charge_wallet = async (req, res, next) => {
   const user_id = req.user_id;
   const bank_ticket = req.body.bank_ticket;
   let amount = req.body.amount;
-
+  if (!req.file) {
+    return res.status(400).json({ msg: "No file uploaded.", data: null });
+  }
   const charge_req = await ChargeRequest.create({
     UserId: user_id,
-    bank_ticket: bank_ticket,
+    bank_ticket: `http://localhost:3000/uploads/${req.file.filename}`,
     amount: amount,
   });
   let wallet = await Wallet.findOne({ where: { UserId: user_id } });
@@ -2320,6 +2347,7 @@ module.exports.charge_wallet = async (req, res, next) => {
     type: "credit",
     status: "pending",
     chargeRequestId: charge_req.id,
+    
   });
   const fcm = await FCM.findOne({ where: { UserId: user_id } });
   console.log(fcm);
@@ -2944,3 +2972,76 @@ module.exports.reservation_trip_image = async (req, res, next) => {
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
 };
+
+module.exports.add_profile_pic = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ msg: "No file uploaded.", data: null });
+    }
+
+    const user = await User.findOne({ where: { id: req.user_id } });
+    if (!user) {
+      return res.status(404).json({ msg: "User not found.", data: null });
+    }
+
+    user.profile_pic = `http://localhost:3000/uploads/${req.file.filename}`;
+    await user.save();
+
+    return res.status(200).json({ msg: "Profile picture updated successfully", data: {} });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.token_profile_pic = async (req, res, next) => {
+  try {
+
+    const pic = await User.findOne({
+      where: {
+        id: req.user_id
+      },
+      attributes: [
+        'profile_pic',
+      ],
+    });
+
+    if (!pic) {
+      return res.status(404).json({ msg: "No profile_pic", data: null });
+    }
+
+    return res.status(200).json({ msg: {}, data: {pic} });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.id_profile_pic = async (req, res, next) => {
+  const user_id = req.params.id;
+  try {
+    const pic = await User.findOne({
+      where: {
+        id: user_id
+      },
+      attributes: [
+        'profile_pic',
+      ],
+    });
+
+    if (!pic) {
+      return res.status(404).json({ msg: "No profile_pic", data: null });
+    }
+
+    return res.status(200).json({ msg: {}, data: {pic} });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+
+

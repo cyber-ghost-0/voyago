@@ -96,4 +96,8 @@ router.get('/top_trips',is_auth, generalController.top_trips);
 
 router.get('/top_destinations',is_auth, generalController.top_destinations);
 
+router.get('/profile_pic/:id', is_auth, generalController.id_profile_pic);
+
+router.delete('/delete_reservation_by_id/:id', is_auth, generalController.delete_reservation_by_id);
+
 module.exports = router;

@@ -1793,35 +1793,37 @@ module.exports.overview_users = async (req, res, next) => {
     const today_percentage_change_bookings = ((todayBookings - yesterdayBookings) / (yesterdayBookings || 1)) * 100;
 
     const userMessage = percentage_change_of_registration > 0
-    ? 'Up from last month'
-    : 'Down from last month';
+      ? 'Up from last month'
+      : 'Down from last month';
 
     const bookingMessage = percentage_change_of_booking > 0
       ? 'Up from last month'
       : 'Down from last month';
 
     const todayUserMessage = today_percentage_change_users > 0
-    ? 'Up from yesterday'
-    : 'Down from yesterday';
+      ? 'Up from yesterday'
+      : 'Down from yesterday';
 
     const todayBookingMessage = today_percentage_change_bookings > 0
       ? 'Up from yesterday'
       : 'Down from yesterday';
 
-    return res.status(200).json({ msg: {}, data: {
-      total_users,
-      percentage_change_of_registration_from_last_month: percentage_change_of_registration.toFixed(2),
-      userMessage,
-      total_booking,
-      percentage_change_of_booking_from_last_month: percentage_change_of_booking.toFixed(2),
-      bookingMessage,
-      todayUsers,
-      today_percentage_change_users: today_percentage_change_users.toFixed(2),
-      todayUserMessage,
-      todayBookings,
-      today_percentage_change_bookings: today_percentage_change_bookings.toFixed(2),
-      todayBookingMessage
-    } });
+    return res.status(200).json({
+      msg: {}, data: {
+        total_users,
+        percentage_change_of_registration_from_last_month: percentage_change_of_registration.toFixed(2),
+        userMessage,
+        total_booking,
+        percentage_change_of_booking_from_last_month: percentage_change_of_booking.toFixed(2),
+        bookingMessage,
+        todayUsers,
+        today_percentage_change_users: today_percentage_change_users.toFixed(2),
+        todayUserMessage,
+        todayBookings,
+        today_percentage_change_bookings: today_percentage_change_bookings.toFixed(2),
+        todayBookingMessage
+      }
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error", error });
@@ -1856,7 +1858,7 @@ module.exports.top_trips = async (req, res, next) => {
       rate = rate.toFixed(1);
 
       let bookings = await reservation.findAll({
-        where:{
+        where: {
           tripId: trpID
         }
       });
@@ -1923,4 +1925,44 @@ module.exports.top_destinations = async (req, res, next) => {
   result = result.slice(0, 10);
 
   return res.status(200).json({ msg: {}, data: { result } });
+};
+
+module.exports.id_profile_pic = async (req, res, next) => {
+  const user_id = req.params.id;
+  try {
+    const pic = await User.findOne({
+      where: {
+        id: user_id
+      },
+      attributes: [
+        'profile_pic',
+      ],
+    });
+
+    if (!pic) {
+      return res.status(404).json({ msg: "No profile_pic", data: null });
+    }
+
+    return res.status(200).json({ msg: {}, data: { pic } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.delete_reservation_by_id = async (req, res, next) => {
+  const resrvation_id = req.params.id;
+  try {
+    let reserv = await reservation.findByPk(resrvation_id);
+    if (!reserv) {
+      return res.status(500).json({ msg: "fault", err: "Reservation is not exist!" });
+    }
+    reserv.destroy();
+    return res.status(200).json({ msg: "DONE|" }).status(200);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
 };
