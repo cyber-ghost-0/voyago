@@ -19,7 +19,7 @@ router.post('/attraction_review/:id', is_auth, generalController.attraction_revi
 
 router.post('/reservation/:id', is_auth, generalController.reserve_on_trip)
 
-router.post('/charge_wallet', is_auth, generalController.charge_wallet)
+router.post('/charge_wallet', is_auth, generalController.upload, generalController.charge_wallet)
 
 router.get('/trending_destenation',is_auth, generalController.trending_destenation)
 
@@ -112,6 +112,13 @@ router.get('/all_attraction_images/:id', is_auth, generalController.all_attracti
 router.get('/all_destination_images/:id', is_auth, generalController.all_destination_images);
 
 router.get('/reservation_trip_image/:id', is_auth, generalController.reservation_trip_image);
+
+router.post('/add_profile_pic', is_auth, generalController.upload, generalController.add_profile_pic);
+
+router.get('/token_profile_pic', is_auth, generalController.token_profile_pic);
+
+router.get('/id_profile_pic/:id', is_auth, generalController.id_profile_pic);
+
 
 // router.get('/send',generalController.notify);
 
