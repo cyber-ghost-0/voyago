@@ -1926,7 +1926,9 @@ module.exports.search = async (req, res, next) => {
   try {
     let {
       destination,
-      price,
+     // price,
+      minPrice,
+      maxPrice,
       travelers,
       checkIn,
       checkOut,
@@ -1995,11 +1997,76 @@ module.exports.search = async (req, res, next) => {
       return res.status(404).json({ err: "No trips found" });
     }
 
-    if (price) {
+    // if (price) {
+    //   trips_01 = await Trip.findAll({
+    //     where: {
+    //       avilable: { [Op.eq]: 1 },
+    //       trip_price: price,
+    //     },
+    //     include: [
+    //       {
+    //         model: Destenation,
+    //         attributes: ["name"],
+    //       },
+    //       {
+    //         model: Image,
+    //         attributes: ["url"],
+    //         limit: 1,
+    //         order: [["id", "ASC"]],
+    //       },
+    //     ],
+    //   });
+    // } else {
+    //   trips_01 = await Trip.findAll({
+    //     where: {
+    //       avilable: { [Op.eq]: 1 },
+    //     },
+    //     include: [
+    //       {
+    //         model: Destenation,
+    //         attributes: ["name"],
+    //       },
+    //       {
+    //         model: Image,
+    //         attributes: ["url"],
+    //         limit: 1,
+    //         order: [["id", "ASC"]],
+    //       },
+    //     ],
+    //   });
+    // }
+    // if (trips_01.length === 0) {
+    //   return res.status(404).json({ err: "No trips found" });
+    // }
+
+    if (minPrice && maxPrice) {
       trips_01 = await Trip.findAll({
         where: {
           avilable: { [Op.eq]: 1 },
-          trip_price: price,
+          trip_price: { [Op.between]: [minPrice, maxPrice] },
+        },
+        include: [
+          {
+            model: Destenation,
+            attributes: ["name"],
+          },
+          {
+            model: Image,
+            attributes: ["url"],
+            limit: 1,
+            order: [["id", "ASC"]],
+          },
+        ],
+      });
+    } else if (minPrice || maxPrice) {
+      const priceCondition = minPrice
+        ? { [Op.gte]: minPrice }
+        : { [Op.lte]: maxPrice };
+      
+      trips_01 = await Trip.findAll({
+        where: {
+          avilable: { [Op.eq]: 1 },
+          trip_price: priceCondition,
         },
         include: [
           {
@@ -2033,10 +2100,11 @@ module.exports.search = async (req, res, next) => {
         ],
       });
     }
+    
     if (trips_01.length === 0) {
       return res.status(404).json({ err: "No trips found" });
     }
-
+    
     if (travelers) {
       trips_02 = await Trip.findAll({
         where: {
