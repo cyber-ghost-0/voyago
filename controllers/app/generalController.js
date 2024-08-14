@@ -1926,7 +1926,7 @@ module.exports.search = async (req, res, next) => {
   try {
     let {
       destination,
-     // price,
+      // price,
       minPrice,
       maxPrice,
       travelers,
@@ -2062,7 +2062,7 @@ module.exports.search = async (req, res, next) => {
       const priceCondition = minPrice
         ? { [Op.gte]: minPrice }
         : { [Op.lte]: maxPrice };
-      
+
       trips_01 = await Trip.findAll({
         where: {
           avilable: { [Op.eq]: 1 },
@@ -2100,11 +2100,11 @@ module.exports.search = async (req, res, next) => {
         ],
       });
     }
-    
+
     if (trips_01.length === 0) {
       return res.status(404).json({ err: "No trips found" });
     }
-    
+
     if (travelers) {
       trips_02 = await Trip.findAll({
         where: {
@@ -2407,7 +2407,7 @@ module.exports.charge_wallet = async (req, res, next) => {
     type: "credit",
     status: "pending",
     chargeRequestId: charge_req.id,
-    
+
   });
   const fcm = await FCM.findOne({ where: { UserId: user_id } });
   console.log(fcm);
@@ -2939,7 +2939,7 @@ module.exports.token_profile_pic = async (req, res, next) => {
       return res.status(404).json({ msg: "No profile_pic", data: null });
     }
 
-    return res.status(200).json({ msg: {}, data: {pic} });
+    return res.status(200).json({ msg: {}, data: { pic } });
 
   } catch (error) {
     console.error(error);
@@ -2963,7 +2963,7 @@ module.exports.id_profile_pic = async (req, res, next) => {
       return res.status(404).json({ msg: "No profile_pic", data: null });
     }
 
-    return res.status(200).json({ msg: {}, data: {pic} });
+    return res.status(200).json({ msg: {}, data: { pic } });
 
   } catch (error) {
     console.error(error);
@@ -2971,5 +2971,35 @@ module.exports.id_profile_pic = async (req, res, next) => {
   }
 };
 
+module.exports.personal_reservation = async (req, res, next) => {
+  try {
+    const rese = await reservation.findAll({
+      where: {
+        UserId: req.user_id
+      },
+      attributes: ['id', 'adult', 'child', 'TripId'],
+      include: [
+        {
+          model: Trip,
+          attributes: ['name', 'start_date'],
+          include: [
+            {
+              model: Destenation,
+              attributes: ['name'],
+            }
+          ]
+        }
+      ]
+    });
 
+    if (!rese || rese.length === 0) {
+      return res.status(404).json({ msg: "No reservations found", data: null });
+    }
 
+    return res.status(200).json({ msg: {}, data: rese });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};

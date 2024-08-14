@@ -119,6 +119,7 @@ router.get('/token_profile_pic', is_auth, generalController.token_profile_pic);
 
 router.get('/id_profile_pic/:id', is_auth, generalController.id_profile_pic);
 
+router.get('/personal_reservation', is_auth, generalController.personal_reservation);
 
 // router.get('/send',generalController.notify);
 
