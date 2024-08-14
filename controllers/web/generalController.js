@@ -856,16 +856,16 @@ module.exports.approve_charge = async (req, res, next) => {
   await chargeRequest.destroy();
   let title = "crediting";
   let body = "Your request is Accepted !";
-  // await Notification_mod.create({ UserId: req.user_id, title: title, body: body, type: "wallet" });
-  // Notification.notify(
-  //   fcm.token,
-  //   title,
-  //   body,
-  //   res,
-  //   next
-  // );
+  await Notification_mod.create({ UserId: req.user_id, title: title, body: body, type: "wallet" });
+  Notification.notify(
+    fcm.token,
+    title,
+    body,
+    res,
+    next
+  );
 
-  return res.status(200).json({ data: {}, err: {}, msg: "success" });
+  // return res.status(200).json({ data: {}, err: {}, msg: "success" });
 };
 
 module.exports.reject_charge = async (req, res, next) => {
@@ -1986,4 +1986,3 @@ module.exports.delete_reservation_by_id = async (req, res, next) => {
   }
 };
 
-module.exports.dep

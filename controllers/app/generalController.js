@@ -2422,16 +2422,16 @@ module.exports.charge_wallet = async (req, res, next) => {
   console.log(fcm);
   let title = "crediting";
   let body = "Your requist is pending ... we will respond as soon as possible!";
-  // await Notification_mod.create({
-  //   UserId: user_id,
-  //   title: title,
-  //   body: body,
-  //   type: "wallet",
-  // });
-  // Notification.notify(fcm.token, title, body, res, next);
-  return res
-    .status(200)
-    .json({ data: {}, err: {}, msg: "wait for admin response <3" });
+  await Notification_mod.create({
+    UserId: user_id,
+    title: title,
+    body: body,
+    type: "wallet",
+  });
+  Notification.notify(fcm.token, title, body, res, next);
+  // return res
+  //   .status(200)
+  //   .json({ data: {}, err: {}, msg: "wait for admin response <3" });
 };
 
 module.exports.my_reviwes = async (req, res, next) => {
@@ -3144,3 +3144,5 @@ module.exports.personal_reservation = async (req, res, next) => {
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
 };
+
+//module.exports.
