@@ -403,7 +403,7 @@ module.exports.add_trip = async (req, res, nxt) => {
       await DAY.save();
     }
 
-
+    const trip_id = trp.id;
     trp.name = name;
     trp.DestenationId = DestenationId;
     trp.description = description;
@@ -417,7 +417,7 @@ module.exports.add_trip = async (req, res, nxt) => {
     trp.avilable = 1;
     trp.available_capacity = capacity;
     await trp.save();
-    return res.json({ data: {}, msg: "Added!" }).status(200);
+    return res.json({ data: { trip_id }, msg: "Added!" }).status(200);
   } catch (error) {
     await trp.destroy();
     console.log("Error fetching data:", error);
@@ -602,12 +602,30 @@ module.exports.Attractions = async (req, res, next) => {
   let arr = [];
   for (let i = 0; i < Atr.length; i++) {
     let cur = Atr[i].dataValues;
+    let reviews = await every_user_review.findAll({
+      where: { AttractionId: Atr[i].id },
+    });
     // let all_images = await Atr[i].getImages();
     // let URL_images = [];
     // all_images.forEach((element) => {
     //   URL_images.push(element.image);
     // });
     // cur.images = URL_images;
+    let rate = 0.0;
+    let cnt = 0;
+    reviews.forEach((element) => {
+      // console.log(element.dataValues);
+      if (element.rate) {
+        cnt++;
+        rate += element.rate;
+        console.log(element.rate);
+      }
+    });
+    if (!cnt) rate = 0;
+    else {
+      rate = (rate * 1.0) / cnt;
+    }
+    cur.rate = rate.toFixed(1);
     arr.push(cur);
   }
   return res.status(200).json({ data: arr, err: {}, msg: "success" });
@@ -831,22 +849,23 @@ module.exports.approve_charge = async (req, res, next) => {
     return res.status(500).json("there is no ");
   }
   temp.status = "Success";
+  temp.AdminId = req.user_id;
   temp.save();
   const fcm = await FCM.findOne({ where: { UserId: req.user_id } });
   console.log(fcm);
   await chargeRequest.destroy();
   let title = "crediting";
   let body = "Your request is Accepted !";
-  await Notification_mod.create({ UserId: req.user_id, title: title, body: body, type: "wallet" });
-  Notification.notify(
-    fcm.token,
-    title,
-    body,
-    res,
-    next
-  );
+  // await Notification_mod.create({ UserId: req.user_id, title: title, body: body, type: "wallet" });
+  // Notification.notify(
+  //   fcm.token,
+  //   title,
+  //   body,
+  //   res,
+  //   next
+  // );
 
-  // return res.status(200).json({ data: {}, err: {}, msg: "success" });
+  return res.status(200).json({ data: {}, err: {}, msg: "success" });
 };
 
 module.exports.reject_charge = async (req, res, next) => {
@@ -1966,3 +1985,5 @@ module.exports.delete_reservation_by_id = async (req, res, next) => {
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
 };
+
+module.exports.dep

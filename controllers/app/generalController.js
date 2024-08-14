@@ -312,7 +312,8 @@ module.exports.reserve_on_trip = async (req, res, next) => {
     });
   }
   let nw = 0;
-  if (is_stripe) nw = parseInt(wallet.balance) - parseInt(cost);
+  if (is_stripe) 
+    nw = parseInt(wallet.balance) - parseInt(cost);
   else nw = parseInt(wallet.balance);
   console.log(nw);
   await Transaction.create({
@@ -2421,16 +2422,16 @@ module.exports.charge_wallet = async (req, res, next) => {
   console.log(fcm);
   let title = "crediting";
   let body = "Your requist is pending ... we will respond as soon as possible!";
-  await Notification_mod.create({
-    UserId: user_id,
-    title: title,
-    body: body,
-    type: "wallet",
-  });
-  Notification.notify(fcm.token, title, body, res, next);
-  // return res
-  //   .status(200)
-  //   .json({ data: {}, err: {}, msg: "wait for admin response <3" });
+  // await Notification_mod.create({
+  //   UserId: user_id,
+  //   title: title,
+  //   body: body,
+  //   type: "wallet",
+  // });
+  // Notification.notify(fcm.token, title, body, res, next);
+  return res
+    .status(200)
+    .json({ data: {}, err: {}, msg: "wait for admin response <3" });
 };
 
 module.exports.my_reviwes = async (req, res, next) => {
