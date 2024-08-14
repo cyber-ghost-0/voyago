@@ -107,7 +107,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\" : \"Aya sareej\",\r\n    \"password\" : \"12345678\",\r\n    \"fcm\": \"cqPP1uSjRtiH1CgyvX2gkR:APA91bEb9h4g4_0frVdtVrZrWVlA7Oevgcbp60x2O-cqT-bmF2vqbqz9MNF35Xu_1onnnNaQG9PjozeLKViARM_nVsW5WkKyIh1mGZSk1LcnSDNejxoZ9XnRHrDAWZz-gssb8muXc_Rm\"\r\n}",
+							"raw": "{\r\n    \"username\" : \"Aya sareej\",\r\n    \"password\" : \"12345678\",\r\n    \"fcm\": \"dzRLgwD0THCC3ss1CwGQx0:APA91bGgq2yObGFvwc0troI4sdF4enpw_449fbEOUOhLhbGPKNh6XaAqFLam6Q9QZJLvY9KIxX5sMSMxTAl04yq0_NhFWDYFMqF0tpoef-QqSd1IAVZoIKkl2es0lh2ChmrCgM58f6O5\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1955,6 +1955,37 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "stripe_id",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/stripe/customerId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"stripe",
+								"customerId"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -3325,6 +3356,66 @@
 								"web",
 								"delete_reservation_by_id",
 								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show_all_reservations",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/show_all_reservations",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"show_all_reservations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show_all_transactions",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/web/show_all_transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"web",
+								"show_all_transactions"
 							]
 						}
 					},
