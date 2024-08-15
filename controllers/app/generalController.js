@@ -2007,48 +2007,6 @@ module.exports.search = async (req, res, next) => {
       return res.status(404).json({ err: "No trips found" });
     }
 
-    // if (price) {
-    //   trips_01 = await Trip.findAll({
-    //     where: {
-    //       avilable: { [Op.eq]: 1 },
-    //       trip_price: price,
-    //     },
-    //     include: [
-    //       {
-    //         model: Destenation,
-    //         attributes: ["name"],
-    //       },
-    //       {
-    //         model: Image,
-    //         attributes: ["url"],
-    //         limit: 1,
-    //         order: [["id", "ASC"]],
-    //       },
-    //     ],
-    //   });
-    // } else {
-    //   trips_01 = await Trip.findAll({
-    //     where: {
-    //       avilable: { [Op.eq]: 1 },
-    //     },
-    //     include: [
-    //       {
-    //         model: Destenation,
-    //         attributes: ["name"],
-    //       },
-    //       {
-    //         model: Image,
-    //         attributes: ["url"],
-    //         limit: 1,
-    //         order: [["id", "ASC"]],
-    //       },
-    //     ],
-    //   });
-    // }
-    // if (trips_01.length === 0) {
-    //   return res.status(404).json({ err: "No trips found" });
-    // }
-
     if (minPrice && maxPrice) {
       trips_01 = await Trip.findAll({
         where: {
@@ -2282,20 +2240,24 @@ module.exports.search = async (req, res, next) => {
         trips_03.some((t) => t.id === trip.id) &&
         trips_04.some((t) => t.id === trip.id)
     );
-
+        
     const favorites = await favourites.findAll({
       where: {
         TripId: trips_1.map((t) => t.id),
         UserId: userId,
       },
     });
-
-    const favoriteTripIds = favorites.map((f) => f.TripId);
-
+    
+    const favoritesMap = {};
+    favorites.forEach((f) => {
+      favoritesMap[f.TripId] = f.is_favourite;
+    });
+    
     trips_1 = trips_1.map((trip) => ({
       ...trip.toJSON(),
-      favorites: favoriteTripIds.includes(trip.id),
+      favorites: favoritesMap.hasOwnProperty(trip.id) ? favoritesMap[trip.id] : false,
     }));
+    
 
     if (priceLtoH == 1) {
       trips_1.sort((a, b) => a.trip_price - b.trip_price);
@@ -2436,48 +2398,59 @@ module.exports.charge_wallet = async (req, res, next) => {
 };
 
 module.exports.my_reviwes = async (req, res, next) => {
-  const id = req.user_id;
-  const user = await User.findByPk(id);
-  let trips, attraction, destenation;
-  trips = await every_user_review.findAll({
-    where: { UserId: id, AttractionId: null, DestenationId: null },
-  });
-  attraction = await every_user_review.findAll({
-    where: { UserId: id, DestenationId: null, TripId: null },
-  });
-  destenation = await every_user_review.findAll({
-    where: { UserId: id, AttractionId: null, TripId: null },
-  });
-  let trip_n = [],
-    attr_n = [],
-    dest_n = [];
-  for (let i = 0; i < trips.length; i++) {
-    let element = trips[i];
-    element = await services.removeProperty(element.dataValues, "AttractionId");
-    element = await services.removeProperty(element, "TripId");
-    element = await services.removeProperty(element, "DestenationId");
-    trip_n.push(element);
-    console.log("=>", element, "<=");
-  }
-  for (let i = 0; i < destenation.length; i++) {
-    let element = destenation[i];
-    element = await services.removeProperty(element.dataValues, "AttractionId");
-    element = await services.removeProperty(element, "TripId");
-    element = await services.removeProperty(element, "DestenationId");
-    dest_n.push(element);
-  }
-  for (let i = 0; i < attraction.length; i++) {
-    let element = attraction[i];
+  try {
+    const id = req.user_id;
+    const user = await User.findByPk(id);
+    const trips = await every_user_review.findAll({
+      where: { UserId: id, AttractionId: null, DestenationId: null },
+    });
+  
+    const attractions = await every_user_review.findAll({
+      where: { UserId: id, DestenationId: null, TripId: null },
+    });
+  
+    const destinations = await every_user_review.findAll({
+      where: { UserId: id, AttractionId: null, TripId: null },
+    });
 
-    element = await services.removeProperty(element.dataValues, "AttractionId");
-    element = await services.removeProperty(element, "TripId");
-    element = await services.removeProperty(element, "DestenationId");
-    attr_n.push(element);
+    const extractId = (element, idKey) => {
+      return {
+        [idKey]: element[idKey],
+        ...element,
+      };
+    };
+
+    const trip_n = await Promise.all(trips.map(async (element) => {
+      element = element.dataValues;
+      element = await services.removeProperty(element, "AttractionId");
+      element = await services.removeProperty(element, "DestenationId");
+      return extractId(element, "TripId");
+    }));
+
+    const dest_n = await Promise.all(destinations.map(async (element) => {
+      element = element.dataValues;
+      element = await services.removeProperty(element, "AttractionId");
+      element = await services.removeProperty(element, "TripId");
+      return extractId(element, "DestenationId");
+    }));
+
+    const attr_n = await Promise.all(attractions.map(async (element) => {
+      element = element.dataValues;
+      element = await services.removeProperty(element, "TripId");
+      element = await services.removeProperty(element, "DestenationId");
+      return extractId(element, "AttractionId");
+    }));
+
+    return res
+      .status(200)
+      .json({ data: { trip_n, dest_n, attr_n }, err: {}, msg: "done" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
   }
-  return res
-    .status(200)
-    .json({ data: { trip_n, dest_n, attr_n }, err: {}, msg: "done" });
 };
+
+
 
 module.exports.wallet_history = async (req, res, next) => {
   const user = await User.findByPk(req.user_id);
@@ -2827,6 +2800,7 @@ module.exports.get_customer = async (req, res, next) => {
 module.exports.attraction_search = async (req, res, next) => {
   try {
     const userId = req.user_id;
+    let attractions = [];
     let { destination } = req.query
     destination = await Destenation.findAll({
       where: {
@@ -2840,60 +2814,64 @@ module.exports.attraction_search = async (req, res, next) => {
       return res.status(404).json({ msg: "No result found1", data: null });
     }
 
-    let attractions = await Attraction.findAll({
+    let attr = await Attraction.findAll({
       where: {
         DestenationId: destination.map((d) => d.id),
       },
-      include: [
-        {
-          model: Image,
-          attributes: ["url"],
-          limit: 1,
-          order: [["id", "ASC"]],
-        },
-      ],
     });
 
-    if (attractions.length === 0) {
+    if (attr.length === 0) {
       return res.status(404).json({ msg: "No result found2", data: null });
     }
 
-    const favorites = await favourites.findAll({
-      where: {
-        AttractionId: attractions.map(a => a.id),
-        UserId: userId,
-      },
-    });
+    for (let i = 0; i < attr.length; i++) {
+      let single_attr = attr[i];
+      let image = await Image.findOne({
+        where: { AttractionId: single_attr.id },
+        attributes: ["url"],
+        limit: 1,
+        order: [["id", "ASC"]],
+      });
+      let fav = await favourites.findOne({
+        where: { UserId: req.user_id, AttractionId: single_attr.id },
+      });
 
-    const favoritre_attractionIds = favorites.map(f => f.AttractionId);
-
-    let reviews = await every_user_review.findAll({
-      where: { AttractionId: attractions.map((a) => a.id) },
-    });
-
-    let rateMap = {};
-    reviews.forEach((review) => {
-      if (review.rate) {
-        if (!rateMap[review.AttractionId]) {
-          rateMap[review.AttractionId] = {
-            total: 0,
-            count: 0,
-          };
-        }
-        rateMap[review.AttractionId].total += review.rate;
-        rateMap[review.AttractionId].count += 1;
+      if (!fav) {
+        fav = await favourites.create({
+          UserId: req.user_id,
+          AttractionId: single_attr.id,
+          is_favourite: false,
+        });
       }
-    });
 
-    attractions = attractions.map((attraction) => {
-      const { total, count } = rateMap[attraction.id] || { total: 0, count: 0 };
-      const rate = count > 0 ? (total / count).toFixed(1) : null;
-      return {
-        ...attraction.toJSON(),
-        favorites: favoritre_attractionIds.includes(attraction.id),
-        rate,
+      let object = {
+        id: single_attr.id,
+        name: single_attr.name,
+        image: image,
+        is_favourite: fav.is_favourite,
       };
-    });
+      let reviews = await every_user_review.findAll({
+        where: { AttractionId: single_attr.id },
+      });
+      let rate = 0.0;
+      let cnt = 0;
+      reviews.forEach((element) => {
+        console.log(element.dataValues);
+        if (element.rate) {
+          cnt++;
+          rate += element.rate;
+          console.log(element.rate);
+        }
+      });
+      if (!cnt) rate = 0;
+      else {
+        rate = (rate * 1.0) / cnt;
+      }
+      rate = rate.toFixed(1);
+      object.rate = rate;
+      attractions.push(object);
+    }
+    attractions.sort((b, a) => a.rate - b.rate);
 
     return res.status(200).json({ data: { attractions } });
   } catch (error) {

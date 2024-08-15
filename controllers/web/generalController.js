@@ -458,16 +458,37 @@ module.exports.trips_card = async (req, res, next) => {
         limit: 10,
         order: [["id", "ASC"]],
   });
+  
   // return res.json(trips);
   for (let i = 0; i < 10; i++) {
     let single = {};
     let trip = trips[i];
     if (!trip) continue;
+    let cur = trips[i].dataValues;
+    let reviews = await every_user_review.findAll({
+      where: { TRipId: trips[i].id },
+    });
     // let IMg1 = await trip.getImages();
     // single.image = [];
     // IMg1.forEach((element) => {
     //   single.image.push(element.image);
     // });
+    let rate = 0.0;
+    let cnt = 0;
+    reviews.forEach((element) => {
+      // console.log(element.dataValues);
+      if (element.rate) {
+        cnt++;
+        rate += element.rate;
+        console.log(element.rate);
+      }
+    });
+    if (!cnt) rate = 0;
+    else {
+      rate = (rate * 1.0) / cnt;
+    }
+    cur.rate = rate.toFixed(1);
+    single.rate = cur;
     single.title = trip.name;
     single.Destenation = await trip.getDestenation();
     single.Destenation = single.Destenation.name;
