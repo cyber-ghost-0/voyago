@@ -33,6 +33,7 @@ const Notification_mod=require("./models/Notification.js")
 const cors = require("cors");
 const cron = require("node-cron");
 const moment = require("moment");
+const Delete_Request = require("./models/DeleteRequest.js");  
 const { Op, INTEGER } = require("sequelize");
 
 
@@ -133,6 +134,8 @@ transaction.belongsTo(charge_request, { constraints: true });
 User.hasMany(Notification_mod, { constraints: true, onDelete: "CASCADE" });
 Notification_mod.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
+User.hasOne(Delete_Request, { constraints: true });
+Delete_Request.belongsTo(User, { constraints: true });
 
 app.use(cors());
 app.use(BP.urlencoded({ extended: true }));
@@ -150,7 +153,7 @@ app.use("/api", appRoutes);
 app.use("/web", webRoutes);
 app.use("/web", imageRoutes);
 sequelize
-  // .sync({  force:true})
+ //  .sync({  force:true})
   .sync()
   .then((result) => {
     app.listen(3000);

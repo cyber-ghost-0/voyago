@@ -35,6 +35,7 @@ const Notification_mod = require("../../models/Notification");
 const Event = require("../../models/Event.js");
 const everyReservationEvent = require("../../models/everyResrvationEvent");
 const Reservation = require("../../models/reservation");
+const Delete_Request = require("../../models/DeleteRequest.js");
 const cron = require("node-cron");
 const moment = require("moment");
 const e = require("express");
@@ -312,7 +313,7 @@ module.exports.reserve_on_trip = async (req, res, next) => {
     });
   }
   let nw = 0;
-  if (is_stripe) 
+  if (is_stripe)
     nw = parseInt(wallet.balance) - parseInt(cost);
   else nw = parseInt(wallet.balance);
   console.log(nw);
@@ -3145,4 +3146,57 @@ module.exports.personal_reservation = async (req, res, next) => {
   }
 };
 
-//module.exports.
+module.exports.delete_account_request = async (req, res, next) => {
+  try {
+    const user_id = req.user_id;
+    const user = await User.findByPk(user_id);
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found", data: null });
+    }
+
+    const check = await Delete_Request.findAll({
+      where: {
+        UserId: user_id,
+      },
+    });
+
+    if (check.length > 0) {
+      return res.status(202).json({ msg: "You have sent the request before, please wait for the response.", data: null });
+    }
+    console.log(check.lenght);
+    await Delete_Request.create({
+      UserId: user.id
+    });
+
+    return res.status(200).json({ msg: "We will respond to your request soon..", data: null });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.check_password = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ where: { id: req.user_id } });
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found", err: "User with the provided ID not found", data: {} });
+    }
+
+    if (!req.body.password || !user.password) {
+      return res.status(400).json({ msg: "Bad Request", err: "Invalid password data", data: {} });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ msg: "fault", err: "Invalid password" });
+    }
+
+    return res.status(200).json({ msg: "success", data: { authenticated: true } });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};

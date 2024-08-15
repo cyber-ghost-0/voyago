@@ -10,42 +10,45 @@ const User = sequelize.define('User', {
   },
   phone_number: {
     type: Sequelize.STRING,
-    allowNull:true
+    allowNull: true
   },
   username: {
     type: Sequelize.STRING,
-    unique:true
+    unique: true
   },
   cod_ver: {
     type: Sequelize.INTEGER,
-    allownull :true
+    allownull: true
   },
   email: {
     type: Sequelize.STRING,
     allowNull: false,
-    unique:true
+    unique: true
 
   },
   password: {
     type: Sequelize.STRING,
     allowNull: false
   },
-  role :{
+  role: {
     type: Sequelize.STRING,
-    allowNull : false
+    allowNull: false
   },
   location: {
     type: Sequelize.STRING,
-    allowNull : true
+    allowNull: true
   },
   profile_pic: {
     type: Sequelize.STRING,
-    allowNull : true
+    allowNull: true
   },
-  customerStripId:{
-    type:Sequelize.STRING,
-    allowNull:true
+  customerStripId: {
+    type: Sequelize.STRING,
+    allowNull: true
   }
-});
+},
+  {
+    paranoid: true,
+  });
 
 module.exports = User;

@@ -100,4 +100,10 @@ router.get('/profile_pic/:id', is_auth, generalController.id_profile_pic);
 
 router.delete('/delete_reservation_by_id/:id', is_auth, generalController.delete_reservation_by_id);
 
+router.get('/delete_profile_requests',is_auth, generalController.delete_profile_requests);
+
+router.get('/delete_user_directly/:id',is_auth, generalController.delete_user_directly);
+
+router.get('/empty_then_delete/:id',is_auth, generalController.empty_then_delete);
+
 module.exports = router;

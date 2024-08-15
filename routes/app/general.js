@@ -128,8 +128,11 @@ router.get('/id_profile_pic/:id', is_auth, generalController.id_profile_pic);
 
 router.get('/personal_reservation', is_auth, generalController.personal_reservation);
 
-// router.get('/send',generalController.notify);
+router.get('/delete_account_request', is_auth, generalController.delete_account_request);
 
+router.post('/check_password', is_auth, generalController.check_password);
+
+// router.get('/send',generalController.notify);
 
 
 

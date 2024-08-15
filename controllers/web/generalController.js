@@ -35,6 +35,7 @@ const Favourite = require("../../models/Favourites.js");
 const DayTrips = require("../../models/Day_trip.js");
 const every_feature = require("../../models/every_feture.js");
 const features_included = require("../../models/features_included.js");
+const Delete_Request = require("../../models/DeleteRequest.js");
 const { where } = require("sequelize");
 // require('dotenv').config()
 
@@ -454,19 +455,19 @@ module.exports.upload_trip_images = async (req, res, next) => {
 module.exports.trips_card = async (req, res, next) => {
   let cards = [];
   const trips = await Trip.findAll({
-    limit: 10,
-    order: [["id", "ASC"]],
+        limit: 10,
+        order: [["id", "ASC"]],
   });
   // return res.json(trips);
   for (let i = 0; i < 10; i++) {
     let single = {};
     let trip = trips[i];
     if (!trip) continue;
-    let IMg1 = await trip.getImages();
-    single.image = [];
-    IMg1.forEach((element) => {
-      single.image.push(element.image);
-    });
+    // let IMg1 = await trip.getImages();
+    // single.image = [];
+    // IMg1.forEach((element) => {
+    //   single.image.push(element.image);
+    // });
     single.title = trip.name;
     single.Destenation = await trip.getDestenation();
     single.Destenation = single.Destenation.name;
@@ -481,6 +482,12 @@ module.exports.trips_card = async (req, res, next) => {
     single.duration = diffInDays;
     single.avilable = trip.avilable;
     single.price = trip.price;
+    single.images = await image.findAll({
+      where: { TripId: trip.id },  
+      attributes: ['url'],
+      limit: 1,
+      order: [["id", "ASC"]]
+    });
     cards.push(single);
   }
   return res.status(200).json({ data: { cards }, err: {}, msg: "Added!" });
@@ -865,7 +872,7 @@ module.exports.approve_charge = async (req, res, next) => {
     next
   );
 
-  // return res.status(200).json({ data: {}, err: {}, msg: "success" });
+  //return res.status(200).json({ data: {}, err: {}, msg: "success" });
 };
 
 module.exports.reject_charge = async (req, res, next) => {
@@ -1986,3 +1993,99 @@ module.exports.delete_reservation_by_id = async (req, res, next) => {
   }
 };
 
+module.exports.delete_profile_requests = async (req, res, next) => {
+  try {
+    let requests = await Delete_Request.findAll({
+      attributes: ['id', 'createdAt'],
+      include: [
+        {
+          model: User,
+          attributes: ['username'],
+          include: [
+            {
+              model: Wallet,
+              attributes: ['balance'],
+            }
+          ]
+        }
+      ]
+    });
+
+    return res.status(200).json({ data: requests, err: null, msg: "success" });
+  } catch (error) {
+    // Handle any errors that occur during the query
+    console.error(error);
+    return res.status(500).json({ error: error.message, msg: "An error occurred" });
+  }
+};
+
+module.exports.delete_user_directly = async (req, res, next) => {
+  const request_id = req.params.id;
+  try {
+    const request = await Delete_Request.findByPk(request_id);
+    if (!request) {
+      return res.status(404).json({ msg: "Request not found!", data: null });
+    }
+    const user_id = request.UserId;
+    const user = await User.findByPk(user_id);
+    const wallet = await Wallet.findOne({
+      where: {
+        UserId: user_id,
+      },
+    });
+
+    let balance = wallet.balance;
+    if (balance > 0) {
+      return res.status(409).json({ msg: "The wallet must be empty to delete the user account", data: null });
+    }
+
+    user.destroy({ force: false });
+    request.destroy();
+    mail(user.email, "Your account on Voyago app has deleted successfully!");
+    return res.status(200).json({ data: null, err: {}, msg: "The user deleted successfully!" });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.empty_then_delete = async (req, res, next) => {
+  const request_id = req.params.id;
+  try {
+    const request = await Delete_Request.findByPk(request_id);
+    if (!request) {
+      return res.status(404).json({ msg: "Request not found!", data: null });
+    }
+    const user_id = request.UserId;
+    const user = await User.findByPk(user_id);
+    const wallet = await Wallet.findOne({
+      where: {
+        UserId: user_id,
+      },
+    });
+    let balance = wallet.balance;
+    if (balance = 0) {
+      user.destroy({ force: false });
+      request.destroy();
+
+      mail(user.email, "Your account on Voyago app has deleted successfully!");
+
+      return res.status(200).json({ data: null, err: {}, msg: "The user deleted successfully!" });
+    }
+
+    wallet.balance = 0;
+    wallet.save();
+    user.destroy({ force: false });
+    request.destroy();
+
+    mail(user.email, "Your wallet balance has been transferred to your bank account, please check your bank account and contact us via email if any problem occurs.");
+    mail(user.email, "Your account on Voyago app has deleted successfully!");
+
+    return res.status(200).json({ data: null, err: {}, msg: "The user deleted successfully!" });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
