@@ -132,6 +132,12 @@ router.get('/delete_account_request', is_auth, generalController.delete_account_
 
 router.post('/check_password', is_auth, generalController.check_password);
 
+router.get('/reservation_details/:id', is_auth, generalController.reservation_details);
+
+router.delete('/delete_reservation/:id', is_auth, generalController.delete_reservation);
+
+router.put('/edit_reservation/:id', is_auth, generalController.edit_reservation);
+
 // router.get('/send',generalController.notify);
 
 

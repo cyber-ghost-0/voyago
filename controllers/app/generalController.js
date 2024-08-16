@@ -2240,24 +2240,24 @@ module.exports.search = async (req, res, next) => {
         trips_03.some((t) => t.id === trip.id) &&
         trips_04.some((t) => t.id === trip.id)
     );
-        
+
     const favorites = await favourites.findAll({
       where: {
         TripId: trips_1.map((t) => t.id),
         UserId: userId,
       },
     });
-    
+
     const favoritesMap = {};
     favorites.forEach((f) => {
       favoritesMap[f.TripId] = f.is_favourite;
     });
-    
+
     trips_1 = trips_1.map((trip) => ({
       ...trip.toJSON(),
       favorites: favoritesMap.hasOwnProperty(trip.id) ? favoritesMap[trip.id] : false,
     }));
-    
+
 
     if (priceLtoH == 1) {
       trips_1.sort((a, b) => a.trip_price - b.trip_price);
@@ -2385,16 +2385,16 @@ module.exports.charge_wallet = async (req, res, next) => {
   console.log(fcm);
   let title = "crediting";
   let body = "Your requist is pending ... we will respond as soon as possible!";
-  await Notification_mod.create({
-    UserId: user_id,
-    title: title,
-    body: body,
-    type: "wallet",
-  });
-  Notification.notify(fcm.token, title, body, res, next);
-  // return res
-  //   .status(200)
-  //   .json({ data: {}, err: {}, msg: "wait for admin response <3" });
+  // await Notification_mod.create({
+  //   UserId: user_id,
+  //   title: title,
+  //   body: body,
+  //   type: "wallet",
+  // });
+  // Notification.notify(fcm.token, title, body, res, next);
+  return res
+    .status(200)
+    .json({ data: {}, err: {}, msg: "wait for admin response <3" });
 };
 
 module.exports.my_reviwes = async (req, res, next) => {
@@ -2404,11 +2404,11 @@ module.exports.my_reviwes = async (req, res, next) => {
     const trips = await every_user_review.findAll({
       where: { UserId: id, AttractionId: null, DestenationId: null },
     });
-  
+
     const attractions = await every_user_review.findAll({
       where: { UserId: id, DestenationId: null, TripId: null },
     });
-  
+
     const destinations = await every_user_review.findAll({
       where: { UserId: id, AttractionId: null, TripId: null },
     });
@@ -3173,6 +3173,249 @@ module.exports.check_password = async (req, res, next) => {
     }
 
     return res.status(200).json({ msg: "success", data: { authenticated: true } });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.reservation_details = async (req, res, next) => {
+  try {
+    let reservation = await Reservation.findByPk(req.params.id, {
+      attributes: [
+        'adult',
+        'child',
+        'phone',
+        'TripId'
+      ],
+    });
+    if (!reservation) {
+      return res.status(404).json({ msg: "Reservation not found", err: "Reservation with the provided ID not found", data: {} });
+    }
+    let trip_id = reservation.TripId;
+    // console.log(trip_id);
+    let trip = await Trip.findByPk(trip_id, {
+      attributes: [
+        'id',
+        'name',
+        'start_date',
+        'end_date',
+        'meeting_point_location',
+        'DestenationId',
+        'trip_price',
+        'TimeLimitCancellation'
+      ]
+    });
+    let dest_id = trip.DestenationId;
+    let destination = await Destenation.findByPk(dest_id, {
+      attributes: [
+        'name',
+      ],
+    });
+    let reserved_events = await everyReservationEvent.findAll({
+      where: {
+        reservationId: req.params.id,
+      },
+      attributes: [
+        'adult',
+        'child',
+        'EventId'
+      ],
+    });
+
+    let events = [];
+    let events_price = 0;
+
+    for (let i = 0; i < reserved_events.length; i++) {
+      const event = await Event.findOne({
+        where: {
+          id: reserved_events[i].EventId,
+        },
+        attributes: ['id', 'price_adult', 'price_child']
+      });
+
+      if (event) {
+        let event_price = (reserved_events[i].adult * event.price_adult) + (reserved_events[i].child * event.price_child);
+        events_price += event_price;
+        events.push(event);
+      }
+    }
+    let details = {};
+    details.trip_name = trip.name;
+    details.destination = destination.name;
+    details.meeting_point = trip.meeting_point_location;
+    details.from = trip.startDate;
+    details.to = trip.endDate;
+    details.adults = reservation.adult;
+    details.children = reservation.child;
+    details.phone_number = reservation.phone;
+    details.trip_price = trip.trip_price;
+    details.total_price = events_price + trip.trip_price;
+    //details.events_price = events_price;
+
+    let start_date = new Date(trip.start_date);
+
+    if (isNaN(start_date)) {
+      console.error('Invalid start_date format:', trip.start_date);
+      return res.status(400).json({ msg: "Invalid start date format", data: null });
+    }
+
+    let time_limit_cancelation = trip.TimeLimitCancellation;
+
+    let last_cancellation_date = new Date(start_date);
+    last_cancellation_date.setDate(start_date.getDate() - time_limit_cancelation);
+
+    let date_to_disable_edit_and_cancellation = last_cancellation_date.toISOString().split('T')[0];
+
+    console.log("Last date for cancellation: " + date_to_disable_edit_and_cancellation);
+    return res.status(200).json({ msg: "success", data: { details, reserved_events, events, date_to_disable_edit_and_cancellation } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.delete_reservation = async (req, res, next) => {
+  try {
+    let reservation = await Reservation.findByPk(req.params.id);
+    if (!reservation) {
+      return res.status(404).json({ msg: "Reservation not found", err: "Reservation with the provided ID not found", data: {} });
+    }
+    let trip_id = reservation.TripId;
+    let trip = await Trip.findByPk(trip_id);
+    let start_date = new Date(trip.start_date);
+
+    if (isNaN(start_date)) {
+      console.error('Invalid start_date format:', trip.start_date);
+      return res.status(400).json({ msg: "Invalid start date format", data: null });
+    }
+
+    let time_limit_cancelation = trip.TimeLimitCancellation;
+
+    let last_cancellation_date = new Date(start_date);
+    last_cancellation_date.setDate(start_date.getDate() - time_limit_cancelation);
+
+    let currentDate = new Date();
+    console.log(currentDate);
+    currentDate.setHours(0, 0, 0, 0);
+
+    last_cancellation_date.setHours(0, 0, 0, 0);
+
+    if (currentDate > last_cancellation_date) {
+      return res.status(400).json({ msg: "Cancellation is not allowed after the last cancellation date.", data: null });
+    }
+
+    await reservation.destroy();
+    return res.status(200).json({ msg: "Your reservation was deleted successfully!", data: null });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+
+module.exports.edit_reservation = async (req, res, next) => {
+  try {
+   
+    let reservation = await Reservation.findByPk(req.params.id);
+    if (!reservation) {
+      return res.status(404).json({
+        msg: "Reservation not found",
+        err: "Reservation with the provided ID not found",
+        data: {},
+      });
+    }
+
+    let trip_id = reservation.TripId;
+    let trip = await Trip.findByPk(trip_id);
+    let reserved = await everyReservationEvent.findAll({
+      where: {
+        reservationId: req.params.id,
+      },
+    });
+
+    let day = await DayTrips.findAll({
+      where: {
+        TripId: trip_id
+      }
+    });
+
+    let static_events = [];
+    for (let i = 0; i < day.length; i++) {
+      let event = await Event.findAll({
+        where: {
+          DayTripId: day[i].id,
+        }
+      });
+      static_events.push(event);
+    }
+
+    let start_date = new Date(trip.start_date);
+    if (isNaN(start_date)) {
+      console.error("Invalid start_date format:", trip.start_date);
+      return res.status(400).json({ msg: "Invalid start date format", data: null });
+    }
+
+    let time_limit_cancelation = trip.TimeLimitCancellation;
+    let last_cancellation_date = new Date(start_date);
+    last_cancellation_date.setDate(start_date.getDate() - time_limit_cancelation);
+
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    last_cancellation_date.setHours(0, 0, 0, 0);
+
+    if (currentDate > last_cancellation_date) {
+      return res.status(400).json({
+        msg: "Editing is not allowed after the last cancellation date.",
+        data: null,
+      });
+    }
+
+    reservation.adult = req.body.adult;
+    reservation.child = req.body.child;
+    reservation.phone = req.body.phone;
+    reservation.email = req.body.email;
+    await reservation.save();
+
+    const reservedEventCount = req.body.reserved_events.length;
+
+    for (let i = 0; i < reserved.length; i++) {
+      let event = reserved[i];
+      let updatedEvent = req.body.reserved_events.find(e => e.id === event.EventId);
+      if (updatedEvent) {
+        event.adult = updatedEvent.adult;
+        event.child = updatedEvent.child;
+        await event.save();
+      }
+    }
+
+    const existingEventIds = reserved.map(e => e.EventId);
+    for (let i = 0; i < reservedEventCount; i++) {
+      let eventData = req.body.reserved_events[i];
+      if (!existingEventIds.includes(eventData.id)) {
+        await everyReservationEvent.create({
+          reservationId: req.params.id,
+          EventId: eventData.id,
+          adult: eventData.adult,
+          child: eventData.child
+        });
+      }
+    }
+
+    for (let i = 0; i < reserved.length; i++) {
+      let event = reserved[i];
+      if (!req.body.reserved_events.find(e => e.id === event.EventId)) {
+        await event.destroy();
+      }
+    }
+
+    return res.status(200).json({
+      msg: "Your reservation was edited successfully!",
+      data: null
+    });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
