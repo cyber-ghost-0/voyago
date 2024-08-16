@@ -136,7 +136,7 @@ router.get('/reservation_details/:id', is_auth, generalController.reservation_de
 
 router.delete('/delete_reservation/:id', is_auth, generalController.delete_reservation);
 
-//router.put('/edit_reservation/:id', is_auth, generalController.edit_reservation);
+router.put('/edit_reservation/:id', is_auth, generalController.edit_reservation);
 
 router.post('/add_personal_trip', is_auth, generalController.add_personal_trip);
 
