@@ -589,26 +589,6 @@
 					"response": []
 				},
 				{
-					"name": "trending_destenation",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:3000/api/trending_destenation",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "3000",
-							"path": [
-								"api",
-								"trending_destenation"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "add_destenation_favourite",
 					"request": {
 						"method": "PUT",
@@ -666,6 +646,26 @@
 								"api",
 								"add_attraction_favourite",
 								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "trending_destenation",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/trending_destenation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"trending_destenation"
 							]
 						}
 					},
@@ -2051,6 +2051,108 @@
 							"path": [
 								"api",
 								"check_password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reservation_details",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/reservation_details/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"reservation_details",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_reservation",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/delete_reservation/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"delete_reservation",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit_reservation",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"adult\":5,\r\n    \"child\":2,\r\n    \"reserved_events\":[\r\n        {\r\n            \"id\":1,\r\n            \"adult\":0,\r\n            \"child\":3\r\n        },\r\n        {\r\n            \"id\":5,\r\n            \"adult\":0,\r\n            \"child\":3\r\n        }\r\n    ],\r\n    \"email\":\"AA@gmail.com\",\r\n    \"phone\":\"0937403346\",\r\n    \"password\":\"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/edit_reservation/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"edit_reservation",
+								"4"
 							]
 						}
 					},
