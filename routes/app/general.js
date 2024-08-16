@@ -142,6 +142,12 @@ router.post('/add_personal_trip', is_auth, generalController.add_personal_trip);
 
 router.get('/show_all_personal_trips', is_auth, generalController.show_all_personal_trips);
 
+router.get('/all_destenations', generalController.get_all_destenations);
+
+router.get('/attractionsByDestenations/:id',is_auth, generalController.attractionsByDestenations);
+
+
+
 // router.get('/send',generalController.notify);
 
 
