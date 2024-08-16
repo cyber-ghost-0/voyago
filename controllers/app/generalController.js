@@ -3479,85 +3479,85 @@ module.exports.delete_reservation = async (req, res, next) => {
 //   }
 // };
 
-module.exports.edit_reservation = async (req, res, next) => {
-  try {
-    let old_total = 0;
-    let new_total = 0;
+// module.exports.edit_reservation = async (req, res, next) => {
+//   try {
+//     let old_total = 0;
+//     let new_total = 0;
 
-    const reservation = await Reservation.findByPk(req.params.id);
-    if (!reservation) {
-      return res.status(404).json({
-        msg: "Reservation not found",
-        err: "Reservation with the provided ID not found",
-        data: {},
-      });
-    }
+//     const reservation = await Reservation.findByPk(req.params.id);
+//     if (!reservation) {
+//       return res.status(404).json({
+//         msg: "Reservation not found",
+//         err: "Reservation with the provided ID not found",
+//         data: {},
+//       });
+//     }
 
-    const trip = await Trip.findByPk(reservation.TripId);
-    if (!trip) {
-      return res.status(404).json({
-        msg: "Trip not found",
-        err: "Trip associated with the reservation not found",
-        data: {},
-      });
-    }
+//     const trip = await Trip.findByPk(reservation.TripId);
+//     if (!trip) {
+//       return res.status(404).json({
+//         msg: "Trip not found",
+//         err: "Trip associated with the reservation not found",
+//         data: {},
+//       });
+//     }
 
-    // Calculate old total based on existing reservation and events
-    old_total = (reservation.adult + reservation.child) * trip.total_price;
-    console.log(old_total);
-    const reservedEvents = await everyReservationEvent.findAll({
-      where: { reservationId: req.params.id }
-    });
+//     // Calculate old total based on existing reservation and events
+//     old_total = (reservation.adult + reservation.child) * trip.total_price;
+//     console.log(old_total);
+//     const reservedEvents = await everyReservationEvent.findAll({
+//       where: { reservationId: req.params.id }
+//     });
 
-    for (const event of reservedEvents) {
-      old_total += (event.child * event.price_child) + (event.adult * event.price_adult);
-    }
+//     for (const event of reservedEvents) {
+//       old_total += (event.child * event.price_child) + (event.adult * event.price_adult);
+//     }
 
-    // Update reservation details
-    reservation.adult = req.body.adult;
-    reservation.child = req.body.child;
-    reservation.phone = req.body.phone;
-    reservation.email = req.body.email;
-    await reservation.save();
+//     // Update reservation details
+//     reservation.adult = req.body.adult;
+//     reservation.child = req.body.child;
+//     reservation.phone = req.body.phone;
+//     reservation.email = req.body.email;
+//     await reservation.save();
 
-    // Calculate new total based on updated reservation and events
-    new_total = (req.body.adult * trip.total_price) + (req.body.child * trip.total_price);
+//     // Calculate new total based on updated reservation and events
+//     new_total = (req.body.adult * trip.total_price) + (req.body.child * trip.total_price);
 
-    for (const eventData of req.body.reserved_events) {
-      const event = await Event.findByPk(eventData.id);
-      if (event && event.type === "optional") {
-        new_total += (eventData.adult * event.price_adult) + (eventData.child * event.price_child);
-      }
-    }
+//     for (const eventData of req.body.reserved_events) {
+//       const event = await Event.findByPk(eventData.id);
+//       if (event && event.type === "optional") {
+//         new_total += (eventData.adult * event.price_adult) + (eventData.child * event.price_child);
+//       }
+//     }
 
-    // Update reserved events
-    for (const event of reservedEvents) {
-      const updatedEvent = req.body.reserved_events.find(e => e.id === event.EventId);
-      if (updatedEvent) {
-        event.adult = updatedEvent.adult;
-        event.child = updatedEvent.child;
-        await event.save();
-      }
-    }
+//     // Update reserved events
+//     for (const event of reservedEvents) {
+//       const updatedEvent = req.body.reserved_events.find(e => e.id === event.EventId);
+//       if (updatedEvent) {
+//         event.adult = updatedEvent.adult;
+//         event.child = updatedEvent.child;
+//         await event.save();
+//       }
+//     }
     
-    // Update trip's available capacity
-    const totalTravelers = req.body.adult + req.body.child;
-    const newCapacity = trip.available_capacity - totalTravelers;
+//     // Update trip's available capacity
+//     const totalTravelers = req.body.adult + req.body.child;
+//     const newCapacity = trip.available_capacity - totalTravelers;
 
-    if (newCapacity < 0) {
-      return res.status(400).json({ msg: "Not enough available capacity!", data: null });
-    }
+//     if (newCapacity < 0) {
+//       return res.status(400).json({ msg: "Not enough available capacity!", data: null });
+//     }
 
-    trip.available_capacity = newCapacity;
-    await trip.save();
+//     trip.available_capacity = newCapacity;
+//     await trip.save();
 
-    return res.status(200).json({ msg: "Your reservation was edited successfully!", data: { new_total, old_total } });
+//     return res.status(200).json({ msg: "Your reservation was edited successfully!", data: { new_total, old_total } });
 
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "Internal server error.", data: null });
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ msg: "Internal server error.", data: null });
+//   }
+// };
 
 module.exports.add_personal_trip = async (req, res, next) => {
   await Personal_trip.create({ name: "ZZZZAAAANNAASS" });
@@ -3585,12 +3585,14 @@ module.exports.add_personal_trip = async (req, res, next) => {
       });
     }
 
-    for (const attraction of req.body.attractions) {
-      await AttractionForPersonal.create({
+    const attractionPromises = req.body.attractions.map(attraction => {
+      return AttractionForPersonal.create({
         PersonalTripId: per.id,
-        AttractionId: attraction.id
+        AttractionId: attraction
       });
-    }
+    });
+
+    await Promise.all(attractionPromises);
     per.name = name;
     per.DestenationId = DestenationId;
     per.start_date = start_date;
@@ -3599,7 +3601,7 @@ module.exports.add_personal_trip = async (req, res, next) => {
     per.notes = notes;
     await per.save();
 
-    return res.status(200).json({ msg: "Added!", data: {old_total, new_total} });
+    return res.status(200).json({ msg: "Added!", data: null });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
@@ -3627,6 +3629,26 @@ module.exports.show_all_personal_trips = async (req, res, next) => {
     return res.status(200).json({ msg: {}, data: { personal_trip } });
 
   } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.add_personal_events = async(req,res,next)=>{
+  try{
+    let action = req.body.action,
+    title = req.body.title,
+    duration = req.body.duration,
+    PersonalDayId = req.body.PersonalDayId;
+
+    let err = await Personal_day_trip.findByPk(PersonalDayId);
+
+    if (!err) {
+      return res.status(500).json({ msg: "fault", err: "Day is not exist" });
+    }
+
+
+  }catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
