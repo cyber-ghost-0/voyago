@@ -3247,6 +3247,10 @@ module.exports.reservation_details = async (req, res, next) => {
         'child',
         'EventId'
       ],
+      include:{
+        model: Event,
+        attributes: ['title', 'price_adult', 'price_child'],
+      },
     });
 
     let events = [];
@@ -3270,8 +3274,8 @@ module.exports.reservation_details = async (req, res, next) => {
     details.trip_name = trip.name;
     details.destination = destination.name;
     details.meeting_point = trip.meeting_point_location;
-    details.from = trip.startDate;
-    details.to = trip.endDate;
+    details.from = trip.start_date;
+    details.to = trip.end_date;
     details.adults = reservation.adult;
     details.children = reservation.child;
     details.phone_number = reservation.phone;
@@ -3295,7 +3299,7 @@ module.exports.reservation_details = async (req, res, next) => {
     let date_to_disable_edit_and_cancellation = last_cancellation_date.toISOString().split('T')[0];
 
     console.log("Last date for cancellation: " + date_to_disable_edit_and_cancellation);
-    return res.status(200).json({ msg: "success", data: { details, reserved_events, events, date_to_disable_edit_and_cancellation } });
+    return res.status(200).json({ msg: "success", data: { details, reserved_events, date_to_disable_edit_and_cancellation } });
 
   } catch (error) {
     console.error(error);
