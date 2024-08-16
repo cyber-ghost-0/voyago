@@ -54,6 +54,7 @@ async function is_unique(name, model, col) {
 }
 
 module.exports.token = async (req, res, next) => {
+  try{
   const refreshToken = req.body.token;
   if (refreshToken == null)
     return res
@@ -67,11 +68,15 @@ module.exports.token = async (req, res, next) => {
     refreshToken,
     "4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419",
     async (err, user) => {
+      console.log(user);
       if (err) return res.sendStatus(403).json({ msg: "fault", err: err });
-      const accessToken = await services.generateAccessToken(user);
+      const accessToken = await services.generateAccessToken(user.user);
       return res.status(200).json({ msg: "Done", accessToken: accessToken });
     }
   );
+}catch(err){
+  return err;
+}
 };
 
 module.exports.Login = async (req, res, next) => {

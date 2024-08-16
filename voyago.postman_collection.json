@@ -2157,6 +2157,75 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "add_personal_trip",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"dd\",\r\n    \"notes\": \"\",\r\n    \"duration\": 2,\r\n    \"start_date\": \"10-10-2024\",\r\n    \"DestenationId\": 1,\r\n    \"attractions\":\r\n    [\r\n        1,\r\n        2\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/add_personal_trip",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"add_personal_trip"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show_all_personal_trips",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/show_all_personal_trips",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"show_all_personal_trips"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
