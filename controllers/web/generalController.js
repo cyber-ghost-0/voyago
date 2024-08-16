@@ -455,10 +455,10 @@ module.exports.upload_trip_images = async (req, res, next) => {
 module.exports.trips_card = async (req, res, next) => {
   let cards = [];
   const trips = await Trip.findAll({
-        limit: 10,
-        order: [["id", "ASC"]],
+    limit: 10,
+    order: [["id", "ASC"]],
   });
-  
+
   // return res.json(trips);
   for (let i = 0; i < 10; i++) {
     let single = {};
@@ -504,7 +504,7 @@ module.exports.trips_card = async (req, res, next) => {
     single.avilable = trip.avilable;
     single.price = trip.price;
     single.images = await image.findAll({
-      where: { TripId: trip.id },  
+      where: { TripId: trip.id },
       attributes: ['url'],
       limit: 1,
       order: [["id", "ASC"]]
@@ -845,7 +845,16 @@ module.exports.single_attraction = async (req, res, next) => {
 };
 
 module.exports.charge_requests = async (req, res, next) => {
-  let requests = await ChargeRequest.findAll();
+  let requests = [];
+  requests = await ChargeRequest.findAll({
+    include: [
+      {
+        model: User,
+        attributes: ["username"],
+      },
+    ],
+  });
+  
   return res.status(200).json({ data: requests, err: {}, msg: "success" });
 };
 

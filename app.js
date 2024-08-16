@@ -1,4 +1,4 @@
-const FCM=require("./models/FCM_Tokens.js")
+const FCM = require("./models/FCM_Tokens.js")
 const express = require("express");
 const sequelize = require("./util/database");
 const appAuth = require("./routes/app/auth");
@@ -26,14 +26,19 @@ const Transaction = require("./models/transaction.js");
 const ChargeRequest = require("./models/chargeRequest");
 const every_user_review = require("./models/EveryUserReview.js");
 const imageRoutes = require("./models/image.js");
-const everyReservationEvent=require("./models/everyResrvationEvent.js");
+const everyReservationEvent = require("./models/everyResrvationEvent.js");
 const charge_request = require("./models/chargeRequest");
 const transaction = require("./models/transaction.js");
-const Notification_mod=require("./models/Notification.js")
+const Notification_mod = require("./models/Notification.js")
 const cors = require("cors");
 const cron = require("node-cron");
 const moment = require("moment");
-const Delete_Request = require("./models/DeleteRequest.js");  
+const Delete_Request = require("./models/DeleteRequest.js");
+const Personal_trip = require("./models/PersonalTrip.js");
+const Personal_day_trip = require("./models/PersonalDayTrip.js");
+const Personal_event = require("./models/PersonalEvents.js");
+const AttractionForPersonal = require("./models/AttractionForPersonal.js");
+  9
 const { Op, INTEGER } = require("sequelize");
 
 
@@ -137,6 +142,24 @@ Notification_mod.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasOne(Delete_Request, { constraints: true });
 Delete_Request.belongsTo(User, { constraints: true });
 
+Personal_trip.hasMany(Personal_day_trip, { onDelete: "CASCADE" });
+Personal_day_trip.belongsTo(Personal_trip, { constraints: true, onDelete: "CASCADE" });
+
+Personal_day_trip.hasMany(Personal_event, { constraints: true, onDelete: "CASCADE" });
+Personal_event.belongsTo(Personal_day_trip, { constraints: true, onDelete: "CASCADE" });
+
+Personal_trip.belongsTo(Destenation, { constraints: true, onDelete: "CASCADE" });
+Destenation.hasMany(Personal_trip, { constraints: true, onDelete: "CASCADE" });
+
+Attraction.hasMany(AttractionForPersonal, { constraints: true, onDelete: "CASCADE" });
+AttractionForPersonal.belongsTo(Attraction, { constraints: true, onDelete: "CASCADE" });
+
+Personal_trip.hasMany(AttractionForPersonal, { constraints: true, onDelete: "CASCADE" });
+AttractionForPersonal.belongsTo(Personal_trip, { constraints: true, onDelete: "CASCADE" });
+
+Personal_trip.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+User.hasMany(Personal_trip, { constraints: true, onDelete: "CASCADE" });
+
 app.use(cors());
 app.use(BP.urlencoded({ extended: true }));
 app.use(BP.json());
@@ -153,7 +176,7 @@ app.use("/api", appRoutes);
 app.use("/web", webRoutes);
 app.use("/web", imageRoutes);
 sequelize
- //  .sync({  force:true})
+  //  .sync({  force:true})
   .sync()
   .then((result) => {
     app.listen(3000);
