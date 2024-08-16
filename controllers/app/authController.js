@@ -56,7 +56,7 @@ module.exports.token = async (req, res, next) => {
     async (err, user) => {
       if (err)
         return res.sendStatus(403).json({ err: {}, data: {}, msg: "fault " });
-      const accessToken = await services.generateAccessToken(user);
+      const accessToken = await services.generateAccessToken(user.user);
       return res
         .status(200)
         .json({ err: {}, data: { accessToken: accessToken }, msg: "success!" });

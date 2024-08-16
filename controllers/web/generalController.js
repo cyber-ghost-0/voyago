@@ -530,6 +530,7 @@ module.exports.add_destenation = async (req, res, next) => {
   await Destenation.create({ name: "ZZZZAAAANNAASS" });
   const dest = await Destenation.findOne({ where: { name: "ZZZZAAAANNAASS" } });
   try {
+    console.log('=>',req.user_id,'<=');
     let name = req.body.name,
       images,
       desc = req.body.description,
