@@ -36,6 +36,10 @@ const Event = require("../../models/Event.js");
 const everyReservationEvent = require("../../models/everyResrvationEvent");
 const Reservation = require("../../models/reservation");
 const Delete_Request = require("../../models/DeleteRequest.js");
+const Personal_trip = require("../../models/PersonalTrip.js");
+const Personal_day_trip = require("../../models/PersonalDayTrip.js");
+const Personal_event = require("../../models/PersonalEvents.js");
+const AttractionForPersonal = require("../../models/AttractionForPersonal.js");
 const cron = require("node-cron");
 const moment = require("moment");
 const e = require("express");
@@ -93,6 +97,36 @@ async function is_unique(name, model, col) {
 //   }
 // }).single('image');
 
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'uploads'); // Specify the uploads directory
+//   },
+//   filename: (req, file, cb) => {
+//     // Generate a unique filename with the original file extension
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   }
+// });
+
+// const upload = multer({
+//   storage: storage,
+//   limits: { fileSize: '100000000' }, // Limit file size to 100MB
+//   fileFilter: (req, file, cb) => {
+//     const fileTypes = /jpeg|jpg|png|gif|bmp/; // Allowed file types
+//     const mimeType = fileTypes.test(file.mimetype);
+//     const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
+
+//     if (mimeType && extname) {
+//       return cb(null, true);
+//     }
+//     cb(new Error('Invalid file format. Only JPEG, JPG, PNG, GIF, and BMP are allowed.'));
+//   }
+// }).single('image');
+
+// module.exports = {
+//   storage,
+//   upload
+// };
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads'); // Specify the uploads directory
@@ -105,23 +139,14 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: '100000000' }, // Limit file size to 100MB
-  fileFilter: (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|gif|bmp/; // Allowed file types
-    const mimeType = fileTypes.test(file.mimetype);
-    const extname = fileTypes.test(path.extname(file.originalname).toLowerCase());
-
-    if (mimeType && extname) {
-      return cb(null, true);
-    }
-    cb(new Error('Invalid file format. Only JPEG, JPG, PNG, GIF, and BMP are allowed.'));
-  }
-}).single('image');
+  limits: { fileSize: 100000000 } // Limit file size to 100MB
+}).single('image'); // Changed from 'image' to 'file' for flexibility
 
 module.exports = {
   storage,
   upload
 };
+
 
 module.exports.myProfile = async (req, res, next) => {
   let array;
@@ -3186,6 +3211,7 @@ module.exports.reservation_details = async (req, res, next) => {
         'adult',
         'child',
         'phone',
+        'email',
         'TripId'
       ],
     });
@@ -3249,6 +3275,7 @@ module.exports.reservation_details = async (req, res, next) => {
     details.adults = reservation.adult;
     details.children = reservation.child;
     details.phone_number = reservation.phone;
+    details.email = reservation.email;
     details.trip_price = trip.trip_price;
     details.total_price = events_price + trip.trip_price;
     //details.events_price = events_price;
@@ -3318,7 +3345,7 @@ module.exports.delete_reservation = async (req, res, next) => {
 
 module.exports.edit_reservation = async (req, res, next) => {
   try {
-   
+
     let reservation = await Reservation.findByPk(req.params.id);
     if (!reservation) {
       return res.status(404).json({
@@ -3411,10 +3438,80 @@ module.exports.edit_reservation = async (req, res, next) => {
       }
     }
 
-    return res.status(200).json({
-      msg: "Your reservation was edited successfully!",
-      data: null
+    return res.status(200).json({ msg: "Your reservation was edited successfully!", data: null });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.add_personal_trip = async (req, res, next) => {
+  await Personal_trip.create({ name: "ZZZZAAAANNAASS" });
+  const per = await Personal_trip.findOne({ where: { name: "ZZZZAAAANNAASS" } });
+
+  try {
+    let name = req.body.name,
+      DestenationId = req.body.DestenationId,
+      start_date = req.body.start_date,
+      notes = req.body.notes,
+      duration = req.body.duration;
+
+
+    let err = await Destenation.findByPk(DestenationId);
+
+    if (!err) {
+      await per.destroy();
+      return res.status(500).json({ msg: "fault", err: "Destenation is not exist" });
+    }
+
+    for (let i = 1; i <= duration; i++) {
+      await Personal_day_trip.create({
+        PersonalTripId: per.id,
+        num: i
+      });
+    }
+
+    for (const attraction of req.body.attractions) {
+      await AttractionForPersonal.create({
+        PersonalTripId: per.id,
+        AttractionId: attraction.id
+      });
+    }
+    per.name = name;
+    per.DestenationId = DestenationId;
+    per.start_date = start_date;
+    per.UserId = req.user_id;
+    per.duration = duration;
+    per.notes = notes;
+    await per.save();
+
+    return res.status(200).json({ msg: "Added!", data: null });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.show_all_personal_trips = async (req, res, next) => {
+  try {
+    let trips = [];
+    const personal_trip = await Personal_trip.findAll({
+      where: {
+        UserId: req.user_id,
+      },
+      attributes: [
+        'name', 'duration', 'DestenationId', 'start_date'
+      ],
+      include: {
+        model: Destenation,
+        attributes: [
+          'name',
+        ],
+      }
     });
+
+    return res.status(200).json({ msg: {}, data: {personal_trip} });
 
   } catch (error) {
     console.error(error);

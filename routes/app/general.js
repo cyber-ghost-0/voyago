@@ -138,6 +138,10 @@ router.delete('/delete_reservation/:id', is_auth, generalController.delete_reser
 
 router.put('/edit_reservation/:id', is_auth, generalController.edit_reservation);
 
+router.post('/add_personal_trip', is_auth, generalController.add_personal_trip);
+
+router.get('/show_all_personal_trips', is_auth, generalController.show_all_personal_trips);
+
 // router.get('/send',generalController.notify);
 
 
