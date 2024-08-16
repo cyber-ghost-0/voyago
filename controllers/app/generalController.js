@@ -3542,7 +3542,7 @@ module.exports.edit_reservation = async (req, res, next) => {
       reserve_event.child * event.price_child + reserve_event.adult * event.price_adult;
     }
 
-    // Update reservation details
+//     // Update reservation details
     reservation.adult = req.body.adult;
     reservation.child = req.body.child;
     reservation.phone = req.body.phone;
@@ -3616,12 +3616,14 @@ module.exports.add_personal_trip = async (req, res, next) => {
       });
     }
 
-    for (const attraction of req.body.attractions) {
-      await AttractionForPersonal.create({
+    const attractionPromises = req.body.attractions.map(attraction => {
+      return AttractionForPersonal.create({
         PersonalTripId: per.id,
-        AttractionId: attraction.id,
+        AttractionId: attraction
       });
-    }
+    });
+
+    await Promise.all(attractionPromises);
     per.name = name;
     per.DestenationId = DestenationId;
     per.start_date = start_date;
@@ -3655,6 +3657,26 @@ module.exports.show_all_personal_trips = async (req, res, next) => {
 
     return res.status(200).json({ msg: {}, data: { personal_trip } });
   } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.add_personal_events = async(req,res,next)=>{
+  try{
+    let action = req.body.action,
+    title = req.body.title,
+    duration = req.body.duration,
+    PersonalDayId = req.body.PersonalDayId;
+
+    let err = await Personal_day_trip.findByPk(PersonalDayId);
+
+    if (!err) {
+      return res.status(500).json({ msg: "fault", err: "Day is not exist" });
+    }
+
+
+  }catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
