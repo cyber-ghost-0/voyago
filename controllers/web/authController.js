@@ -64,6 +64,7 @@ module.exports.token = async (req, res, next) => {
     return res
       .sendStatus(500)
       .json({ msg: "fault", err: "err:refreshToken is invalid" });
+      console.log('___++',req.user_id,' ');
   jwt.verify(
     refreshToken,
     "4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419",
@@ -93,7 +94,7 @@ module.exports.Login = async (req, res, next) => {
   const refreshToken = await jwt.sign(
     { user: user.id },
     "4ed2d50ac32f06d7c8ae6e3ef5919b43e448d2d3b28307e9b08ca93db8a88202735e933819e5fad292396089219903386abeb44be1940715f38e48e9094db419",
-    { expiresIn: "9h" }
+    { expiresIn: "1000h" }
   );
   services.black_list.push(refreshToken);
   res.json({
