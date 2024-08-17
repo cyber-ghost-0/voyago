@@ -3958,3 +3958,16 @@ module.exports.attractionsByDestenations = async (req, res, next) => {
   }
   return res.status(200).json({ data: result, err: {}, msg: "done" });
 };
+
+
+module.exports.personalTripInfo3 = async(req,res,next)=>{
+  try{
+    const trip_id = req.params.id;
+    let trip = await Personal_trip.findByPk(trip_id);
+    return res.status(200).json({ msg: "Success", data: { trip } });
+
+  }catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+}
