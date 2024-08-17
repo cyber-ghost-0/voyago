@@ -3484,12 +3484,19 @@ module.exports.add_personal_trip = async (req, res, next) => {
         num: i,
       });
     }
+    for(let i=0;i<req.body.attractions.length;i++){
+      let attraction=req.body.attractions[i];
+      if(!(await Attraction.findByPk(attraction))){
+        return res.json({msg:'failed',err:'attraction not found'}).status(500);
+      }
 
-    const attractionPromises = req.body.attractions.map(attraction => {
-      return AttractionForPersonal.create({
-        PersonalTripId: per.id,
-        AttractionId: attraction
-      });
+    }
+    const attractionPromises = req.body.attractions.map(async attraction => {
+        return AttractionForPersonal.create({
+          PersonalTripId: per.id,
+          AttractionId: attraction
+        });
+        
     });
 
     await Promise.all(attractionPromises);
@@ -3503,7 +3510,7 @@ module.exports.add_personal_trip = async (req, res, next) => {
 
     return res
       .status(200)
-      .json({ msg: "Added!", data: { old_total, new_total } });
+      .json({ msg: "Added!", data: {} });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
@@ -3517,7 +3524,7 @@ module.exports.show_all_personal_trips = async (req, res, next) => {
       where: {
         UserId: req.user_id,
       },
-      attributes: ["name", "duration", "DestenationId", "start_date"],
+      attributes: ["name", "duration", "DestenationId", "start_date","id"],
       include: {
         model: Destenation,
         attributes: ["name"],
@@ -3757,8 +3764,9 @@ module.exports.personalTripInfo2 = async (req, res, next) => {
     for(let i=0;i<days.length;i++){
       let object={
         order_of_days : days[i].num,
-        events:days[i].Personal_event 
+        events:days[i].PersonalEvents 
       }
+      data.push(object)
     }
     return res.status(200).json({ msg: "Success", data });
 
