@@ -2327,6 +2327,37 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "personalTripInfo3",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/personalTripInfo3/18",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"personalTripInfo3",
+								"18"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
