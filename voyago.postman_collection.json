@@ -2226,6 +2226,107 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "add_personal_events",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"action\": \"sleeping\",\r\n    \"title\": \"badroom\",\r\n    \"duration\": 5,\r\n    \"PersonalDayId\":1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/api/add_personal_events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"add_personal_events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "personalTripInfo1",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/personalTripInfo1/15",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"personalTripInfo1",
+								"15"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "personalTripInfo2",
+					"request": {
+						"auth": {
+							"type": "oauth2",
+							"oauth2": [
+								{
+									"key": "addTokenTo",
+									"value": "header",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/api/personalTripInfo2/18",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"personalTripInfo2",
+								"18"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
