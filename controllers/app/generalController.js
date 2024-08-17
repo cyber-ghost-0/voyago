@@ -3866,3 +3866,15 @@ module.exports.personalTripInfo2 = async (req, res, next) => {
   }
 
 };
+
+module.exports.personalTripInfo3 = async(req,res,next)=>{
+  try{
+    const trip_id = req.params.id;
+    let trip = await Personal_trip.findByPk(trip_id);
+    return res.status(200).json({ msg: "Success", data: { trip } });
+
+  }catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+}
