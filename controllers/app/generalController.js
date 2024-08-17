@@ -3150,12 +3150,10 @@ module.exports.delete_account_request = async (req, res, next) => {
     });
 
     if (check.length > 0) {
-      return res
-        .status(202)
-        .json({
-          msg: "You have sent the request before, please wait for the response.",
-          data: null,
-        });
+      return res.status(202).json({
+        msg: "You have sent the request before, please wait for the response.",
+        data: null,
+      });
     }
     console.log(check.lenght);
     await Delete_Request.create({
@@ -3176,13 +3174,11 @@ module.exports.check_password = async (req, res, next) => {
     const user = await User.findOne({ where: { id: req.user_id } });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({
-          msg: "User not found",
-          err: "User with the provided ID not found",
-          data: {},
-        });
+      return res.status(404).json({
+        msg: "User not found",
+        err: "User with the provided ID not found",
+        data: {},
+      });
     }
 
     if (!req.body.password || !user.password) {
@@ -3215,13 +3211,11 @@ module.exports.reservation_details = async (req, res, next) => {
       attributes: ["adult", "child", "phone", "email", "TripId"],
     });
     if (!reservation) {
-      return res
-        .status(404)
-        .json({
-          msg: "Reservation not found",
-          err: "Reservation with the provided ID not found",
-          data: {},
-        });
+      return res.status(404).json({
+        msg: "Reservation not found",
+        err: "Reservation with the provided ID not found",
+        data: {},
+      });
     }
     let trip_id = reservation.TripId;
     // console.log(trip_id);
@@ -3245,11 +3239,7 @@ module.exports.reservation_details = async (req, res, next) => {
       where: {
         reservationId: req.params.id,
       },
-      attributes: [
-        'adult',
-        'child',
-        'EventId'
-      ],
+      attributes: ["adult", "child", "EventId"],
       include: {
         model: Event,
         attributes: ["title", "price_adult", "price_child"],
@@ -3312,16 +3302,14 @@ module.exports.reservation_details = async (req, res, next) => {
     console.log(
       "Last date for cancellation: " + date_to_disable_edit_and_cancellation
     );
-    return res
-      .status(200)
-      .json({
-        msg: "success",
-        data: {
-          details,
-          reserved_events,
-          date_to_disable_edit_and_cancellation,
-        },
-      });
+    return res.status(200).json({
+      msg: "success",
+      data: {
+        details,
+        reserved_events,
+        date_to_disable_edit_and_cancellation,
+      },
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
@@ -3332,13 +3320,11 @@ module.exports.delete_reservation = async (req, res, next) => {
   try {
     let reservation = await Reservation.findByPk(req.params.id);
     if (!reservation) {
-      return res
-        .status(404)
-        .json({
-          msg: "Reservation not found",
-          err: "Reservation with the provided ID not found",
-          data: {},
-        });
+      return res.status(404).json({
+        msg: "Reservation not found",
+        err: "Reservation with the provided ID not found",
+        data: {},
+      });
     }
     let trip_id = reservation.TripId;
     let trip = await Trip.findByPk(trip_id);
@@ -3365,12 +3351,10 @@ module.exports.delete_reservation = async (req, res, next) => {
     last_cancellation_date.setHours(0, 0, 0, 0);
 
     if (currentDate > last_cancellation_date) {
-      return res
-        .status(400)
-        .json({
-          msg: "Cancellation is not allowed after the last cancellation date.",
-          data: null,
-        });
+      return res.status(400).json({
+        msg: "Cancellation is not allowed after the last cancellation date.",
+        data: null,
+      });
     }
 
     await reservation.destroy();
@@ -3382,7 +3366,6 @@ module.exports.delete_reservation = async (req, res, next) => {
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
 };
-
 
 // module.exports.edit_reservation = async (req, res, next) => {
 //   try {
@@ -3516,85 +3499,93 @@ module.exports.delete_reservation = async (req, res, next) => {
 //   }
 // };
 
-// module.exports.edit_reservation = async (req, res, next) => {
-//   try {
-//     let old_total = 0;
-//     let new_total = 0;
+module.exports.edit_reservation = async (req, res, next) => {
+  try {
+    let old_total = 0;
+    let new_total = 0;
 
-//     const reservation = await Reservation.findByPk(req.params.id);
-//     if (!reservation) {
-//       return res.status(404).json({
-//         msg: "Reservation not found",
-//         err: "Reservation with the provided ID not found",
-//         data: {},
-//       });
-//     }
+    const reservation = await Reservation.findByPk(req.params.id);
+    if (!reservation) {
+      return res.status(404).json({
+        msg: "Reservation not found",
+        err: "Reservation with the provided ID not found",
+        data: {},
+      });
+    }
 
-//     const trip = await Trip.findByPk(reservation.TripId);
-//     if (!trip) {
-//       return res.status(404).json({
-//         msg: "Trip not found",
-//         err: "Trip associated with the reservation not found",
-//         data: {},
-//       });
-//     }
+    const trip = await Trip.findByPk(reservation.TripId);
+    if (!trip) {
+      return res.status(404).json({
+        msg: "Trip not found",
+        err: "Trip associated with the reservation not found",
+        data: {},
+      });
+    }
+    if(trip.available_capacity + reservation.adult + reservation.child <req.body.child+req.body.adult){
+      return res.status(403).json({data:{},msg:'failed', err:'Not enough available capacity!'})
+    }
 
-//     // Calculate old total based on existing reservation and events
-//     old_total = (reservation.adult + reservation.child) * trip.total_price;
-//     console.log(old_total);
-//     const reservedEvents = await everyReservationEvent.findAll({
-//       where: { reservationId: req.params.id }
-//     });
+    trip.available_capacity+=reservation.adult + reservation.child-req.body.child-req.body.adult;
+    await trip.save();
+    // Calculate old total based on existing reservation and events
+    old_total = (reservation.adult + reservation.child) * trip.trip_price;
+    console.log(old_total);
+    const reservedEvents = await everyReservationEvent.findAll({
+      where: { reservationId: req.params.id },
+    });
 
-//     for (const event of reservedEvents) {
-//       old_total += (event.child * event.price_child) + (event.adult * event.price_adult);
-//     }
+    console.log(reservedEvents)
+    for (let i = 0; i < reservedEvents.length; i++) {
+      const reserve_event = reservedEvents[i];
+      const event=await Event.findByPk(reservedEvents[i].EventId);
+      old_total +=
+      reserve_event.child * event.price_child + reserve_event.adult * event.price_adult;
+    }
 
 //     // Update reservation details
-//     reservation.adult = req.body.adult;
-//     reservation.child = req.body.child;
-//     reservation.phone = req.body.phone;
-//     reservation.email = req.body.email;
-//     await reservation.save();
+    reservation.adult = req.body.adult;
+    reservation.child = req.body.child;
+    reservation.phone = req.body.phone;
+    reservation.email = req.body.email;
+    await reservation.save();
 
-//     // Calculate new total based on updated reservation and events
-//     new_total = (req.body.adult * trip.total_price) + (req.body.child * trip.total_price);
+    // Calculate new total based on updated reservation and events
+    new_total =
+      req.body.adult * trip.trip_price + req.body.child * trip.trip_price;
 
-//     for (const eventData of req.body.reserved_events) {
-//       const event = await Event.findByPk(eventData.id);
-//       if (event && event.type === "optional") {
-//         new_total += (eventData.adult * event.price_adult) + (eventData.child * event.price_child);
-//       }
-//     }
+    for (const eventData of req.body.reserved_events) {
+      const event = await Event.findByPk(eventData.id);
+      if (event && event.type === "optional") {
+        new_total +=
+          eventData.adult * event.price_adult +
+          eventData.child * event.price_child;
+      }
+    }
 
-//     // Update reserved events
-//     for (const event of reservedEvents) {
-//       const updatedEvent = req.body.reserved_events.find(e => e.id === event.EventId);
-//       if (updatedEvent) {
-//         event.adult = updatedEvent.adult;
-//         event.child = updatedEvent.child;
-//         await event.save();
-//       }
-//     }
+    // Update reserved events
+    for (const event of req.body.reserved_events) {
+      let cur=await everyReservationEvent.findOne({where:{reservationId:reservation.id,EventId:event.id}});
+      if(cur){
+        cur.child=event.child;
+        cur.adult=event.adult;
+        await cur.save();
+      }else{
+        console.log('****************')
+        await everyReservationEvent.create({adult : event.adult,child:event.child,reservationId:reservation.id,EventId:event.id});
+      }
+    }
 
-//     // Update trip's available capacity
-//     const totalTravelers = req.body.adult + req.body.child;
-//     const newCapacity = trip.available_capacity - totalTravelers;
+    
 
-//     if (newCapacity < 0) {
-//       return res.status(400).json({ msg: "Not enough available capacity!", data: null });
-//     }
-
-//     trip.available_capacity = newCapacity;
-//     await trip.save();
-
-//     return res.status(200).json({ msg: "Your reservation was edited successfully!", data: { new_total, old_total } });
-
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ msg: "Internal server error.", data: null });
-//   }
-// };
+    return res.status(200).json({
+      msg: "Your reservation was edited successfully!",
+      data: { new_total, old_total },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
 
 module.exports.add_personal_trip = async (req, res, next) => {
   await Personal_trip.create({ name: "ZZZZAAAANNAASS" });
@@ -3641,7 +3632,9 @@ module.exports.add_personal_trip = async (req, res, next) => {
     per.notes = notes;
     await per.save();
 
-    return res.status(200).json({ msg: "Added!", data: null });
+    return res
+      .status(200)
+      .json({ msg: "Added!", data: { old_total, new_total } });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
@@ -3662,8 +3655,7 @@ module.exports.show_all_personal_trips = async (req, res, next) => {
       },
     });
 
-    return res.status(200).json({ msg: {}, data: {personal_trip} });
-
+    return res.status(200).json({ msg: {}, data: { personal_trip } });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
@@ -3904,65 +3896,65 @@ module.exports.personalTripInfo2 = async (req, res, next) => {
 };
 
 module.exports.get_all_destenations = async (req, res, next) => {
-  let destenations=await Destenation.findAll();
-  let data=[];
-  destenations.forEach(element => {
-    let object={
-      id:element.id,
-      name:element.name
+  let destenations = await Destenation.findAll();
+  let data = [];
+  destenations.forEach((element) => {
+    let object = {
+      id: element.id,
+      name: element.name,
     };
     data.push(object);
   });
-  return res.status(200).json({data,err:{},msg:'done'});
+  return res.status(200).json({ data, err: {}, msg: "done" });
 };
 
-module.exports.attractionsByDestenations=async(req,res,next)=>{
-  
-  let attractions = await Attraction.findAll({where:{
-    DestenationId:req.params.id
-  }});
-    let result=[];
-    for (let i = 0; i < attractions.length; i++) {
-      let single_attr = attractions[i];
-      
-      let fav = await favourites.findOne({
-        where: { UserId: req.user_id, AttractionId: single_attr.id },
-      });
+module.exports.attractionsByDestenations = async (req, res, next) => {
+  let attractions = await Attraction.findAll({
+    where: {
+      DestenationId: req.params.id,
+    },
+  });
+  let result = [];
+  for (let i = 0; i < attractions.length; i++) {
+    let single_attr = attractions[i];
 
-      if (!fav) {
-        fav = await favourites.create({
-          UserId: req.user_id,
-          AttractionId: single_attr.id,
-          is_favourite: false,
-        });
-      }
+    let fav = await favourites.findOne({
+      where: { UserId: req.user_id, AttractionId: single_attr.id },
+    });
 
-      let object = {
-        id: single_attr.id,
-        name: single_attr.name,
-        is_favourite: fav.is_favourite,
-      };
-      let reviews = await every_user_review.findAll({
-        where: { AttractionId: single_attr.id },
+    if (!fav) {
+      fav = await favourites.create({
+        UserId: req.user_id,
+        AttractionId: single_attr.id,
+        is_favourite: false,
       });
-      let rate = 0.0;
-      let cnt = 0;
-      reviews.forEach((element) => {
-        console.log(element.dataValues);
-        if (element.rate) {
-          cnt++;
-          rate += element.rate;
-          console.log(element.rate);
-        }
-      });
-      if (!cnt) rate = 0;
-      else {
-        rate = (rate * 1.0) / cnt;
-      }
-      rate = rate.toFixed(1);
-      object.rate = rate;
-      result.push(object);
     }
-    return res.status(200).json({data:result,err:{},msg:"done"});
 
-}
+    let object = {
+      id: single_attr.id,
+      name: single_attr.name,
+      is_favourite: fav.is_favourite,
+    };
+    let reviews = await every_user_review.findAll({
+      where: { AttractionId: single_attr.id },
+    });
+    let rate = 0.0;
+    let cnt = 0;
+    reviews.forEach((element) => {
+      console.log(element.dataValues);
+      if (element.rate) {
+        cnt++;
+        rate += element.rate;
+        console.log(element.rate);
+      }
+    });
+    if (!cnt) rate = 0;
+    else {
+      rate = (rate * 1.0) / cnt;
+    }
+    rate = rate.toFixed(1);
+    object.rate = rate;
+    result.push(object);
+  }
+  return res.status(200).json({ data: result, err: {}, msg: "done" });
+};
