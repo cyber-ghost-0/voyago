@@ -154,6 +154,8 @@ router.get('/personalTripInfo1/:id', is_auth, generalController.personalTripInfo
 
 router.get('/personalTripInfo2/:id', is_auth, generalController.personalTripInfo2);
 
+router.get('/personalTripInfo3/:id', is_auth, generalController.personalTripInfo3);
+
 // router.get('/send',generalController.notify);
 
 
