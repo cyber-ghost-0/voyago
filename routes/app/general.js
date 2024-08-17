@@ -148,6 +148,12 @@ router.get('/attractionsByDestenations/:id',is_auth, generalController.attractio
 
 
 
+router.post('/add_personal_events', is_auth, generalController.add_personal_events);
+
+router.get('/personalTripInfo1/:id', is_auth, generalController.personalTripInfo1);
+
+router.get('/personalTripInfo2/:id', is_auth, generalController.personalTripInfo2);
+
 // router.get('/send',generalController.notify);
 
 

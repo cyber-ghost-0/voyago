@@ -3576,7 +3576,7 @@ module.exports.delete_reservation = async (req, res, next) => {
 //         await event.save();
 //       }
 //     }
-    
+
 //     // Update trip's available capacity
 //     const totalTravelers = req.body.adult + req.body.child;
 //     const newCapacity = trip.available_capacity - totalTravelers;
@@ -3670,12 +3670,12 @@ module.exports.show_all_personal_trips = async (req, res, next) => {
   }
 };
 
-module.exports.add_personal_events = async(req,res,next)=>{
-  try{
+module.exports.add_personal_events = async (req, res, next) => {
+  try {
     let action = req.body.action,
-    title = req.body.title,
-    duration = req.body.duration,
-    PersonalDayId = req.body.PersonalDayId;
+      title = req.body.title,
+      duration = req.body.duration,
+      PersonalDayId = req.body.PersonalDayId;
 
     let err = await Personal_day_trip.findByPk(PersonalDayId);
 
@@ -3683,11 +3683,224 @@ module.exports.add_personal_events = async(req,res,next)=>{
       return res.status(500).json({ msg: "fault", err: "Day is not exist" });
     }
 
+    await Personal_event.create({
+      title: title,
+      action: action,
+      duration: duration,
+      PersonalDayId: PersonalDayId
+    });
 
-  }catch (error) {
+    return res.status(200).json({ msg: "Added!", data: null });
+
+  } catch (error) {
     console.error(error);
     return res.status(500).json({ msg: "Internal server error.", data: null });
   }
+};
+
+// module.exports.personalTripInfo1 = async (req, res, next) => {
+//   try {
+//     let destination = [];
+//     const trip_id = req.params.id;
+//     let trip = await Personal_trip.findByPk(trip_id, {
+//       attributes: ['DestenationId'],
+//     })
+//     if (!trip) {
+//       return res.status(404).json({ msg: "Personal trip not found.", data: null });
+//     }
+//     destination = await Destenation.findByPk(trip.DestenationId);
+//     let fav = await favourites.findOne({
+//       where: { UserId: req.user_id, DestenationId: destination.id },
+//     });
+
+//     if (!fav) {
+//       fav = await favourites.create({
+//         UserId: req.user_id,
+//         DestenationId: destination.id,
+//         is_favourite: false,
+//       });
+//     }
+//     let is_favourite = fav.is_favourite;
+//     destination.dataValues.is_favourite = is_favourite;
+//     let attractions = await AttractionForPersonal.findAll({
+//       where: {
+//         PersonalTripId: trip_id,
+//       },
+//     });
+
+//     let detailedAttractions = await Promise.all(attractions.map(async (att) => {
+//       let attraction = await Attraction.findByPk(att.AttractionId);
+//       let name = attraction.name;
+
+//       let fav = await favourites.findOne({
+//         where: { UserId: req.user_id, AttractionId: att.AttractionId },
+//       });
+
+//       if (!fav) {
+//         fav = await favourites.create({
+//           UserId: req.user_id,
+//           AttractionId: att.AttractionId,
+//           is_favourite: false,
+//         });
+//       }
+
+//       let is_favourite = fav.is_favourite;
+
+//       // Return a new object that includes the original data and the new properties
+//       return {
+//         ...att.dataValues,
+//         name,
+//         is_favourite
+//       };
+//     ));
+
+//     let reviews = await every_user_review.findAll({
+//       where: { AttractionId: attraction.id },
+//     });
+//     let rate = 0.0;
+//     let cnt = 0;
+//     reviews.forEach((element) => {
+//       //console.log(element.dataValues);
+//       if (element.rate) {
+//         cnt++;
+//         rate += element.rate;
+//         console.log(element.rate);
+//       }
+//     });
+//     if (!cnt) rate = 0;
+//     else {
+//       rate = (rate * 1.0) / cnt;
+//     }
+//     rate = rate.toFixed(1);
+//     att.rate = rate;
+//     attractions.dataValues.is_favourite = is_favourite;
+//   }
+//   return res.status(200).json({ msg: {}, data: { destination, attractions: detailedAttractions } });
+
+// } catch (error) {
+//   console.error(error);
+//   return res.status(500).json({ msg: "Internal server error.", data: null });
+// }
+// };
+
+module.exports.personalTripInfo1 = async (req, res, next) => {
+  try {
+    const trip_id = req.params.id;
+
+    // Fetch the personal trip and check if it exists
+    let trip = await Personal_trip.findByPk(trip_id, {
+      attributes: ['DestenationId'],
+    });
+
+    if (!trip) {
+      return res.status(404).json({ msg: "Personal trip not found.", data: null });
+    }
+
+    // Fetch the destination and handle the favorite status
+    let destination = await Destenation.findByPk(trip.DestenationId);
+
+    if (!destination) {
+      return res.status(404).json({ msg: "Destination not found.", data: null });
+    }
+
+    let fav = await favourites.findOne({
+      where: { UserId: req.user_id, DestenationId: destination.id },
+    });
+
+    if (!fav) {
+      fav = await favourites.create({
+        UserId: req.user_id,
+        DestenationId: destination.id,
+        is_favourite: false,
+      });
+    }
+
+    destination.dataValues.is_favourite = fav.is_favourite;
+
+    // Fetch the attractions for the personal trip
+    let attractions = await AttractionForPersonal.findAll({
+      where: {
+        PersonalTripId: trip_id,
+      },
+      attributes: ['id', 'AttractionId']
+    });
+
+    // Process each attraction
+    let detailedAttractions = await Promise.all(attractions.map(async (att) => {
+      let attraction = await Attraction.findByPk(att.AttractionId);
+      if (!attraction) return null;  // Skip if attraction is not found
+
+      let fav = await favourites.findOne({
+        where: { UserId: req.user_id, AttractionId: att.AttractionId },
+      });
+
+      if (!fav) {
+        fav = await favourites.create({
+          UserId: req.user_id,
+          AttractionId: att.AttractionId,
+          is_favourite: false,
+        });
+      }
+
+      let reviews = await every_user_review.findAll({
+        where: { AttractionId: attraction.id },
+      });
+
+      let rate = 0.0;
+      let cnt = 0;
+      reviews.forEach((element) => {
+        if (element.rate) {
+          cnt++;
+          rate += element.rate;
+        }
+      });
+
+      rate = cnt ? (rate / cnt).toFixed(1) : "0.0";
+
+      // Return the detailed attraction object
+      return {
+        ...att.dataValues,
+        name: attraction.name,
+        is_favourite: fav.is_favourite,
+        rate: rate
+      };
+    }));
+
+    // Remove any null entries in case an attraction was not found
+    detailedAttractions = detailedAttractions.filter(attr => attr !== null);
+
+    return res.status(200).json({ msg: "Success", data: { destination, attractions: detailedAttractions } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+};
+
+module.exports.personalTripInfo2 = async (req, res, next) => {
+  try {
+    const trip_id = req.params.id;
+    let days = await Personal_day_trip.findAll({
+      where: {
+        PersonalTripId: trip_id
+      },
+      attributes: ['num'],
+      include: [{
+        model: Personal_event,
+        attributes: ['id', 'action', 'title', 'duration'],
+      }],
+    });
+    
+    let data = [];
+    
+
+    return res.status(200).json({ msg: "Success", data: { days } });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ msg: "Internal server error.", data: null });
+  }
+
 };
 
 module.exports.get_all_destenations = async (req, res, next) => {
