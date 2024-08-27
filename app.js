@@ -38,7 +38,6 @@ const Personal_trip = require("./models/PersonalTrip.js");
 const Personal_day_trip = require("./models/PersonalDayTrip.js");
 const Personal_event = require("./models/PersonalEvents.js");
 const AttractionForPersonal = require("./models/AttractionForPersonal.js");
-  9
 const { Op, INTEGER } = require("sequelize");
 
 

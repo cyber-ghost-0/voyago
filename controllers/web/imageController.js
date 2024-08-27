@@ -41,7 +41,8 @@ const imageFilter = (req, file, cb) => {
 
 const storage = multer.diskStorage({
   destination: async function (req, file, cb) {
-    const uploadPath = path.join(__dirname, `../../uploads/`);
+    // const uploadPath = path.join(__dirname, `../../uploads/`);
+    const uploadPath = path.join(`/temp`, `../../uploads/`);
     await fs.mkdir(uploadPath, { recursive: true });
     cb(null, uploadPath);
   },
