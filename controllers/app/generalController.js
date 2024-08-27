@@ -129,7 +129,7 @@ async function is_unique(name, model, col) {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads"); // Specify the uploads directory
+    cb(null, "temp"); // Specify the uploads directory
   },
   filename: (req, file, cb) => {
     // Generate a unique filename with the original file extension
@@ -2388,7 +2388,7 @@ module.exports.charge_wallet = async (req, res, next) => {
   }
   const charge_req = await ChargeRequest.create({
     UserId: user_id,
-    bank_ticket: `http://localhost:3000/uploads/${req.file.filename}`,
+    bank_ticket: `http://localhost:3000/temp/${req.file.filename}`,
     amount: amount,
   });
   let wallet = await Wallet.findOne({ where: { UserId: user_id } });
@@ -3049,7 +3049,7 @@ module.exports.add_profile_pic = async (req, res, next) => {
       return res.status(404).json({ msg: "User not found.", data: null });
     }
 
-    user.profile_pic = `http://localhost:3000/uploads/${req.file.filename}`;
+    user.profile_pic = `http://localhost:3000/temp/${req.file.filename}`;
     await user.save();
 
     return res

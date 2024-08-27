@@ -170,7 +170,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('Hello This is Voyago ...!\n@Anas@alaa@aya@zaid');
 });
 app.use("/api", appAuth);
 app.use("/web", webAuth);

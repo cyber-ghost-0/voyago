@@ -227,20 +227,18 @@ module.exports.Logout = async (req, res, next) => {
   return res.status(204).send({ msg: "DONE!", data: {}, err: {} });
 };
 
-module.exports.check_regesteration_code = (req, res, next) => {
+module.exports.check_regesteration_code =async (req, res, next) => {
   console.log(req.body.in_code, "  ", req.body.correct_code);
   if (req.body.correct_code === req.body.in_code) {
-    services.get_user_by_any(req.body.email, User, "email").then((user) => {
+    let user=await services.get_user_by_any(req.body.email, User, "email")
       if (!user) {
         return res
           .status(400)
           .json({ msg: "fault", err: "invalid user", data: {} });
       }
       user.cod_ver = req.body.correct_code;
-      user.save();
-      return user;
-    });
-
+      await user.save();
+    
     return res.status(200).json({ msg: "verified!", data: {}, err: {} });
   } else {
     return res.status(400).json({ msg: "fault", err: "invalid cod", data: {} });
