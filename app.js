@@ -1,3 +1,4 @@
+require('dotenv').config();
 const FCM = require("./models/FCM_Tokens.js")
 const express = require("express");
 const sequelize = require("./util/database.js");
@@ -180,7 +181,7 @@ sequelize
   //  .sync({  force:true})
   .sync()
   .then((result) => {
-    app.listen(3000);
+    app.listen(process.env.PORT||3000);
   })
   .catch((err) => {
     console.log(err);

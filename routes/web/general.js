@@ -5,7 +5,7 @@ const generalController = require('../../controllers/web/generalController');
 const is_auth = require('../../middleware/is_auth');
 const multer = require('multer');
 const validateImageUpload = require('../../middleware/imageValidation');
-const upload = multer({ dest: 'uploads/' });
+// const upload = multer({ dest: 'uploads/' });
 const router = express.Router();
 
 
