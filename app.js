@@ -1,33 +1,33 @@
 const FCM = require("./models/FCM_Tokens.js")
 const express = require("express");
-const sequelize = require("./util/database");
-const appAuth = require("./routes/app/auth");
-const webRoutes = require("./routes/web/general");
-const appRoutes = require("./routes/app/general");
-const webAuth = require("./routes/web/auth");
+const sequelize = require("./util/database.js");
+const appAuth = require("./routes/app/auth.js");
+const webRoutes = require("./routes/web/general.js");
+const appRoutes = require("./routes/app/general.js");
+const webAuth = require("./routes/web/auth.js");
 const app = express();
 const BP = require("body-parser");
-const Trip = require("./models/Trip");
-const Admin = require("./models/Admin");
-const Destenation = require("./models/Destenation");
-const Event = require("./models/Event");
-const Attraction = require("./models/Attraction");
+const Trip = require("./models/Trip.js");
+const Admin = require("./models/Admin.js");
+const Destenation = require("./models/Destenation.js");
+const Event = require("./models/Event.js");
+const Attraction = require("./models/Attraction.js");
 const Favourites = require("./models/Favourites.js");
-const Features_included = require("./models/features_included");
-const Every_feature = require("./models/every_feture");
-const Image = require("./models/image");
-const Day_trip = require("./models/Day_trip");
+const Features_included = require("./models/features_included.js");
+const Every_feature = require("./models/every_feture.js");
+const Image = require("./models/image.js");
+const Day_trip = require("./models/Day_trip.js");
 const Review = require("./models/review.js");
 const Every_user_review = require("./models/EveryUserReview.js");
 const User = require("./models/User.js");
 const reservation = require("./models/reservation.js");
 const Wallet = require("./models/wallet.js");
 const Transaction = require("./models/transaction.js");
-const ChargeRequest = require("./models/chargeRequest");
+const ChargeRequest = require("./models/chargeRequest.js");
 const every_user_review = require("./models/EveryUserReview.js");
 const imageRoutes = require("./models/image.js");
 const everyReservationEvent = require("./models/everyResrvationEvent.js");
-const charge_request = require("./models/chargeRequest");
+const charge_request = require("./models/chargeRequest.js");
 const transaction = require("./models/transaction.js");
 const Notification_mod = require("./models/Notification.js")
 const cors = require("cors");
@@ -169,7 +169,9 @@ app.use(express.urlencoded({ extended: true }));
 
 
 
-
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
 app.use("/api", appAuth);
 app.use("/web", webAuth);
 app.use("/api", appRoutes);
@@ -184,3 +186,4 @@ sequelize
   .catch((err) => {
     console.log(err);
   });
+module.exports=app;
